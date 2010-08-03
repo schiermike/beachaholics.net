@@ -1,0 +1,182 @@
+<!--
+Title: Tigra Calendar
+URL: http://www.softcomplex.com/products/tigra_calendar/
+Version: 3.4 (all formats)
+Date: 07/12/2007
+Note: Permission given to use this script in ANY kind of applications if
+   header lines are left unchanged.
+Note: Script consists of two files: calendar?.js and calendar.html
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>Select Date, Please.</title>
+<style>
+	body {
+		margin: 0px 0px 0px 0px; 
+		background-color: white;
+		}
+	td {
+		font-family: Tahoma, Verdana, sans-serif; 
+		font-size: 12px;
+		}
+	td a {
+		text-decoration: none;
+		}
+</style>
+<script language="javascript">
+
+	// months as they appear in the calendar's title
+	var ARR_MONTHS = ["Jänner", "Februar", "März", "April", "Mai", "Juni",
+			"Juli", "August", "September", "Oktober", "November", "Dezember"];
+	// week day titles as they appear on the calendar
+	var ARR_WEEKDAYS = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+	// day week starts from (normally 0-Su or 1-Mo)
+	var NUM_WEEKSTART = 1;
+	// path to the directory where calendar images are stored. trailing slash req.
+	var STR_ICONPATH = 'img/';
+	
+	var re_urlCur = new RegExp('c=(\\-?\\d+)');
+	var re_urlSel = new RegExp('s=(\\-?\\d+)');
+	var re_id = new RegExp('id=(\\d+)');
+	
+	var dt_selected = (re_urlSel.exec(String(window.location)) ? new Date(new Number(RegExp.$1)) : new Date());
+	var dt_current = (re_urlCur.exec(String(window.location)) ? new Date(new Number(RegExp.$1)) : dt_selected);
+	var num_id = (re_id.exec(String(window.location)) ? new Number(RegExp.$1) : 0);
+	
+	var obj_caller = (window.opener ? window.opener.calendars[num_id] : null);
+	
+	if (obj_caller && obj_caller.year_scroll) 
+	{
+		// get same date in the previous year
+		var dt_prev_year = new Date(dt_current);
+		dt_prev_year.setFullYear(dt_prev_year.getFullYear() - 1);
+		if (dt_prev_year.getDate() != dt_current.getDate())
+			dt_prev_year.setDate(0);
+		
+		// get same date in the next year
+		var dt_next_year = new Date(dt_current);
+		dt_next_year.setFullYear(dt_next_year.getFullYear() + 1);
+		if (dt_next_year.getDate() != dt_current.getDate())
+			dt_next_year.setDate(0);
+	}
+	
+	// get same date in the previous month
+	var dt_prev_month = new Date(dt_current);
+	dt_prev_month.setMonth(dt_prev_month.getMonth() - 1);
+	if (dt_prev_month.getDate() != dt_current.getDate())
+		dt_prev_month.setDate(0);
+	
+	// get same date in the next month
+	var dt_next_month = new Date(dt_current);
+	dt_next_month.setMonth(dt_next_month.getMonth() + 1);
+	if (dt_next_month.getDate() != dt_current.getDate())
+		dt_next_month.setDate(0);
+	
+	// get first day to display in the grid for current month
+	var dt_firstday = new Date(dt_current);
+	dt_firstday.setDate(1);
+	dt_firstday.setDate(1 - (7 + dt_firstday.getDay() - NUM_WEEKSTART) % 7);
+	
+	// function passing selected date to calling window
+	function set_datetime(n_datetime, b_close) 
+	{
+		if (!obj_caller) return;
+	
+		var dt_datetime = obj_caller.prs_time( (document.cal ? document.cal.time.value : ''), new Date(n_datetime) );
+	
+		if (!dt_datetime) return;
+		if (b_close)
+		{
+			obj_caller.target.value = (document.cal ? obj_caller.gen_tsmp(dt_datetime) : obj_caller.gen_date(dt_datetime));
+			window.close();
+			if(obj_caller.form_target)
+				obj_caller.form_target.submit();
+		}
+		else 
+			obj_caller.popup(dt_datetime.valueOf());
+	}
+
+</script>
+</head>
+<body>
+<table class="clsOTable" cellspacing="0" border="0" width="100%">
+	<tr>
+	<td bgcolor="#4682B4">
+
+		
+<script language="JavaScript">
+
+	document.write('<table cellspacing="0" cellpadding="2" border="0" width="100%"><tr>');
+	
+	document.write('<td nowrap="nowrap">');
+	if(obj_caller && obj_caller.year_scroll)
+		document.write('<a href="javascript:set_datetime('+dt_prev_year.valueOf()+')"><img src="'+STR_ICONPATH+'prev_year.gif" width="16" height="16" border="0" alt="previous year"></a>&nbsp;');
+	document.write('<a href="javascript:set_datetime(' + dt_prev_month.valueOf() + ')"><img src="' + STR_ICONPATH + 'prev.gif" width="16" height="16" border="0" alt="previous month"></a>');
+	document.write('</td>');
+	
+	document.write('<td style="text-align:center" width="100%">');
+	document.write('<font color="#ffffff">' + ARR_MONTHS[dt_current.getMonth()] + ' ' + dt_current.getFullYear() + '</font>');
+	document.write('</td>');
+
+	document.write('<td nowrap="nowrap">');
+	document.write('<a href="javascript:set_datetime(' + dt_next_month.valueOf() + ')"><img src="' + STR_ICONPATH + 'next.gif" width="16" height="16" border="0" alt="next month"></a>');
+	if(obj_caller && obj_caller.year_scroll)
+		document.write('&nbsp;<a href="javascript:set_datetime('+dt_next_year.valueOf()+')"><img src="'+STR_ICONPATH+'next_year.gif" width="16" height="16" border="0" alt="next year"></a>');
+	document.write('</td>');
+	document.write('</tr></table>');
+
+
+	document.write('<table cellspacing="1" cellpadding="3" border="0" width="100%">');
+
+	document.write('<tr>');
+	// print weekdays titles
+	for (var n=0; n<7; n++)
+		document.write('<td bgcolor="#87cefa" style="text-align:center"><font color="#ffffff">'+ARR_WEEKDAYS[(NUM_WEEKSTART+n)%7]+'</font></td>');
+	document.write('</tr>');
+
+	// print calendar table
+	var dt_current_day = new Date(dt_firstday);
+	while (dt_current_day.getMonth() == dt_current.getMonth() || dt_current_day.getMonth() == dt_firstday.getMonth()) 
+	{
+		// print row heder
+		document.write('<tr>');
+		for (var n_current_wday=0; n_current_wday<7; n_current_wday++) 
+		{
+			if (dt_current_day.getDate() == dt_selected.getDate() && dt_current_day.getMonth() == dt_selected.getMonth() && dt_current_day.getFullYear() == dt_selected.getFullYear())
+				document.write('<td bgcolor="#ffb6c1" style="text-align:center" width="14%">'); // print current date
+			else if (dt_current_day.getDay() == 0 || dt_current_day.getDay() == 6)
+				document.write('<td bgcolor="#dbeaf5" style="text-align:center" width="14%">'); // weekend days
+			else
+				document.write('<td bgcolor="#ffffff" style="text-align:center" width="14%">'); // print working days of current month
+	
+			document.write('<a href="javascript:set_datetime('+dt_current_day.valueOf() +', true);">');
+	
+			if (dt_current_day.getMonth() == this.dt_current.getMonth())
+				document.write('<font color="#000000">'); // print days of current month
+			else 
+				document.write('<font color="#606060">'); // print days of other months
+				
+			document.write(dt_current_day.getDate()+'</font></a></td>');
+			dt_current_day.setDate(dt_current_day.getDate()+1);
+		}
+		document.write('</tr>'); // print row footer
+	}
+	
+	document.write('</table>');
+
+	if (obj_caller && obj_caller.time_comp) 
+	{
+		document.write('<form onsubmit="javascript:set_datetime('+dt_current.valueOf()+', true)" name="cal"><tr><td colspan="7" bgcolor="#87CEFA"><font color="White" face="tahoma, verdana" size="2">Time: <input type="text" name="time" value="'+obj_caller.gen_time(this.dt_current)+'" size="8" maxlength="8"></font></td></tr></form>');
+		document.forms['cal'].elements['time'].focus();
+	}
+	
+</script>
+
+	</td>
+	</tr>
+</table>
+</body>
+</html>
+

@@ -1,0 +1,21 @@
+#!/usr/bin/python3.1
+
+import os
+import subprocess
+
+print("Synchronization script which copies all uncommitted changes to the web server")
+print("=============================================================================\n")
+
+# Only needed when there are remote changes
+#output = subprocess.getoutput("svn up")
+#print("SVN " + output + "\n")
+
+output = subprocess.getoutput("svn stat")
+lines = output.split("\n")
+for line in lines:
+	line = line.split("  ")
+	line = line[len(line)-1]
+	line = line.lstrip()
+	print("Copying '" + line + "' to the web server...")
+	os.system("scp " + line + " eos:/www/beachaholics/" + line)
+

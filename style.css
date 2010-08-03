@@ -1,0 +1,428 @@
+/* General style definitions */
+
+	body 
+	{
+		background-color:black;
+
+		background-image:url('img/background.png');
+		background-repeat:no-repeat;
+		background-attachment:fixed;
+		background-position: bottom right;
+		
+		color:#000000;
+		font: 10pt/120% "Trebuchet MS", Tahoma, Arial;
+		margin:0px;
+		padding:0px;
+		height:100%;
+		border:none;
+	}
+	
+	p, td
+	{
+		text-align: left;
+	}
+	
+	img
+	{
+		border-width: 0px;
+		border-style: none; 
+	}
+	
+	img.commented
+	{
+		border-color: #94ade0; 
+		border-width: 4px;
+	}
+	
+	a:link
+	{
+		color:#b00000; 
+		text-decoration:none;
+	}
+	
+	a:hover 
+	{
+		text-decoration:underline;
+	}
+	
+	a:visited
+	{
+		color:#b00000; 
+		text-decoration: none;
+	}
+	
+	h3
+	{
+		text-decoration: underline;
+	}
+
+
+/* Layout-Table style definitions */
+
+	table#layout
+	{
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	
+	table#navi
+	{
+		position:absolute;
+		visibility: hidden;
+		top: 120px;
+	}
+	
+	table#userinfo
+	{
+		position:absolute;
+		visibility: hidden;
+		top: 262px;
+	}
+	
+	table#logo
+	{
+		position:absolute;
+		visibility: hidden;
+		top: 80px;
+	}
+	
+	table#navi tr td.center
+	{
+		text-align:right;
+		padding: 5px;
+		background-color: white;
+	}
+	
+	table#userinfo tr td.center
+	{
+		background-color: white;
+		padding: 5px;
+		font-size: 8pt;
+	}
+	
+	table#logo tr td.center
+	{
+		background-color: white;
+		padding: 15px;
+	}
+	
+	table#layout tr td#top_left,
+	table#navi tr td.top_left,
+	table#userinfo tr td.top_left,
+	table#logo tr td.top_left
+	{
+		width: 20px;
+		height: 20px;
+		background-repeat: no-repeat;
+		background-image: url("img/trans/top_left.png");
+	}
+	
+	table#layout tr td#top,
+	table#navi tr td.top,
+	table#userinfo tr td.top,
+	table#logo tr td.top
+	{
+		height: 20px;
+		background-repeat: repeat-x;
+		background-image: url("img/trans/top.png");
+	}
+	
+	table#layout tr td#top_right,
+	table#navi tr td.top_right,
+	table#userinfo tr td.top_right,
+	table#logo tr td.top_right
+	{
+		width: 20px;
+		height: 20px;
+		background-repeat: no-repeat;
+		background-image: url("img/trans/top_right.png");
+	}
+	
+	table#layout tr td#left,
+	table#navi tr td.left,
+	table#userinfo tr td.left,
+	table#logo tr td.left
+	{
+		width: 20px;
+		background-repeat: repeat-y;
+		background-image: url("img/trans/left.png");
+	}
+	
+	table#layout tr td#right,
+	table#navi tr td.right,
+	table#userinfo tr td.right,
+	table#logo tr td.right
+	{
+		width: 20px;
+		background-repeat: repeat-y;
+		background-image: url("img/trans/right.png");
+	}
+	
+	table#layout tr td#bottom_left,
+	table#navi tr td.bottom_left,
+	table#userinfo tr td.bottom_left,
+	table#logo tr td.bottom_left
+	{
+		width: 20px;
+		height: 20px;
+		background-repeat: no-repeat;
+		background-image: url("img/trans/bottom_left.png");
+	}
+	
+	table#layout tr td#bottom,
+	table#navi tr td.bottom,
+	table#userinfo tr td.bottom,
+	table#logo tr td.bottom
+	{
+		height: 20px;
+		background-repeat: repeat-x;
+		background-image: url("img/trans/bottom.png");
+	}
+	
+	table#layout tr td#bottom_right,
+	table#navi tr td.bottom_right,
+	table#userinfo tr td.bottom_right,
+	table#logo tr td.bottom_right
+	{
+		width: 20px;
+		height: 20px;
+		background-repeat: no-repeat;
+		background-image: url("img/trans/bottom_right.png");
+	}
+
+	
+/* Main-Table style definitions */
+
+	table#main
+	{
+		background-color: white;
+		table-layout: fixed;
+		width: 800px;
+		height:100%;
+		border-collapse: collapse;
+	}
+	
+	table#main tr td#header
+	{
+		height: 160px;
+	
+		padding: 0px;
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+		border-bottom-color: black;
+		
+		background-image: url("img/maintop.jpg");
+		background-repeat: no-repeat;
+	}
+	
+	table#main tr td#content
+	{
+		padding-top: 40px;
+		height:100%;
+		overflow:auto;
+	}
+	
+	table#main tr td#footer
+	{
+		height: 120px;
+		
+		border-top-style:solid;
+		border-top-width:1px; 
+		border-top-color: black;
+		
+		border-bottom-style:solid; 
+		border-bottom-width:1px; 
+		border-bottom-color: black;
+		
+		background-repeat:no-repeat;
+	}
+	
+	
+/* Guestbook style definitions */
+
+	table#guestbook
+	{
+		width: 100%;
+	}
+	
+	table#guestbook tr td.name
+	{
+		text-align: left;
+		font-weight: bold;
+		
+		border-width: 1px;
+		border-color: black;
+		border-top-style: solid;
+		border-left-style: solid;
+		padding-left: 3px;
+	}
+	
+	table#guestbook tr td.action
+	{
+		text-align: left;
+		font: 8pt/120% sans-serif;
+		padding-left: 10px;
+		
+		border-width: 1px;
+		border-color: black;
+		border-top-style: solid;
+	}
+	
+	table#guestbook tr td.date
+	{
+		text-align: right;
+		font: 8pt/120% sans-serif;
+		white-space: nowrap;
+		border-color: black;
+		
+		border-width: 1px;
+		border-color: black;
+		border-top-style: solid;
+		border-right-style: solid;
+	}
+	
+	table#guestbook tr td.picture
+	{
+		border-color: black;
+		border-width: 1px;
+		border-bottom-style: solid;
+		border-left-style: solid;
+		vertical-align: top;
+		background-color: #d0d0d0;
+	}
+	
+	table#guestbook tr td.message
+	{
+		width: 100%;
+		text-align: left; 
+		padding-left: 10px;
+
+		border-color: black;
+		border-width: 1px;
+		border-bottom-style: solid;
+		border-right-style: solid;
+	}
+	
+	table#guestbook tr.empty
+	{
+		height: 5px;
+	}
+
+
+/* Column color definitions */
+
+	.rowColor0
+	{
+		background-color: #e0e0e0;
+	}
+	
+	.rowColor1
+	{
+		background-color: #cccccc;
+	}
+	
+	.rowColor2
+	{
+		background-color: #aaaaaa;
+	}
+	
+	.rowColorSelected
+	{
+		background-color: #ff8888;
+	}
+	
+
+/* training.php style definitions */
+
+	table#training
+	{
+		border-collapse: collapse;
+	}
+	
+	table#training tr td
+	{
+		padding: 3px 1px 3px 1px;
+		border-bottom-style: solid;
+		border-width: 1px;
+		border-color: grey;
+	}
+	
+	table#training tr.topborder td
+	{
+		border-top-style: solid;
+		border-top-width: 5px;
+		border-top-color: #777;
+	}
+	
+	table#training tr.indoor_men,
+	table#training_legend tr td.indoor_men
+	{
+		background-color: #aecde8;
+	}
+	
+	table#training tr.game_men,
+	table#training_legend tr td.game_men
+	{
+		background-color: #5e9bcf;
+	}
+	
+	table#training tr.indoor_women,
+	table#training_legend tr td.indoor_women
+	{
+		background-color: #ffadad;
+	}
+	
+	table#training tr.game_women,
+	table#training_legend tr td.game_women
+	{
+		background-color: #ff6666;
+	}
+	
+	table#training tr.beach,
+	table#training_legend tr td.beach
+	{
+		background-color: #ffe384;
+	}
+	
+	table#training tr.misc,
+	table#training_legend tr td.misc
+	{
+		background-color: #74cd48;
+	}
+	
+	table#training tr.external,
+	table#training_legend tr td.external
+	{
+		background-color: #eeeeee;
+	}
+	
+	table#training tr#event:hover
+	{
+		background-color: #dddddd;
+	}
+	
+	
+/* ranking.php style definitions */
+
+	table.tvvparsed,
+	table.tvvparsed a,
+	table.tvvparsed font
+	{
+		font-size: 8pt;
+	}
+
+
+/* error log style definitions */
+
+	div.errorlog
+	{
+		border-style: dotted;
+		border-width: 1px;
+		border-color: #b00000;
+	}
+	
+	div.errorinfo
+	{
+		text-align: left;
+		font-size: 8pt;
+	}
