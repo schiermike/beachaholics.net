@@ -28,11 +28,7 @@
 		private $userPicRefreshs = array();
 		
 		public static function initialize()
-		{
-			$ipsubstr = substr($_SERVER['REMOTE_ADDR'], 0,3);
-			if($ipsubstr != "127" && $ipsubstr!="192")
-				ini_set("session.cookie_domain",".beachaholics.net");
-			
+		{	
 			date_default_timezone_set('Europe/Vienna');
 			setlocale(LC_TIME, 'de_AT.utf8');
 			setlocale(LC_MONETARY, 'de_AT.utf8');
@@ -43,7 +39,8 @@
 			ini_set('sendmail_from', 'no-reply@beachaholics.net');
 			
 			// start the session
-			session_start();
+			if(session_id() == "")
+				session_start();
 			
 			// init session object
 			if(!isset($_SESSION['session']))
@@ -52,7 +49,7 @@
 		
 		public function __construct()
 		{
-			$this->db = new DB("www.beachaholics.net", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
+			$this->db = new DB("localhost", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
 		}
 		
 		

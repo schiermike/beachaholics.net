@@ -1,11 +1,12 @@
-<?
+<?php
 	require_once "init.php";
   	
   	HP::printPageHead("Datenaustausch", "img/top_files.png", "files_script/styles.css");
   	
+  	global $showFtp;
   	if(!getUser()->isGuest())
   	{
-  		if($_GET['showFtp'] == "true")
+  		if($showFtp == "true")
   			printFtpDescription();
   		else
   		{
@@ -216,7 +217,7 @@
 				 $leadon = $_GET['dir'];
 			else
 			{
-				echo "BUGGY";
+				echo HP::printErrorText("Files Section is currently unavailable!");
 				return;
 			}
 		}
@@ -251,7 +252,7 @@
 		if(! ($file_location . $leadon) ) $opendir = '.';
 		if(!file_exists($opendir)) 
 		{
-			echo "BUGGY";
+			echo HP::printErrorText("Files Section is currently unavailable!");
 			return;
 		}
 		

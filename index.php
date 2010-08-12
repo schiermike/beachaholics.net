@@ -13,7 +13,7 @@
 	echo "<h2 style='text-align:center;'><strong>Willkommen bei den BeachAholics Kufstein!</strong></h2><br/><br/>";
 	echo "<p style='font-size:12pt; text-align: center;'>Unsere Spielzeiten findet ihr <a href='training.php'>hier</a>!</p><br/>";
 	echo "<p style='font-size:12pt; text-align: center;'>Weiters findet jeden Donnerstag von 18 bis 19 Uhr das Kindertraining im Freischwimmbad Kufstein statt - jeder ist herzlich dazu eingeladen, teilzunehmen!</p>";
-	echo "<p style='font-size:12pt; padding: 20px;'><b>Aktueller Hinweis:</b> Das diesjährige ATV 3:3 Turnier findet am 22. August im Freischwimmbad Kufstein statt - die Anmeldung ist <a href='http://www.mod-kufstein.com' target='_blank'>hier</a> möglich.</p>";
+	echo "<p style='font-size:12pt; padding: 20px;'>Aktueller Hinweis: Das diesjährige ATV 3:3 Turnier findet am 22. August im Freischwimmbad Kufstein statt - die Anmeldung ist <a href='http://www.mod-kufstein.com' target='_blank'>hier</a> möglich.</p>";
 
 
 /****************************

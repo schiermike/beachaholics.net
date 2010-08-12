@@ -19,8 +19,8 @@
 			echo "<a href='".$_SERVER['PHP_SELF']."?section=cupwomen'>Damen Cup</a> | ";
 			echo "<a href='".$_SERVER['PHP_SELF']."?section=mixed'>Mixed Bewerb</a>";
 		echo "</div>";
-		
-		switch($_GET['section'])
+		global $section;
+		switch($section)
 		{
 			case 'cupmen':
 				echo "<h3>Herren Cup Spiele: (<a href='http://www.tvv.at/pdf/TVV_Cup_Raster_Herren.pdf' target='_blank'>Cup Raster</a>)</h3>";

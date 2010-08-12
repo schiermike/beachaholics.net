@@ -4,7 +4,7 @@
 	HP::printPageHead("Anfahrtspläne", "img/top_location.png", NULL, array("http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAACAIT_E71P3eIb-xH4NMDQhTfibC8pX3uhe5mh5-4KgUTvwNs-hQehqkO08mJpv3BSsixkt8BhAJqKA"));
 ?>	
 
-	<div id='map' style='width: 780px; height: 600px'></div>
+	<div id='map' style='width: 100%; height: 100%;'></div>
 		
 	<script type='text/javascript'>
 if(GBrowserIsCompatible())

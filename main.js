@@ -1,4 +1,85 @@
 
+
+/*
+ * returns the URL of the current displayed site without URL parameters
+ * Hope this one works ;-)
+ */
+function getCurrentURL()
+{
+	var url = window.location.href;
+	var pos = url.indexOf('?');
+	if(pos == -1)
+		return url;
+	return url.substr(0, pos);
+}
+
+// ------------------------------------------------------------------------------------------------
+
+/*
+ * Returns a new instance of XMLHttpRequest - browser dependent behaviour encapsulation.
+ */
+function getNewXMLHttpRequest()
+{
+	// Mozilla, Opera, Safari sowie Internet Explorer (ab v7)
+	if (typeof XMLHttpRequest != 'undefined')
+		return new XMLHttpRequest();
+
+	// Internet Explorer 6 und älter
+	try
+	{
+		return new ActiveXObject("Msxml2.XMLHTTP");
+	}
+	catch(e) {}
+
+	try
+	{
+		return new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	catch(e) {}
+
+	alert("This browser cannot work with asynchronous javascript calls using the XMLHttpRequest object!\nDamn man, how old is your computer??? Go out and buy a new one!");
+	return null;
+}
+
+// ------------------------------------------------------------------------------------------------
+
+/*
+ * Requests the content of requestURL by making a GET or POST request depending on the parameters getParams and postParams.
+ * Upon receipt of the answer, the function callback will be called
+ */
+function makeRequest(requestURL, callback, getParams, postParams)
+{
+	var request = getNewXMLHttpRequest();
+	if(getParams != null)
+		requestURL += "?" + getParams;
+
+	request.onreadystatechange = function ()
+	{
+		if (request.readyState == 4 && callback != null)
+		{
+//			alert("Answer: " + request.responseText);
+			callback(request.responseText);
+		}
+	};
+//	alert("makeRequest: " + requestURL);
+	if(postParams == null)
+	{
+		request.open('GET', requestURL, true);
+		request.send(null);
+	}
+	else
+	{
+		request.open('POST', requestURL, true);
+		request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		request.setRequestHeader("Content-length", postParams);
+		request.setRequestHeader("Connection", "close");
+		request.send(postParams);
+	}
+}
+
+// ------------------------------------------------------------------------------------------------
+
+
 // reloads the current page and appends the name=value url parameters of the object
 function updateSiteParam(object)
 {
@@ -8,31 +89,9 @@ function updateSiteParam(object)
 	href += '=';
 	href += object.value;
 	window.location.href = href;	
-}			
-
-
-// correctly places all objects not part of the main table (navigation panel, logo, etc.)
-function placeTables()
-{
-	obj_table = document.getElementById('layout');
-						
-	obj_navi = document.getElementById('navi');
-	obj_navi.style.visibility='visible';
-	obj_navi.style.left = obj_table.offsetLeft + obj_table.offsetWidth - obj_navi.offsetWidth - 10 + 'px';
-						
-	obj_logo = document.getElementById('logo');
-	obj_logo.style.visibility='visible';
-	obj_logo.style.left = obj_table.offsetLeft + obj_table.offsetWidth - 20 + 'px';
-						
-	obj_userinfo = document.getElementById('userinfo');
-	obj_userinfo.style.visibility='visible';
-	obj_userinfo.style.left = obj_table.offsetLeft + obj_table.offsetWidth + 'px';
 }
 
-// setting default function handlers
-window.onload = placeTables;
-window.onresize = placeTables;
-
+// ------------------------------------------------------------------------------------------------	
 
 // is used to bookmark the login for faster access
 function bookmarkLogin(userid, md5pass)
@@ -61,24 +120,28 @@ function bookmarkLogin(userid, md5pass)
 		alert("Konnte Deinen Browser nicht erkennen - füge das Bookmark einfach manuell hinzu:\n\n" + url);
 }
 
+// ------------------------------------------------------------------------------------------------
 
-// functionality for periodic page reloading - start with a call to periodicPageReload
-var interval=300;		
-var startTime=(new Date()).getTime();
-function periodicPageReload()
+function newMessageCheckCallback(answer)
 {
-	nowTime=(new Date()).getTime();
-	passedSeconds=(nowTime-startTime)/1000;
-	leftSeconds=Math.round(interval-passedSeconds);
-
-	if (leftSeconds > 0)
+	if(answer != '0')
 	{
-		var timer=setTimeout(periodicPageReload,1000);
-		window.status='Page refreshing in '+leftSeconds+ ' seconds';
+		parent.soundFrame.location.href = 'sound.php?id=newmessage';
+		setTimeout(reloadPage, 3000);
 	}
 	else
-	{
-		clearTimeout(timer);
-		window.location.reload(true);
-	}
+		setTimeout(periodicMessageCheck,5000);
 }
+
+function reloadPage()
+{
+	parent.soundFrame.location.href = '';
+	window.location.href = 'gb.php';
+}
+
+function periodicMessageCheck()
+{
+	makeRequest(getCurrentURL(), newMessageCheckCallback, "ajax=hasNewMessageCheck");
+}
+
+

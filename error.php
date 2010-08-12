@@ -45,7 +45,7 @@
 				$explanation="Proxy Authentication Required";
 				break;
 			case 408:
-				$explanation="Request Timeout - Der Server wartete zu lange auf die Anforderung des Clients!";
+				$explanation="Request Timeout - Der Server wartete auf die Anforderung des Clients zu lange!";
 				break;
 			case 409:
 				$explanation="Conflict";

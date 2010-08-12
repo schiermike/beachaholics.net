@@ -45,6 +45,7 @@ $ewiki_upload_sections = array(
    "stuff" => "Sonstiges",
 );
 
+global $result;
 $ewiki_t["de"]["UPLOAD0"] = "Mit diesem Formular kannst du beliebige Dateien in das Wiki abspeichern:<br />";
 $ewiki_t["de"]["UPL_NEWNAM"] = "Mit unterschiedlichem Dateinamen speichern";
 $ewiki_t["de"]["UPL_INSECT"] = "Hochladen in Bereich:";

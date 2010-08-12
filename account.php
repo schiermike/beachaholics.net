@@ -3,6 +3,7 @@
 	define('COLOR_OUT','#ff0000');
 	define('COLOR_IN','#008800');
 	
+	global $type;
 	if($type != 'print' && $type != 'download')
 		HP::printPageHead("Kontoübersicht", "img/top_account.png");
 	
@@ -79,11 +80,13 @@
 	
 	function printToolBar()
 	{
+		global $accountSelectionStartDate, $accountSelectionEndDate;		
+		
 		echo "\n<div style='text-align:right'>";
 		echo "<form name='timeFilterForm' method='get' action='".$_SERVER['PHP_SELF']."'>";
-		echo "<input type='text' readonly='readonly' name='startDate' size='9' value='".$_SESSION['accountSelectionStartDate']."'/>";
+		echo "<input type='text' readonly='readonly' name='startDate' size='9' value='".$accountSelectionStartDate."'/>";
 		echo "<a href='javascript:calStartDate.popup();'><img src='img/clock_play.png' alt='Startzeitpunkt' title='Startzeitpunkt'/></a> - ";
-		echo "<input type='text' readonly='readonly' name='endDate' size='9' value='".$_SESSION['accountSelectionEndDate']."'/>";
+		echo "<input type='text' readonly='readonly' name='endDate' size='9' value='".$accountSelectionEndDate."'/>";
 		echo "<a href='javascript:calEndDate.popup();'><img src='img/clock_stop.png' alt='Endzeitpunkt' title='Endzeitpunkt'/></a> ";
 		echo "&nbsp;&nbsp;<a href='".$_SERVER['PHP_SELF']."?type=reset_timeframe'><img src='img/clock_delete.png' alt='Zeitfilter löschen' title='Zeitfilter löschen'/></a>";
 		echo "&nbsp;&nbsp;&nbsp;";
@@ -325,10 +328,12 @@
 	
 	function printAccountTable($toDeleteId=NULL)
 	{
+		global $accountSelectionStartDate, $accountSelectionEndDate;			
+		
 		$sql = "SELECT BuchungID, Datum, Vermerk, Betrag, AnhangName, UserEntered, s1.Nick as UserEnteredNick, UserChecked, s2.Nick AS UserCheckedNick ";
 		$sql .= "FROM Konto JOIN Spieler s1 ON s1.SpielerID=UserEntered LEFT JOIN Spieler s2 ON s2.SpielerID=UserChecked ";
-		if($_SESSION['accountSelectionStartDate']!=NULL && $_SESSION['accountSelectionEndDate']!=NULL)
-			$sql .= "WHERE Datum>='".$_SESSION['accountSelectionStartDate']."' AND Datum<='".$_SESSION['accountSelectionEndDate']."' "; 
+		if($accountSelectionStartDate!=NULL && $accountSelectionEndDate!=NULL)
+			$sql .= "WHERE Datum>='".$accountSelectionStartDate."' AND Datum<='".$accountSelectionEndDate."' "; 
 		$sql .= "ORDER BY Datum, Vermerk";
 		$request = getDB()->query($sql);
 

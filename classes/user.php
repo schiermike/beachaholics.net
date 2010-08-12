@@ -22,6 +22,7 @@
 		public $roles;
 		
 		private $gbEntriesPerPage;
+		private $gbLastEntrySeen;
 		
 		public function getGbEntriesPerPage()
 		{
@@ -32,6 +33,17 @@
 		{
 			$this->gbEntriesPerPage = $numEntries;
 			getDB()->query("UPDATE Spieler SET gbEntriesPerPage=$numEntries WHERE SpielerID=".$this->id);
+		}
+		
+		public function getGbLastEntrySeen()
+		{
+			return $this->gbLastEntrySeen;
+		}
+		
+		public function setGbLastEntrySeen($entryId)
+		{
+			$this->gbLastEntrySeen = $entryId;
+			getDB()->query("UPDATE Spieler SET gbLastEntrySeen=$entryId WHERE SpielerID=".$this->id);
 		}
 		 
 		public static function getRoles()
@@ -67,7 +79,7 @@
 			if($id == NULL)
 				$id = User::getGuestId();
 				
-			$result = getDB()->query("SELECT Rights, Nachname, Vorname, Nick, MD5(Password) AS MD5Pass, gbEntriesPerPage FROM Spieler WHERE SpielerID=".$id);
+			$result = getDB()->query("SELECT Rights, Nachname, Vorname, Nick, MD5(Password) AS MD5Pass, gbEntriesPerPage, gbLastEntrySeen FROM Spieler WHERE SpielerID=".$id);
 			$row = mysql_fetch_assoc($result);
 			$this->id = $id;
 			$this->lastName = $row['Nachname'];
@@ -76,6 +88,7 @@
 			$this->md5Pass = $row['MD5Pass'];
 			$this->roles = $row['Rights'];
 			$this->gbEntriesPerPage = $row['gbEntriesPerPage'];
+			$this->gbLastEntrySeen = $row['gbLastEntrySeen'];
 		}
 		
 		public static function getGuestId()

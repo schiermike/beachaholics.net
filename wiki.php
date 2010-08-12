@@ -16,7 +16,8 @@
 		if( getUser()->isMember())
 		{	  	
 			// strip slash hack - sonst wird ''BLA'' zu \'\'BLA\'\'
-			$_REQUEST['content'] = stripslashes($_REQUEST['content']);
+			if(isset($_REQUEST['content']))
+				$_REQUEST['content'] = stripslashes($_REQUEST['content']);
 			
 			echo "<div>";
 			echo ewiki_page();

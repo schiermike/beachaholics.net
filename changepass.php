@@ -3,6 +3,7 @@
   	
   	HP::printPageHead("Passwort ändern", "img/top_changepass.png");
   	
+  	global $oldpass, $newpass1, $newpass2;
   	if(!getUser()->isGuest())
   		printPassChangeForm($oldpass, $newpass1, $newpass2);
   	else

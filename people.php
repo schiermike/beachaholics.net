@@ -3,15 +3,16 @@
 	define('STAT_START_DATE', "2009-09-01 00:00:00");
 	
 	HP::printPageHead("Spielerübersicht", "img/top_people.png");
-
+	
+	global $cmd;
 	if( !getUser()->isGuest())
 	{
 		switch($cmd)
 		{
-			case userEdit:
+			case 'userEdit':
 				printUserEditForm($userid);
 				break;
-			case userEditConfirm:
+			case 'userEditConfirm':
 				userEditConfirm($userid);
 			default:
 				printPlayerTable();

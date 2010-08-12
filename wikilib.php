@@ -1628,7 +1628,7 @@ $params = array()
 	unset($htmlentities["&"]);
 
 	#-- pre-processing plugins (working on wiki source)
-	if ($pf_source = $ewiki_plugins["format_source"]) {
+	if (isset($ewiki_plugins["format_source"]) && $pf_source = $ewiki_plugins["format_source"]) {
 		foreach ($pf_source as $pf) $pf($iii[0][0]);
 	}
 
@@ -2006,7 +2006,7 @@ $params = array()
 		$ooo[$in] = 0;
 	}
 	#-- call post processing plugins
-	if ($pf_final = $ewiki_plugins["format_final"]) {
+	if (isset($ewiki_plugins["format_final"]) && $pf_final = $ewiki_plugins["format_final"]) {
 		foreach ($pf_final as $pf) $pf($html);
 	}
 	return($html);
@@ -2229,10 +2229,6 @@ function ewiki_link_regex_callback($ii, $force_noimg=0) {
 	#-- for case-insensitivines
 	$href_i = EWIKI_CASE_INSENSITIVE ? strtolower($href) : ($href);
 
-	#-- injected URLs
-	if (isset($ewiki_links[$href_i]) && strpos($inj_url = $ewiki_links[$href_i], "://")) {
-		if ($href==$title) { $href = $inj_url; }
-	}
 	$states["title"] = &$title;
 
 	#-- interwiki links
@@ -2447,10 +2443,10 @@ function ewiki_interwiki(&$href, &$type, &$s) {
 			$href = str_replace("%s", $page, $p1);
 			return($href);
 		}
-		elseif ($pf = $ewiki_plugins["intermap"][$p1]) {
+		elseif (isset($ewiki_plugins["intermap"]) && $pf = $ewiki_plugins["intermap"][$p1]) {
 			return($pf($p1, $page));
 		}
-		elseif ($pf_a = $ewiki_plugins["interxhtml"]) {
+		elseif (isset($ewiki_plugins["interxhtml"]) && $pf_a = $ewiki_plugins["interxhtml"]) {
 			foreach($pf_a as $pf) {
 				$pf($p1, $page, $s);
 			}
