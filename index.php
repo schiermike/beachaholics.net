@@ -9,6 +9,13 @@
 	require_once "init.php";
  
 	HP::printPageHead("Beachaholics.net");
+
+	echo "<h2 style='text-align:center;'><strong>Willkommen bei den BeachAholics Kufstein!</strong></h2><br/><br/>";
+	echo "<p style='font-size:12pt; text-align: center;'>Unsere Spielzeiten findet ihr <a href='training.php'>hier</a>!</p><br/>";
+	echo "<p style='font-size:12pt; text-align: center;'>Weiters findet jeden Donnerstag von 18 bis 19 Uhr das Kindertraining im Freischwimmbad Kufstein statt - jeder ist herzlich dazu eingeladen, teilzunehmen!</p>";
+	echo "<p style='font-size:12pt; padding: 20px;'><b>Aktueller Hinweis:</b> Das diesjährige ATV 3:3 Turnier findet am 22. August im Freischwimmbad Kufstein statt - die Anmeldung ist <a href='http://www.mod-kufstein.com' target='_blank'>hier</a> möglich.</p>";
+
+
 /****************************
 	echo "
 	<h2 style='text-align:center;'><strong>Die Beachaholics sind in der Winterpause!</strong></h2>
@@ -50,9 +57,11 @@
 <p>Weitere Infos findet ihr hier: <a href='training.php'>Trainingsübersicht</a>, <a href='plan.php'>Anfahrtspläne</a></p>
 
 <br/>";
-*************************/
+****************************/
 
-	echo "
+/****************************
+
+	echo "<div style='padding:50px;'>
 	<h2 style='text-align:center;'><strong>Willkommen bei den Beachaholics Kufstein</strong></h2>
 <br/>
 <h3>Es ist Sommer! (Egal ob man schwitzt oder ...)</h3>
@@ -63,9 +72,40 @@
 
 <p>Gespielt wird meistens im Kufsteiner Freischwimmbad, an heißen Tagen wird gerne auf den Hechtsee ausgewichen. Anfahrtspläne und weitere Spielorte finden sich <a href='plan.php'>hier</a>.</p>
 
+<p>Weiters erreicht ihr uns unter +4369981931833 / klaus[DOT]kendlbacher[AT]gmx[DOT]at beziehungsweise +4366488539190 / perktold[AT]kufnet[DOT]at</p>
+
 <br/><br/>
 <p style='text-align:right;'>Einen schönen Sommer wünschen euch <br/>die <i>Beachaholics Kufstein</i><p>
-<br/>";
+<br/></div>";
+
+****************************/
+
+/****************************
+
+echo "<center><table cellspacing='8'><tr><td><img src='flyer.jpg' alt=''/></td><td>";
+
+echo "<h3>Hallo Volleyballfreunde!</h3>
+
+<p>Wir Beachaholics Kufstein veranstalten in diesem Jahr bereits zum 6. Mal das ultimativ spaßige <br/><b>BEACH&WATER-Mixed-Volleyballturnier</b></p>
+WO: Hechtsee Kufstein<br/>
+WANN: 03.07.2010<br/>
+BEGINN: 10 Uhr<br/>
+NENNGEBÜHR: 16 Euro/Team<br/>
+MODUS: 4 vs 4 (mind. 1 Dame)<br/>
+
+<p>Dabei messen sich die Teams nicht nur am Beachvolleyballplatz, sondern müssen auch im Wassercourt ihr Können unter Beweis stellen.</p>
+
+<p>Wie immer warten super Preise für alle teilnehmenden Mannschaften! Außerdem ist für das leibliche Wohl natürlich bestens gesorgt, unsere Bardamen freuen sich schon!</p>
+
+<p>Eine Teilnahme lohnt sich also auf jeden Fall, wir freuen uns auf eure Anmeldungen unter</p>
+<p style='text-align:right'>
+<i>+43 699 81931833</i><br/>
+bzw.<br/>
+<i><a href='mailto:klaus_kendlbacher@gmx.at'>klaus_kendlbacher@gmx.at</a></i></p>";
+
+echo "</td></tr></table></center>";
+
+****************************/
 	
 	HP::printPageTail();
 	
