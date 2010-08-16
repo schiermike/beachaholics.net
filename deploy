@@ -14,8 +14,17 @@ output = subprocess.getoutput("svn stat")
 lines = output.split("\n")
 for line in lines:
 	line = line.split("  ")
+	info = line[0]
 	line = line[len(line)-1]
 	line = line.lstrip()
-	print("Copying '" + line + "' to the web server...")
-	os.system("scp " + line + " eos:/www/beachaholics/" + line)
+	if line == "deploy":
+		continue
+	if info == "D":
+		print("DEL " + line)
+		os.system("ssh eos 'rm -rf " + line + " eos:/www/beachaholics/" + line + "'")		
+	else:
+		print("MOV " + line)
+		os.system("scp -q " + line + " eos:/www/beachaholics/" + line)	
+	
+
 

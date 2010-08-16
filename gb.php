@@ -38,39 +38,9 @@ define('LINK_END_TAG', "[:/link:]");
 
 // ===================================================================
 
-if(isset($_GET['ajax']))
-{
-	switch($_GET['ajax'])
-	{
-		case 'hasNewMessageCheck':
-			echo hasNewMessageCheck();
-			break;
-	}
-	exit();	
-}
-
 HP::printPageHead("Pinnwand", "img/top_gb.png");
 printPage();
 HP::printPageTail();
-
-// ===================================================================
-
-/**
- * Check whether there is a new unread message for the user
- */
-function hasNewMessageCheck()
-{
-	if(getUser()->isGuest())
-		return 0;		
-	
-	$result = getDB()->query("SELECT MAX(NachrichtID) AS latestId FROM Gaestebuch WHERE (Sichtbarkeit = 0 OR (Sichtbarkeit & ".getUser()->roles.") > 0) AND SpielerID!=".getUser()->id);
-	$row = mysql_fetch_assoc($result);
-	$delta = $row['latestId'] - getUser()->getGbLastEntrySeen(); 
-	if($delta > 0)
-		getUser()->setGbLastEntrySeen($row['latestId']);
-	
-	return $delta;
-}
 
 // ===================================================================
 
@@ -523,12 +493,6 @@ function printGuestbook()
 		$msg_offset=0;
 	
 	printNavigationField($msg_offset, $num_rows);
-	
-	if(!isset($action) && !getUser()->isGuest())
-	{
-		echo "<script type='text/javascript'>periodicMessageCheck()</script>\n";
-		echo "<iframe src='' name='soundFrame' style='visibility:hidden;' width='0' height='0' frameborder='0' scrolling='no'></iframe>\n";
-	}
 	
 	$sql = "SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit, Skype
 		FROM Gaestebuch JOIN Spieler USING(SpielerID)

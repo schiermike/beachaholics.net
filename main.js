@@ -120,28 +120,4 @@ function bookmarkLogin(userid, md5pass)
 		alert("Konnte Deinen Browser nicht erkennen - füge das Bookmark einfach manuell hinzu:\n\n" + url);
 }
 
-// ------------------------------------------------------------------------------------------------
-
-function newMessageCheckCallback(answer)
-{
-	if(answer != '0')
-	{
-		parent.soundFrame.location.href = 'sound.php?id=newmessage';
-		setTimeout(reloadPage, 3000);
-	}
-	else
-		setTimeout(periodicMessageCheck,5000);
-}
-
-function reloadPage()
-{
-	parent.soundFrame.location.href = '';
-	window.location.href = 'gb.php';
-}
-
-function periodicMessageCheck()
-{
-	makeRequest(getCurrentURL(), newMessageCheckCallback, "ajax=hasNewMessageCheck");
-}
-
 
