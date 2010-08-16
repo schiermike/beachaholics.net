@@ -21,7 +21,7 @@ for line in lines:
 		continue
 	if info == "D":
 		print("DEL " + line)
-		os.system("ssh eos 'rm -rf " + line + " eos:/www/beachaholics/" + line + "'")		
+		os.system("ssh eos 'rm -rf " + line + " /www/beachaholics/" + line + "'")		
 	else:
 		print("MOV " + line)
 		os.system("scp -q " + line + " eos:/www/beachaholics/" + line)	
