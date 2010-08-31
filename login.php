@@ -1,7 +1,7 @@
 <?php
 	require_once "init.php";
 	
-	if(getSession()->login($userid, $pass))
+	if(isset($userid) && isset($pass) && getSession()->login($userid, $pass))
 	{
 		require_once "gb.php";
 	}

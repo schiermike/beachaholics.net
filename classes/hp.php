@@ -29,11 +29,44 @@ class HP
 			echo "<script type='text/javascript' src='main.js'></script>\n";
 			foreach($jsToInclude as $js)
 				echo "<script type='text/javascript' src='".$js."'></script>\n";
-				
+			
+			if(getSession()->getClientResolution() == NULL)
+			{
+				if(isset($_COOKIE['screenresolution']))
+				{
+					$screenres = $_COOKIE['screenresolution'];
+					$dim = split("x", $screenres);
+					getSession()->setClientResolution($dim[0], $dim[1]);
+				}
+				else
+				{
+	 				echo "<script type='text/javascript'>
+	 					function writeCookie() 
+	 					{
+	 						var enddate = new Date('December 31, 2060');
+	 						document.cookie = 'screenresolution='+ screen.width +'x'+ screen.height + ';expires=' + enddate.toGMTString();
+	 						window.location.replace('" . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'] . "');
+	 					}
+	 					writeCookie();
+	 				</script>";
+	 			}
+ 			}
+ 			
+ 			if(HP::displayMini())
+ 			{
+ 				echo "<style type='text/css'>body { background-color:white; }</style>";
+ 			}
 			
 		echo "</head>\n";
 			
 		echo "<body>\n";
+		
+		if(HP::displayMini())
+		{
+			echo "<div style='position: absolute; top: 0px; height: 100%; left: 0px; right: 0px; padding-left: 50px'>";
+			HP::divNavigation();
+			return;
+		}
 		
 		// Background Image
 		echo "<div style='position: absolute; bottom: 0px; right: 0px; width: 300px; height: 307px; background-image:url(\"img/background.png\");'></div>";
@@ -97,7 +130,10 @@ class HP
 	
 	private static function divNavigation()
 	{
-		echo "<div style='position:absolute; z-index: 1; top: 70px; width: 24px; left: 50%; margin-left: -444px; padding: 10px; background-color: white;'>";
+		if(HP::displayMini())
+			echo "<div style='position:absolute; z-index: 1; top: 0px; left: 0px; width: 24px; padding: 10px; background-color: white;'>";
+		else
+			echo "<div style='position:absolute; z-index: 1; top: 70px; width: 24px; left: 50%; margin-left: -444px; padding: 10px; background-color: white;'>";
 		
 		echo "<a href='/training.php'><img src='/img/navi/training.gif' alt='Events' title='Events'/></a>\n";
 		echo "<a href='/ranking.php'><img src='/img/navi/ranking.png' alt='Platzierung' title='Platzierung'/></a>\n";
@@ -157,40 +193,51 @@ class HP
 			echo "<a href='/login.php?userid=-1'><img src='/img/navi/exit.gif' alt='Logout' title='Logout'/></a>";
 		}
 		
+		if(!HP::displayMini())
+		{
 			echo "<div style='position: absolute; top: -20px; left: -20px; width: 20px; height: 20px; background-image: url(\"img/trans/top_left.png\"); background-repeat: no-repeat;'></div>\n";
 			echo "<div style='position: absolute; top: -20px; left: 0px; width: 100%; height: 20px; background-image: url(\"img/trans/top.png\"); background-repeat: repeat-x;'></div>\n";
 			echo "<div style='position: absolute; top: 0px; left: -20px; width: 20px; height: 100%; background-image: url(\"img/trans/left.png\"); background-repeat: repeat-y;'></div>\n";
 			echo "<div style='position:absolute; top: 100%; left: -20px; width: 20px; height: 20px; background-image: url(\"img/trans/bottom_left.png\"); background-repeat: no-repeat;'></div>\n";
 			echo "<div style='position:absolute; top: 100%; left: 0px; width: 100%; height: 20px; background-image: url(\"img/trans/bottom.png\"); background-repeat: repeat-x;'></div>\n";
+		}
 			
 		echo "</div>\n";
+	}
+	
+	private static function displayMini()
+	{
+		$dim = getSession()->getClientResolution();
+		return $dim != NULL && $dim[0] <= 640;
 	}
 	
 	public static function printPageTail()
 	{
 		HP::printDebugInformation();
 		echo "</div>\n";
-		
-		echo "<div style='position: absolute; bottom: 0px; left: 50%; margin-left: -400px; width: 800px; height: 165px;  border-top-style: solid; border-top-width: 1px; border-top-color: black; background-color: white'>";
-			echo "<div style='width: 800px; height: 120px; background-image:url(\"".HP::getRandPicURL()."\");'></div>";
-			echo "<table align='right' cellspacing='4' cellpadding='0' style='font-size:x-small;'>
-						<tr>
-							<td style='text-align:right'>für den Inhalt verantwortlich: Beachaholics Kufstein</td>
-							<td>&nbsp;&nbsp;</td>
-							<td rowspan='2'>
-								<a href='http://validator.w3.org/check?uri=referer'><img src='/img/valid_xhtml.gif' alt='Valid XHTML 1.0 Transitional'/></a>
-								<a href='http://jigsaw.w3.org/css-validator/'><img src='/img/valid_css.gif' alt='Valid CSS!'/></a>
-								<a href='/phpinfo.php' target='_blank'><img src='/img/php.gif' alt='' title='currently running version ".phpversion()."'/></a>
-							</td>
-						</tr>
-						<tr>
-							<td style='text-align:right'>".HP::$VERSION." &copy;  by Schier Michael</td>
-							<td/>
-						</tr>
-					</table>";
-			echo "<div style='position: absolute; top: 0px; left: -20px; width: 20px; height: 100%; background-image: url(\"img/trans/left.png\"); background-repeat: repeat-y;'></div>\n";
-			echo "<div style='position:absolute; top: 0px; left: 100%; width: 20px; height: 100%; background-image: url(\"img/trans/right.png\"); background-repeat: repeat-y;'></div>\n";
-		echo "</div>";		
+		if(!HP::displayMini())
+		{
+			echo "<div style='position: absolute; bottom: 0px; left: 50%; margin-left: -400px; width: 800px; height: 165px;  border-top-style: solid; border-top-width: 1px; border-top-color: black; background-color: white'>";
+				echo "<div style='width: 800px; height: 120px; background-image:url(\"".HP::getRandPicURL()."\");'></div>";
+				echo "<table align='right' cellspacing='4' cellpadding='0' style='font-size:x-small;'>
+							<tr>
+								<td style='text-align:right'>für den Inhalt verantwortlich: Beachaholics Kufstein</td>
+								<td>&nbsp;&nbsp;</td>
+								<td rowspan='2'>
+									<a href='http://validator.w3.org/check?uri=referer'><img src='/img/valid_xhtml.gif' alt='Valid XHTML 1.0 Transitional'/></a>
+									<a href='http://jigsaw.w3.org/css-validator/'><img src='/img/valid_css.gif' alt='Valid CSS!'/></a>
+									<a href='/phpinfo.php' target='_blank'><img src='/img/php.gif' alt='' title='currently running version ".phpversion()."'/></a>
+								</td>
+							</tr>
+							<tr>
+								<td style='text-align:right'>".HP::$VERSION." &copy;  by Schier Michael</td>
+								<td/>
+							</tr>
+						</table>";
+				echo "<div style='position: absolute; top: 0px; left: -20px; width: 20px; height: 100%; background-image: url(\"img/trans/left.png\"); background-repeat: repeat-y;'></div>\n";
+				echo "<div style='position:absolute; top: 0px; left: 100%; width: 20px; height: 100%; background-image: url(\"img/trans/right.png\"); background-repeat: repeat-y;'></div>\n";
+			echo "</div>";
+		}
 		echo "</body>\n";
 		echo "</html>";
 	}

@@ -26,6 +26,7 @@
 		public $debug = false;
 		
 		private $userPicRefreshs = array();
+		private $clientResolution = NULL;
 		
 		public static function initialize()
 		{	
@@ -49,10 +50,18 @@
 		
 		public function __construct()
 		{
-			$this->db = new DB("localhost", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
+			$this->db = new DB("beachaholics.net", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
 		}
 		
+		public function getClientResolution()
+		{
+			return $this->clientResolution;
+		}
 		
+		public function setClientResolution($w, $h)
+		{
+			$this->clientResolution = array($w, $h);
+		}
 		
 	    /**
 	     * Try to login using credentials provided by the user.
