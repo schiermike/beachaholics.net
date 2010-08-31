@@ -1,0 +1,30 @@
+#!/usr/bin/python
+
+import os
+import shutil
+from zipfile import ZipFile
+import Image
+
+thumbnailSize = 145, 100
+normalSize = 1200, 750
+
+shutil.rmtree("thumbs")
+os.mkdir("thumbs")
+shutil.rmtree("normalsized")
+os.mkdir("normalsized")
+
+folderName = os.getcwd().split("/")[-1:][0]
+zipFile = ZipFile(folderName + ".zip", "w")
+for file in os.listdir("."):
+	if file[-4:].lower() != ".jpg":
+		continue
+	image = Image.open(file)
+	image.thumbnail(thumbnailSize, Image.ANTIALIAS)
+	image.save("thumbs/" + file)
+	image = Image.open(file)
+	image.thumbnail(normalSize, Image.ANTIALIAS)
+	image.save("normalsized/" + file)
+	zipFile.write(file)
+	print file + " done."
+zipFile.close()
+	

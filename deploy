@@ -17,7 +17,7 @@ for line in lines:
 	info = line[0]
 	line = line[len(line)-1]
 	line = line.lstrip()
-	if line == "deploy":
+	if line == "deploy" or line == "imageThumbnailer":
 		continue
 	if info == "D":
 		print("DEL " + line)
