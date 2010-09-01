@@ -3,7 +3,10 @@
 	
 	if(isset($userid) && isset($pass) && getSession()->login($userid, $pass))
 	{
-		require_once "gb.php";
+		echo "<html><head>";
+		echo "<script type='text/css'>body { background-color:black; }</script>";
+		echo "<script type='text/javascript'>window.location.href='gb.php'</script>";
+		echo "</head></html>";
 	}
 	else
 	{
