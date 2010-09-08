@@ -208,7 +208,7 @@ class HP
 	private static function displayMini()
 	{
 		$dim = getSession()->getClientResolution();
-		return $dim != NULL && $dim[0] <= 640;
+		return $dim != NULL && $dim[1] <= 600;
 	}
 	
 	public static function printPageTail()
