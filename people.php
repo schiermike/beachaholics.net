@@ -1,6 +1,6 @@
 <?php
 	require_once "init.php";
-	define('STAT_START_DATE', "2009-09-01 00:00:00");
+	define('STAT_START_DATE', "2010-09-07 00:00:00");
 	
 	HP::printPageHead("Spielerübersicht", "img/top_people.png");
 	
