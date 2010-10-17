@@ -20,12 +20,12 @@
 	header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 	
 	// the browser will send a $_SERVER['HTTP_IF_MODIFIED_SINCE'] 
-	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && getSession()->useCachedUserPic($pictureId))
-	{
+//	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']))
+//	{
 		// if the browser has a cached version of this image, send 304
-		header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
-		exit;
-	}
+//		header('Last-Modified: '.$_SERVER['HTTP_IF_MODIFIED_SINCE'],true,304);
+//		exit;
+//	}
 	
 	$result = getDB()->query("SELECT Bild FROM Spieler WHERE SpielerID=".$pictureId);
 	if(mysql_num_rows($result) == 0)

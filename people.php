@@ -64,10 +64,7 @@
 			if(getUser()->isAdmin()) $sql .= ", Rights=$rechte";
 			
 			if(isset($picture))
-			{
 				$sql .= ", Bild='$picture'";
-				getSession()->refreshUserPic($userid);
-			}
 			
 			$sql .=  " WHERE SpielerID=$userid";
 			

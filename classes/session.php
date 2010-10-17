@@ -151,33 +151,5 @@
 					break;
 			}
 		}
-		
-		/**
-		 * is called when a user picture gets changed to reload the browser's cache
-		 * @param int $userId
-		 */
-		public function refreshUserPic($userId)
-		{
-			if(array_search($userId, $this->userPicRefreshs) !== FALSE)
-				return;
-
-			$this->userPicRefreshs[] = $userId;
-		}
-		
-		/**
-		 * tells the client whether to use a cached user pic or not
-		 * @param int $userId
-		 * @return boolean
-		 */
-		public function useCachedUserPic($userid)
-		{
-			$search = array_search($userid, $this->userPicRefreshs);
-			if($search === FALSE)
-				return true;
-				
-			// remove the entry
-			unset($this->userPicRefreshs[$search]);
-			return false;
-		}
 	}
 ?>
