@@ -83,7 +83,7 @@
 			}
 			
 			$hash = md5(uniqid(rand()));
-			$sql = "UPDATE Spieler SET LoginHash='".$hash."' WHERE SpielerID=".$userId." AND (Password='".$pass."' OR MD5(Password)='".$pass."')";
+			$sql = "UPDATE Spieler SET LoginHash='".$hash."' WHERE SpielerID=".$userId." AND (Password='".mysql_real_escape_string($pass)."' OR MD5(Password)='".mysql_real_escape_string($pass)."')";
 			$request = getDB()->query($sql);
 			if(mysql_affected_rows()!=1)
 				return false;

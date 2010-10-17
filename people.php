@@ -59,7 +59,7 @@
 		
 		if($userid > 0)
 		{
-			$sql = "UPDATE Spieler SET Nachname='$nachname', Vorname='$vorname', Nick='$nickname', Strasse='$strasse', Ort='$ort', GebDatum='$geburtstag', Email='$email', Telefon='$telefon', Skype='$skype'";
+			$sql = "UPDATE Spieler SET Nachname='".mysql_real_escape_string($nachname)."', Vorname='".mysql_real_escape_string($vorname)."', Nick='".mysql_real_escape_string($nickname)."', Strasse='".mysql_real_escape_string($strasse)."', Ort='".mysql_real_escape_string($ort)."', GebDatum='".mysql_real_escape_string($geburtstag)."', Email='".mysql_real_escape_string($email)."', Telefon='".mysql_real_escape_string($telefon)."', Skype='".mysql_real_escape_string($skype)."'";
 			
 			if(getUser()->isAdmin()) $sql .= ", Rights=$rechte";
 			
@@ -82,7 +82,7 @@
 		{			
 			$sql = "INSERT INTO Spieler (Nachname, Vorname, Nick, Strasse, Ort, GebDatum, Email, Telefon, Rights, Password, CreationDate, Skype";
 			if(isset($picture)) $sql .= ", Bild";
-			$sql .=") VALUES ('$nachname', '$vorname', '$nickname', '$strasse', '$ort', '$geburtstag', '$email', '$telefon', $rechte, '$passwd', CURDATE(), '$skype'";
+			$sql .=") VALUES ('".mysql_real_escape_string($nachname)."', '".mysql_real_escape_string($vorname)."', '".mysql_real_escape_string($nickname)."', '".mysql_real_escape_string($strasse)."', '".mysql_real_escape_string($ort)."', '".mysql_real_escape_string($geburtstag)."', '".mysql_real_escape_string($email)."', '".mysql_real_escape_string($telefon)."', $rechte, '".mysql_real_escape_string($passwd)."', CURDATE(), '".mysql_real_escape_string($skype)."'";
 			if(isset($picture)) $sql .= ", '$picture'";
 			$sql.= ")";
 			getDB()->query($sql);
