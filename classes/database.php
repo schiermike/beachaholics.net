@@ -16,7 +16,7 @@
 			$this->username = $username;
 			$this->password = $password;
 			$this->database = $database;
-			$this->connection = NULL;
+			$this->connection = $this->getConnection(); // important for early calls to mysql_real_escape_string
 		}
 		
 		public function removePassFromString($string)

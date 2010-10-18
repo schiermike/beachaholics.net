@@ -3,9 +3,9 @@
 	require_once "user.php";
 	
 	function getSession()
-    {
-    	return $_SESSION['session'];
-    }
+	{
+		return $_SESSION['session'];
+	}
     
 	function getUser()
 	{
@@ -13,19 +13,18 @@
 	}
 	
 	function getDB()
-    {
-    	return getSession()->db;
-    }
+	{
+		return getSession()->db;
+	}
 
 	class Session
 	{
 		private static $LOGIN_TIMEOUT = 604800; // 1 Woche
-		
+		public $sessionId;
 		public $user = NULL;
 		public $db = NULL;
 		public $debug = false;
 		
-		private $userPicRefreshs = array();
 		private $clientResolution = NULL;
 		
 		public static function initialize()
@@ -45,12 +44,13 @@
 			
 			// init session object
 			if(!isset($_SESSION['session']))
-    			$_SESSION['session'] = new Session();
+				$_SESSION['session'] = new Session();
 		}
 		
 		public function __construct()
 		{
 			$this->db = new DB("beachaholics.net", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
+			$this->sessionId = session_id();
 		}
 		
 		public function getClientResolution()
@@ -63,14 +63,14 @@
 			$this->clientResolution = array($w, $h);
 		}
 		
-	    /**
-	     * Try to login using credentials provided by the user.
-	     * On success, the session data is initialized.
-	     *
-	     * @param userid
-	     * @param password
-	     * @return true on success, else false
-	     */
+		/**
+		 * Try to login using credentials provided by the user.
+		 * On success, the session data is initialized.
+		 *
+		 * @param userid
+		 * @param password
+		 * @return true on success, else false
+		 */
 		public function login($userId, $pass)
 		{
 			if($userId < 0)
@@ -83,6 +83,7 @@
 			}
 			
 			$hash = md5(uniqid(rand()));
+			
 			$sql = "UPDATE Spieler SET LoginHash='".$hash."' WHERE SpielerID=".$userId." AND (Password='".mysql_real_escape_string($pass)."' OR MD5(Password)='".mysql_real_escape_string($pass)."')";
 			$request = getDB()->query($sql);
 			if(mysql_affected_rows()!=1)
@@ -98,13 +99,14 @@
 		 */
 		public function logout()
 		{
-			if(getUser()->isGuest())
-				return false;
-				
-			$sql = "UPDATE Spieler SET LoginHash=NULL WHERE SpielerID=".getUser()->id;
-			getDB()->query($sql);
-			$this->user = new User();
-			return true;
+			if(!getUser()->isGuest())
+			{
+				$sql = "UPDATE Spieler SET LoginHash=NULL WHERE SpielerID=".getUser()->id;
+				getDB()->query($sql);
+			}
+			
+			session_unset();
+			session_destroy();			
 		}
 		
 		/**

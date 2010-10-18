@@ -9,17 +9,17 @@
 		echo "</head></html>";
 	}
 	else
-	{
-		getSession()->logout();
-			
+	{			
 		HP::printPageHead("Authentifizierung", "img/top_changepass.png");
 		if(isset($pass))
 			HP::printErrorText("Passwort inkorrekt!");
 		printLogin();
 		HP::printPageTail();
+		
+		if(isset($userid) && $userid == -1)
+			getSession()->logout();
 	}
-	
-	
+
 // ===================================================================
 // ===================================================================
 	
