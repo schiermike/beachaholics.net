@@ -26,8 +26,8 @@
 
 		public function escape($string)
 		{
-			if($this->database)
-				return mysql_real_escape_string($string);
+			//if($this->database)
+			//	return mysql_real_escape_string($string);
 			return mysql_escape_string($string);
 		}
 		
