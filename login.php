@@ -1,6 +1,12 @@
 <?php
 	require_once "init.php";
 	
+	if(isset($userid) && $userid == -1)
+	{
+		getSession()->logout();
+		Session::initialize();
+	}
+
 	if(isset($userid) && isset($pass) && getSession()->login($userid, $pass))
 	{
 		echo "<html><head>";
@@ -15,9 +21,6 @@
 			HP::printErrorText("Passwort inkorrekt!");
 		printLogin();
 		HP::printPageTail();
-		
-		if(isset($userid) && $userid == -1)
-			getSession()->logout();
 	}
 
 // ===================================================================

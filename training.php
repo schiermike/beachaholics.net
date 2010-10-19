@@ -94,7 +94,7 @@
 		
 		if($trainingid==NULL)
 		{
-			$result = getDB()->query("INSERT IGNORE INTO Events (Zeit, EndZeit, Ort, Bemerkung, Typ, Link) VALUES ('".$startDate."', $endDate, '".mysql_real_escape_string($location)."', '".mysql_real_escape_string($comment)."', $eventType, $link)");
+			$result = getDB()->query("INSERT IGNORE INTO Events (Zeit, EndZeit, Ort, Bemerkung, Typ, Link) VALUES ('".$startDate."', $endDate, '".getDB()->escape($location)."', '".getDB()->escape($comment)."', $eventType, $link)");
 			$trainingid = mysql_insert_id();
 		}
 		else
@@ -102,7 +102,7 @@
 			/**
 			 * Typ kann nicht geändert werden, da sonst Chaos
 			 */
-			getDB()->query("UPDATE Events SET Zeit='".$startDate."', EndZeit=$endDate, Ort='".mysql_real_escape_string($location)."', Bemerkung='".mysql_real_escape_string($comment)."', Link=$link WHERE EventID=$trainingid");
+			getDB()->query("UPDATE Events SET Zeit='".$startDate."', EndZeit=$endDate, Ort='".getDB()->escape($location)."', Bemerkung='".getDB()->escape($comment)."', Link=$link WHERE EventID=$trainingid");
 		}
 			
 		if(mysql_affected_rows() == 1 && $eventType == Event::$BEACH)
@@ -303,7 +303,7 @@
 		if(!Event::userCanJoin($eventType) )
 			return;
 			
-		$sql = "INSERT IGNORE INTO Abmeldung (EventID, SpielerID, Zeitpunkt, Grund) VALUES (".$trainingid.",".$playerid.",'".HP::getPHPTime()."','".mysql_real_escape_string($grund)."')";
+		$sql = "INSERT IGNORE INTO Abmeldung (EventID, SpielerID, Zeitpunkt, Grund) VALUES (".$trainingid.",".$playerid.",'".HP::getPHPTime()."','".getDB()->escape($grund)."')";
 		$request = getDB()->query($sql);
 		
 		if($playerid == getUser()->id)

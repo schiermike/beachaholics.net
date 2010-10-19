@@ -268,9 +268,9 @@ function makeGBEntry($userId, $datetime, $message, $visibility, $captcha_code, $
 	$message = strtr($message, $trans);
 	$sql="";
 	if($messageId == NULL)
-		$sql = "INSERT INTO Gaestebuch (Datum, SpielerID, Nachricht, Sichtbarkeit) VALUES ('".$datetime."',".$userId.",'".mysql_real_escape_string($message)."', ".$visibility.")";
+		$sql = "INSERT INTO Gaestebuch (Datum, SpielerID, Nachricht, Sichtbarkeit) VALUES ('".$datetime."',".$userId.",'".getDB()->escape($message)."', ".$visibility.")";
 	else
-		$sql = "UPDATE Gaestebuch SET Nachricht='".mysql_real_escape_string($message)."', Sichtbarkeit=".$visibility." WHERE SpielerID=".$userId." AND NachrichtID=".$messageId;
+		$sql = "UPDATE Gaestebuch SET Nachricht='".getDB()->escape($message)."', Sichtbarkeit=".$visibility." WHERE SpielerID=".$userId." AND NachrichtID=".$messageId;
 		
 	$request = getDB()->query($sql);
 	
@@ -318,7 +318,7 @@ function searchEntry($searchString)
 	$request = getDB()->query("SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit, Skype
 		FROM Gaestebuch JOIN Spieler USING(SpielerID)
 		WHERE ( Sichtbarkeit = 0 OR (Sichtbarkeit & ".getUser()->roles.") > 0 )
-		AND Nachricht LIKE '%".mysql_real_escape_string($searchString)."%' 
+		AND Nachricht LIKE '%".getDB()->escape($searchString)."%' 
 		ORDER BY Datum DESC");
 		
 	echo "\n<table id='guestbook' cellspacing='0' cellpadding='0'>";

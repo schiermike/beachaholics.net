@@ -45,6 +45,8 @@
 			// init session object
 			if(!isset($_SESSION['session']))
 				$_SESSION['session'] = new Session();
+
+			getSession()->update();
 		}
 		
 		public function __construct()
@@ -84,7 +86,7 @@
 			
 			$hash = md5(uniqid(rand()));
 			
-			$sql = "UPDATE Spieler SET LoginHash='".$hash."' WHERE SpielerID=".$userId." AND (Password='".mysql_real_escape_string($pass)."' OR MD5(Password)='".mysql_real_escape_string($pass)."')";
+			$sql = "UPDATE Spieler SET LoginHash='".$hash."' WHERE SpielerID=".$userId." AND (Password='".getDB()->escape($pass)."' OR MD5(Password)='".getDB()->escape($pass)."')";
 			$request = getDB()->query($sql);
 			if(mysql_affected_rows()!=1)
 				return false;
@@ -106,14 +108,14 @@
 			}
 			
 			session_unset();
-			session_destroy();			
+			session_destroy();	
 		}
 		
 		/**
 		 * Should be called every time a page is displayed (per user interaction)
 		 * updates the timing information about the user currenty logged in or creates a new session when an autologin cookie is available.
 		 */
-		public function update()
+		private function update()
 		{
 			if($this->user == NULL)
 				$this->user = new User();

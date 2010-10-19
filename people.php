@@ -59,7 +59,7 @@
 		
 		if($userid > 0)
 		{
-			$sql = "UPDATE Spieler SET Nachname='".mysql_real_escape_string($nachname)."', Vorname='".mysql_real_escape_string($vorname)."', Nick='".mysql_real_escape_string($nickname)."', Strasse='".mysql_real_escape_string($strasse)."', Ort='".mysql_real_escape_string($ort)."', GebDatum='".mysql_real_escape_string($geburtstag)."', Email='".mysql_real_escape_string($email)."', Telefon='".mysql_real_escape_string($telefon)."', Skype='".mysql_real_escape_string($skype)."'";
+			$sql = "UPDATE Spieler SET Nachname='".getDB()->escape($nachname)."', Vorname='".getDB()->escape($vorname)."', Nick='".getDB()->escape($nickname)."', Strasse='".getDB()->escape($strasse)."', Ort='".getDB()->escape($ort)."', GebDatum='".getDB()->escape($geburtstag)."', Email='".getDB()->escape($email)."', Telefon='".getDB()->escape($telefon)."', Skype='".getDB()->escape($skype)."'";
 			
 			if(getUser()->isAdmin()) $sql .= ", Rights=$rechte";
 			
@@ -79,7 +79,7 @@
 		{			
 			$sql = "INSERT INTO Spieler (Nachname, Vorname, Nick, Strasse, Ort, GebDatum, Email, Telefon, Rights, Password, CreationDate, Skype";
 			if(isset($picture)) $sql .= ", Bild";
-			$sql .=") VALUES ('".mysql_real_escape_string($nachname)."', '".mysql_real_escape_string($vorname)."', '".mysql_real_escape_string($nickname)."', '".mysql_real_escape_string($strasse)."', '".mysql_real_escape_string($ort)."', '".mysql_real_escape_string($geburtstag)."', '".mysql_real_escape_string($email)."', '".mysql_real_escape_string($telefon)."', $rechte, '".mysql_real_escape_string($passwd)."', CURDATE(), '".mysql_real_escape_string($skype)."'";
+			$sql .=") VALUES ('".getDB()->escape($nachname)."', '".getDB()->escape($vorname)."', '".getDB()->escape($nickname)."', '".getDB()->escape($strasse)."', '".getDB()->escape($ort)."', '".getDB()->escape($geburtstag)."', '".getDB()->escape($email)."', '".getDB()->escape($telefon)."', $rechte, '".getDB()->escape($passwd)."', CURDATE(), '".mysql_real_escape_string($skype)."'";
 			if(isset($picture)) $sql .= ", '$picture'";
 			$sql.= ")";
 			getDB()->query($sql);

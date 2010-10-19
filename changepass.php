@@ -50,7 +50,7 @@
 			}
 			else
 			{
-				$sql = "UPDATE Spieler SET Password='".mysql_real_escape_string($newpass1)."' WHERE SpielerID=".getUser()->id." AND Password='".mysql_real_escape_string($oldpass)."'";
+				$sql = "UPDATE Spieler SET Password='".getDB()->escape($newpass1)."' WHERE SpielerID=".getUser()->id." AND Password='".getDB()->escape($oldpass)."'";
 				$request = getDB()->query($sql);
 				if(mysql_affected_rows()==0)
 				{

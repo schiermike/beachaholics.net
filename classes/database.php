@@ -16,12 +16,19 @@
 			$this->username = $username;
 			$this->password = $password;
 			$this->database = $database;
-			$this->connection = $this->getConnection(); // important for early calls to mysql_real_escape_string
+			$this->connection = NULL;
 		}
 		
 		public function removePassFromString($string)
 		{
 			return str_replace($this->password, "*******", $string);
+		}
+
+		public function escape($string)
+		{
+			if($this->database)
+				return mysql_real_escape_string($string);
+			return mysql_escape_string($string);
 		}
 		
 		/**
