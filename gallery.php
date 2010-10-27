@@ -366,9 +366,10 @@
 		// alle Unterverzeichnisse einlesen
 		$subdirs = getOrderedChildren(PICTURE_BASE_DIRECTORY, false, false);
 		
+		$switchingColor = 0;
 		foreach($subdirs as $subdir)
 		{	
-			echo $i++%2 == 0 ? "<tr class='rowColor0'>" : "<tr class='rowColor1'>";	
+			echo "<tr class='rowColor".($switchingColor++%2)."'>";	
 			echo "<td>";
 			echo "<img src='img/imagefolder.png' alt=''/>&nbsp;&nbsp;&nbsp;";
 			if(isAccessible(PICTURE_BASE_DIRECTORY.$subdir))

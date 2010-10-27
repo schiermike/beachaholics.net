@@ -34,7 +34,7 @@
 		echo "<br/><hr/><br/>";
 		
 		
-		
+		/*
 		$html = HP::getWebsite("http://www.meinbezirk.at/Kufstein/bez_106/channel_1-1-18/chsid_0/gid_70513");
 		
 		$startPos = strpos($html, "<div class=\"lih1\">Kufstein</div>");
@@ -47,7 +47,7 @@
 		echo $htmlWeather;
 		
 		echo "<br/><hr/><br/>";
-		
+		*/
 		
 		
 		

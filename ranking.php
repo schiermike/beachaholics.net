@@ -10,43 +10,46 @@
 // ===================================================================
 // ===================================================================
 
+	function getLigaLink($tvvid, $showGames, $name, $nsaison=False)
+	{
+		$link = "<a href='".$_SERVER['PHP_SELF']."?&tvvid=" . $tvvid . "&name=" . urlencode($name);
+		if($showGames)
+			$link .= "&showgames=true";
+		if($nsaison !== False)
+			$link .= "&nsaison=" . $nsaison;
+		$link .= "'>" . $name . "</a>";
+		return $link;
+	}
+
 	function printPage()
 	{
 		echo "<div style='text-align:right'>";
-			echo "<a href='".$_SERVER['PHP_SELF']."?section=ligamen'>Herren Liga</a> | ";
-			echo "<a href='".$_SERVER['PHP_SELF']."?section=ligawomen'>Damen Liga</a> | ";
-			echo "<a href='".$_SERVER['PHP_SELF']."?section=cupmen'>Herren Cup</a> | ";
-			echo "<a href='".$_SERVER['PHP_SELF']."?section=cupwomen'>Damen Cup</a> | ";
-			echo "<a href='".$_SERVER['PHP_SELF']."?section=mixed'>Mixed Bewerb</a>";
+			echo "<i>Saison 2010/2011:</i> ";
+			echo getLigaLink(426, true, "Damen B-Liga Herbst");
+			echo " | " . getLigaLink(440, false, "Damen Cup Gr. D");
+			echo " | " . getLigaLink(425, true, "Herren B-Liga Herbst");
+			echo " | " . getLigaLink(429, false, "Herren Cup");
 		echo "</div>";
-		global $section;
-		switch($section)
-		{
-			case 'cupmen':
-				echo "<h3>Herren Cup Spiele: (<a href='http://www.tvv.at/pdf/TVV_Cup_Raster_Herren.pdf' target='_blank'>Cup Raster</a>)</h3>";
-				echo parseLigaGames(312);
-				break;
-			case 'cupwomen':
-				echo "<h3>Damen Cup Spiele: (<a href='http://www.tvv.at/pdf/TVV_Cup_Raster_Damen.pdf' target='_blank'>Cup Raster</a>)</h3>";
-				echo parseLigaGames(311);
-				break;
-			case 'mixed':
-				echo "<h3>Mixed-A-Liga Herbstdurchgang:</h3>";
-				echo parseLigaTable(319);
-				echo parseLigaGames(319);
-				break;
-			case 'ligawomen':
-				echo "<h3>Damen oberes Playoff:</h3>";
-				echo parseLigaTable(367);
-				echo parseLigaGames(367);
-				break;
-			case 'ligamen':
-			default:
-				echo "<h3>Herren oberes Playoff:</h3>";
-				echo parseLigaTable(370);
-				echo parseLigaGames(370);
-				break;
-		}
+		echo "<div style='text-align:right'>";
+			echo "<i>Saison 2009/2010:</i> ";
+			echo getLigaLink(367, true, "Damen oberes Playoff", "2009/2010");
+			echo " | " . getLigaLink(311, false, "Damen Cup", "2009/2010");
+			echo " | " . getLigaLink(370, true, "Herren oberes Playoff", "2009/2010");
+			echo " | " . getLigaLink(312, false, "Herren Cup", "2009/2010");
+			echo " | " . getLigaLink(373, true, "Mixed Meister Playoff", "2009/2010");
+		echo "</div>";
+
+		global $tvvid;
+		global $showgames;
+		global $name;
+
+		if(!isset($tvvid))
+			return;
+		
+		echo "<h3>" . $name . "</h3>";
+		echo parseLigaTable($tvvid);
+		if($showgames)
+			echo "<br/>" . parseLigaGames($tvvid);
 	}
 	
 	function parseLigaTable($ligaid)

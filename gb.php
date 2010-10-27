@@ -241,7 +241,7 @@ function makeGBEntry($userId, $datetime, $message, $visibility, $captcha_code, $
 		return false;
 	}
 	
-	if(getUser()->isGuest() && $_SESSION['securimage_code_value'] != strtolower($captcha_code))
+	if(getUser()->isGuest() && isset($_SESSION['securimage_code_value']) && $_SESSION['securimage_code_value'] != strtolower($captcha_code))
 	{
 		echo "'" . $_SESSION['securimage_code_value'] . "' != '" . strtolower($captcha_code) . "'";
 		HP::printErrorText("Falscher Captcha-Code - versuch es nochmals!");
