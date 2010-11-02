@@ -58,7 +58,7 @@ function printPage()
 	global $gbEntriesPerPage;
 	global $searchString;
 	
-	if(isset($gbEntriesPerPage))
+	if(isset($gbEntriesPerPage) && is_numeric($gbEntriesPerPage))
 		getUser()->setGbEntriesPerPage($gbEntriesPerPage);
 
 	$withEntryLink = true;

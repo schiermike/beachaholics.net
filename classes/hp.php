@@ -1,4 +1,5 @@
 <?php
+require_once "version.php";
 require_once "database.php";
 require_once "user.php";
 require_once "session.php";
@@ -7,7 +8,6 @@ require_once "log.php";
 class HP
 {
 	private static $VISIBLE_USER_TIMEOUT = 7200; // 2 Stunden
-	private static $VERSION = "v2.43 (2010/06/23)";
 	
 	public static function printDocumentHead()
 	{
@@ -230,7 +230,7 @@ class HP
 								</td>
 							</tr>
 							<tr>
-								<td style='text-align:right'>".HP::$VERSION." &copy;  by Schier Michael</td>
+								<td style='text-align:right'>".HP_VERSION." &copy;  by Schier Michael</td>
 								<td/>
 							</tr>
 						</table>";
