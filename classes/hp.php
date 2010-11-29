@@ -222,13 +222,13 @@ class HP
 				echo "<table align='right' cellspacing='4' cellpadding='0' style='font-size:x-small; width:100%'>
 							<tr>
 								<td rowspan='2' width='100%'>
-									<a href='vnstat'><img src='/img/network_stats.png' alt='Network statistics'/></a>
+									<a href='vnstat' target='_blank'><img src='/img/network_stats.png' alt='Network statistics'/></a>
 								</td>
 								<td style='text-align:right;white-space:nowrap'>für den Inhalt verantwortlich: Beachaholics Kufstein</td>
 								<td rowspan='2'>&nbsp;&nbsp;</td>
 								<td rowspan='2' style='white-space:nowrap'>
-									<a href='http://validator.w3.org/check?uri=referer'><img src='/img/valid_xhtml.gif' alt='Valid XHTML 1.0 Transitional'/></a>
-									<a href='http://jigsaw.w3.org/css-validator/'><img src='/img/valid_css.gif' alt='Valid CSS!'/></a>
+									<a href='http://validator.w3.org/check?uri=referer' target='_blank'><img src='/img/valid_xhtml.gif' alt='Valid XHTML 1.0 Transitional'/></a>
+									<a href='http://jigsaw.w3.org/css-validator/' target='_blank'><img src='/img/valid_css.gif' alt='Valid CSS!'/></a>
 									<a href='/phpinfo.php' target='_blank'><img src='/img/php.gif' alt='' title='currently running version ".phpversion()."'/></a>
 								</td>
 							</tr>
