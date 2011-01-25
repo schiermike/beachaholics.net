@@ -25,9 +25,9 @@
 	{
 		echo "<div style='text-align:right'>";
 			echo "<i>Saison 2010/2011:</i> ";
-			echo getLigaLink(426, true, "Damen B-Liga Herbst");
-			echo " | " . getLigaLink(440, false, "Damen Cup Gr. D");
-			echo " | " . getLigaLink(425, true, "Herren B-Liga Herbst");
+			echo getLigaLink(465, true, "Damen oberes Playoff");
+			echo " | " . getLigaLink(430, false, "Damen Cup");
+			echo " | " . getLigaLink(462, true, "Herren oberes Playoff");
 			echo " | " . getLigaLink(429, false, "Herren Cup");
 		echo "</div>";
 		echo "<div style='text-align:right'>";

@@ -110,7 +110,7 @@ class Securimage {
    *
    * @var int
    */
-  var $code_length = 4;
+  var $code_length = 6;
 
   /**
    * The character set for individual characters in the image.<br />
@@ -134,7 +134,7 @@ class Securimage {
    *
    * @var bool
    */
-  var $use_wordlist  = true;
+  var $use_wordlist  = false;
 
   /**
    * Whether to use a GD font instead of a TTF font.<br />
@@ -160,7 +160,7 @@ class Securimage {
    *
    * @var int
    */
-  var $gd_font_size = 20;
+  var $gd_font_size = 18;
 
   // Note: These font options below do not apply if you set $use_gd_font to true with the exception of $text_color
 
@@ -177,7 +177,7 @@ class Securimage {
    *
    * @var int
    */
-  var $font_size = 24;
+  var $font_size = 20;
 
   /**
    * The minimum angle in degrees, with 0 degrees being left-to-right reading text.<br />
@@ -186,7 +186,7 @@ class Securimage {
    *
    * @var int
    */
-  var $text_angle_minimum = -20;
+  var $text_angle_minimum = -30;
 
   /**
    * The minimum angle in degrees, with 0 degrees being left-to-right reading text.<br />
@@ -195,7 +195,7 @@ class Securimage {
    *
    * @var int
    */
-  var $text_angle_maximum = 20;
+  var $text_angle_maximum = 30;
 
   /**
    * The X-Position on the image where letter drawing will begin.<br />
@@ -213,7 +213,7 @@ class Securimage {
    *
    * @var int
    */
-  var $text_minimum_distance = 30;
+  var $text_minimum_distance = 15;
 
   /**
    * Letters can be spaced apart at random distances.<br />
@@ -223,7 +223,7 @@ class Securimage {
    *
    * @var int
    */
-  var $text_maximum_distance = 33;
+  var $text_maximum_distance = 25;
 
   /**
    * The background color for the image.<br />
@@ -277,7 +277,7 @@ class Securimage {
    * @see Securimage::$use_transparent_text
    * @var int
    */
-  var $text_transparency_percentage = 15;
+  var $text_transparency_percentage = 30;
 
 
   // Line options
@@ -307,7 +307,7 @@ class Securimage {
    * @see Securimage::$draw_lines
    * @var int
    */
-  var $line_distance = 8;
+  var $line_distance = 7;
 
   /**
    * How thick to draw the lines in pixels.<br />
