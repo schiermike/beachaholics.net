@@ -307,11 +307,11 @@
 			$rowOutput.="<td style='padding-left:30px;'>".$row['Vermerk']."</td>";
 				
 			$color= $row['Betrag']<0 ? COLOR_OUT : COLOR_IN;
-			$rowOutput.="<td style='padding-right:30px; text-align:right'><font color='".$color."'>".echoMoney($row['Betrag'])."</font></td>";
+			$rowOutput.="<td style='padding-right:30px; text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($row['Betrag'])."</font></td>";
 				
 			$account+=$row['Betrag'];
 			$color= $account<0 ? COLOR_OUT : COLOR_IN;
-			$rowOutput.="<td style='text-align:right'><font color='".$color."'>".echoMoney($account)."</font></td>";
+			$rowOutput.="<td style='text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($account)."</font></td>";
 			
 			$rowOutput.="</tr>\n";
 			
