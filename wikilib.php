@@ -1232,7 +1232,7 @@ function ewiki_page_edit($id, $data, $action) {
 	$hidden_postdata = array();
 
 	#-- previous version come back
-	if ($ewiki_config["forced_version"]) {
+	if (isset($ewiki_config["forced_version"]) && $ewiki_config["forced_version"]) {
 
 		$current = ewiki_db::GET($id);
 		$data["version"] = $current["version"];
@@ -1271,8 +1271,10 @@ function ewiki_page_edit($id, $data, $action) {
 	$o = ewiki_make_title($id, ewiki_t("EDITTHISPAGE").(" '{$id}'"), 2, $action, "", "_MAY_SPLIT=1");
 
 	#-- normalize to UNIX newlines
-	$_REQUEST["content"] = str_replace("\r\n", "\n", $_REQUEST["content"]);
-	$_REQUEST["content"] = str_replace("\n", "\012", $_REQUEST["content"]);
+	if (isset($_REQUEST["content"])) {
+		$_REQUEST["content"] = str_replace("\r\n", "\n", $_REQUEST["content"]);
+		$_REQUEST["content"] = str_replace("\n", "\012", $_REQUEST["content"]);
+	}
 
 	#-- preview
 	if (isset($_REQUEST["preview"])) {
@@ -1395,7 +1397,7 @@ function ewiki_page_edit_form(&$id, &$data, &$hidden_postdata) {
 	$hidden_postdata["version"] = &$data["version"];
 
 	#-- edit textarea/form
-	$o .= ewiki_t("EDIT_FORM_1")
+	$o = ewiki_t("EDIT_FORM_1")
 	. '<form method="POST" enctype="multipart/form-data" action="'
 	. ewiki_script("edit", $id) . '" name="ewiki"\n';
 
@@ -1409,9 +1411,9 @@ function ewiki_page_edit_form(&$id, &$data, &$hidden_postdata) {
 	. HP::toHtml($data["content"]) . "</textarea>";
 
 	#-- more <input> elements before the submit button
-	if ($pf_a = $ewiki_plugins["edit_form_insert"]) foreach ($pf_a as $pf) {
-		$o .= $pf($id, $data, $action);
-	}
+	if (isset($ewiki_plugins["edit_form_insert"]) && $pf_a = $ewiki_plugins["edit_form_insert"]) 
+		foreach ($pf_a as $pf)
+			$o .= $pf($id, $data, $action);
 
 	$o .= "\n<br />\n"
 	. ewiki_form("save:submit", " &nbsp; ".ewiki_t("SAVE")." &nbsp; ")
@@ -1420,9 +1422,9 @@ function ewiki_page_edit_form(&$id, &$data, &$hidden_postdata) {
 	. ' &nbsp; <a class="cancel" href="'. ewiki_script("", $id) . '">' . ewiki_t("CANCEL_EDIT") . '</a><br />';
 
 	#-- additional form elements
-	if ($pf_a = $ewiki_plugins["edit_form_append"]) foreach ($pf_a as $pf) {
+	if (isset($ewiki_plugins["edit_form_append"]) && $pf_a = $ewiki_plugins["edit_form_append"]) 
+		foreach ($pf_a as $pf)
 		$o .= $pf($id, $data, $action);
-	}
 
 	$o .= "\n</form>\n"
 	. ewiki_t("EDIT_FORM_2");
@@ -2942,7 +2944,12 @@ function ewiki_form($name, $value, $label="", $_text="| |\n", $inj="") {
 	#-- prepare
 	$o = "";
 	$_text = explode("|", $_text);
-	list($name, $type, $width, $height) = explode(":", $name);
+	$lst = explode(":", $name);
+	$name = count($lst) > 0 ? $lst[0] : NULL;
+	$type = count($lst) > 1 ? $lst[1] : NULL;
+	$width = count($lst) > 2 ? $lst[2] : NULL;
+	$height = count($lst) > 3 ? $lst[3] : NULL;
+
 	$type = $type ? (strpos($type, "a") ? "a" : (strpos($type, "b") ? "b" : $type[0])) : "t";
 	if ($inj) { $inj = " $inj"; }
 	$old_value = @$_EWIKI["form"][$ewiki_id][$name];

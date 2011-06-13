@@ -53,7 +53,7 @@
 		$row = mysql_fetch_assoc($result);
 		echo $row['Inhalt'];
 
-		if( getUser()->isAdmin() )
+		if( getUser()->isAuthorized(User::$ROLE_MEMBER) )
 		{
 			echo "<div style='text-align:right'>";
 				echo "<a href='" . $_SERVER['PHP_SELF'] . "?action=edit'><img src='img/text_edit.png' alt='edit'/></a>";
@@ -63,7 +63,7 @@
  
 	HP::printPageHead("Beachaholics.net");
 
-	if(getUser()->isAdmin() && isset($action))
+	if(getUser()->isAuthorized(User::$ROLE_MEMBER) && isset($action))
 	{
 		switch($action)
 		{
