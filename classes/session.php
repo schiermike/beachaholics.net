@@ -51,7 +51,7 @@
 		
 		public function __construct()
 		{
-			$this->db = new DB("beachaholics.net", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
+			$this->db = new DB("localhost", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
 			$this->sessionId = session_id();
 		}
 		

@@ -252,7 +252,8 @@ class HP
 			return;
 		
 		echo "<div class='errorinfo'>";
-		echo "IP-ADDRESS: ".$_SERVER['REMOTE_ADDR']."<br/>";
+		echo "CLIENT-IP: ".$_SERVER['REMOTE_ADDR']."<br/>";
+		echo "SERVER: ".gethostname()."<br/>";
 		echo "SESSION-ID: ".session_id()."<br/>";
 		echo "SESSION-DATA: ";
 		echo getDB()->removePassFromString(print_r($_SESSION, true));

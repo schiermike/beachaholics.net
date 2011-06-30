@@ -1,8 +1,6 @@
 <VirtualHost *:80>
-	ServerAlias beachaholics.net
+	ServerAlias  beachaholics.net
 	ServerAlias www.beachaholics.net
-	ServerAlias indoor.beachaholics.net
-	ServerAlias beachaholics.ath.cx
 	ServerAdmin schiermike@gmx.net
 	
 	DocumentRoot /www/beachaholics/
