@@ -1,0 +1,58 @@
+<VirtualHost *:443>
+	ServerName  beachaholics.net
+	ServerAlias www.beachaholics.net
+	ServerAdmin schiermike@gmx.net
+	
+	GnuTLSEnable on
+	GnuTLSPriorities NORMAL
+	GnuTLSCertificateFile /etc/apache2/certs/beachaholics.crt
+	GnuTLSKeyFile /etc/apache2/certs/beachaholics.key
+	
+	DocumentRoot /www/beachaholics/
+	<Location />
+		Options -Indexes
+	</Location>
+
+	<DirectoryMatch "(.*/\.svn)|(tools)">
+		Order deny,allow
+		Deny from all
+	</DirectoryMatch>
+	
+	<Location /files/>
+		php_flag engine off
+	</Location>
+
+
+	ErrorLog /var/log/apache2/beachaholics.error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/beachaholics.access.log combined
+
+	ErrorDocument 400 /error.php
+	ErrorDocument 401 /error.php
+	ErrorDocument 402 /error.php
+	ErrorDocument 403 /error.php
+	ErrorDocument 404 /error.php
+	ErrorDocument 405 /error.php
+	ErrorDocument 406 /error.php
+	ErrorDocument 407 /error.php
+	ErrorDocument 408 /error.php
+	ErrorDocument 409 /error.php
+	ErrorDocument 410 /error.php
+	ErrorDocument 411 /error.php
+	ErrorDocument 412 /error.php
+	ErrorDocument 413 /error.php
+	ErrorDocument 414 /error.php
+	ErrorDocument 415 /error.php
+	ErrorDocument 416 /error.php
+	ErrorDocument 417 /error.php
+	
+	ErrorDocument 500 /error.php
+	ErrorDocument 501 /error.php
+	ErrorDocument 502 /error.php
+	ErrorDocument 503 /error.php
+	ErrorDocument 504 /error.php
+	ErrorDocument 505 /error.php
+</VirtualHost>
