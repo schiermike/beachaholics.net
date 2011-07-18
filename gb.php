@@ -23,7 +23,8 @@ $smileys = array
 	"[:eek:]" => array($smileyDir."eek.gif", "erstaunt"),
 	"[:vogel:]" => array($smileyDir."vogel.gif", "bescheuert"),
 	"[:tired:]" => array($smileyDir."tired.gif", "pennen"),
-	"[:fuckyou:]" => array($smileyDir."finger.gif", "fuck you")
+	"[:fuckyou:]" => array($smileyDir."finger.gif", "fuck you"),
+	"[:shit:]" => array($smileyDir."shit.gif", "shit")
 );
 $smileysBig = array
 (
@@ -315,7 +316,7 @@ function searchEntry($searchString)
 	
 	$searchString = str_replace("'", "\"", $searchString);
 	
-	$request = getDB()->query("SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit, Skype
+	$request = getDB()->query("SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit
 		FROM Gaestebuch JOIN Spieler USING(SpielerID)
 		WHERE ( Sichtbarkeit = 0 OR (Sichtbarkeit & ".getUser()->roles.") > 0 )
 		AND Nachricht LIKE '%".getDB()->escape($searchString)."%' 
@@ -330,9 +331,6 @@ function searchEntry($searchString)
 
 			echo "<td class='action'>";
 				echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']);
-				
-				if($row['Skype'] != NULL)
-					echo "&nbsp;<img src='http://mystatus.skype.com/smallicon/".$row['Skype']."' alt='' title='Skype'/>";
 				
 			echo "</td>";
 			echo "<td class='date'>";
@@ -494,7 +492,7 @@ function printGuestbook()
 	
 	printNavigationField($msg_offset, $num_rows);
 	
-	$sql = "SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit, Skype
+	$sql = "SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit
 		FROM Gaestebuch JOIN Spieler USING(SpielerID)
 		WHERE Sichtbarkeit = 0 OR (Sichtbarkeit & ".getUser()->roles.") > 0 
 		ORDER BY Datum DESC LIMIT ".$msg_offset*getUser()->getGbEntriesPerPage()." , ".getUser()->getGbEntriesPerPage();
@@ -518,9 +516,6 @@ function printGuestbook()
 					$url = $_SERVER['PHP_SELF']."?action=deleteEntry&messageId=".$row['NachrichtID'];
 					echo "&nbsp;<a href='".$url."'><img src='img/delete_gb_entry.png' alt='löschen' title='Eintrag löschen'/></a>";
 				}
-				
-				if($row['Skype'] != NULL)
-					echo "&nbsp;<img src='http://mystatus.skype.com/smallicon/".$row['Skype']."' alt='' title='Skype'/>";
 				
 			echo "</td>";
 			echo "<td class='date'>";

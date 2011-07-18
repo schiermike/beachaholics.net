@@ -19,7 +19,6 @@
 
 	class Session
 	{
-		private static $LOGIN_TIMEOUT = 604800; // 1 Woche
 		public $sessionId;
 		public $user = NULL;
 		public $db = NULL;
@@ -70,43 +69,18 @@
 		 * On success, the session data is initialized.
 		 *
 		 * @param userid
-		 * @param password
-		 * @return true on success, else false
 		 */
-		public function login($userId, $pass)
+		public function login($userId)
 		{
-			if($userId < 0)
-				return ;
-				
-			if($pass==NULL || $userId==NULL)
-			{
-				// is the user already logged in?
-				return !$this->user->isGuest();
-			}
-			
-			$hash = md5(uniqid(rand()));
-			
-			$sql = "UPDATE Spieler SET LoginHash='".$hash."' WHERE SpielerID=".$userId." AND (Password='".getDB()->escape($pass)."' OR MD5(Password)='".getDB()->escape($pass)."')";
-			$request = getDB()->query($sql);
-			if(mysql_affected_rows()!=1)
-				return false;
-			setcookie("autologin", $hash, time() + Session::$LOGIN_TIMEOUT);
-			$this->user = new User($userId);
-			return true;	
+			$this->user = new User($userId);	
 		}
 		
 		/**
-		 * Logs out the user with the userid - deletes the loginHash from DB and unsets the session.
+		 * Logs out the current user
 		 * @return unknown_type
 		 */
 		public function logout()
 		{
-			if(!getUser()->isGuest())
-			{
-				$sql = "UPDATE Spieler SET LoginHash=NULL WHERE SpielerID=".getUser()->id;
-				getDB()->query($sql);
-			}
-			
 			session_unset();
 			session_destroy();	
 		}
@@ -119,17 +93,6 @@
 		{
 			if($this->user == NULL)
 				$this->user = new User();
-			
-			// attribute which every valid session must have
-			if( isset($_COOKIE['autologin']) && getUser()->isGuest() )
-			{	
-				$result = getDB()->query("SELECT SpielerID FROM Spieler WHERE LoginHash='".$_COOKIE['autologin']."'");
-				if(mysql_num_rows($result)==1)
-				{
-					$row = mysql_fetch_assoc($result);
-					$this->user = new User($row['SpielerID']);
-				}
-			}
 			
 			if(!getUser()->isGuest())
 			{

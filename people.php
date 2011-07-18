@@ -10,7 +10,7 @@
 		switch($cmd)
 		{
 			case 'userEdit':
-				printUserEditForm($userid);
+				printUserEditForm(isset($userid) ? $userid : User::getGuestId());
 				break;
 			case 'userEditConfirm':
 				userEditConfirm($userid);
@@ -34,7 +34,7 @@
 			return;
 		}
 		
-		global $nachname, $vorname, $nickname, $strasse, $ort, $geburtstag, $email, $telefon, $rights, $passwd, $skype;
+		global $nachname, $vorname, $nickname, $strasse, $ort, $geburtstag, $email, $telefon, $rights, $passwd;
 		
 		$rechte = 0;
 		if(isset($rights))
@@ -59,7 +59,7 @@
 		
 		if($userid > 0)
 		{
-			$sql = "UPDATE Spieler SET Nachname='".getDB()->escape($nachname)."', Vorname='".getDB()->escape($vorname)."', Nick='".getDB()->escape($nickname)."', Strasse='".getDB()->escape($strasse)."', Ort='".getDB()->escape($ort)."', GebDatum='".getDB()->escape($geburtstag)."', Email='".getDB()->escape($email)."', Telefon='".getDB()->escape($telefon)."', Skype='".getDB()->escape($skype)."'";
+			$sql = "UPDATE Spieler SET Nachname='".getDB()->escape($nachname)."', Vorname='".getDB()->escape($vorname)."', Nick='".getDB()->escape($nickname)."', Strasse='".getDB()->escape($strasse)."', Ort='".getDB()->escape($ort)."', GebDatum='".getDB()->escape($geburtstag)."', Email='".getDB()->escape($email)."', Telefon='".getDB()->escape($telefon)."'";
 			
 			if(getUser()->isAdmin()) $sql .= ", Rights=$rechte";
 			
@@ -77,9 +77,9 @@
 		}
 		else
 		{			
-			$sql = "INSERT INTO Spieler (Nachname, Vorname, Nick, Strasse, Ort, GebDatum, Email, Telefon, Rights, Password, CreationDate, Skype";
+			$sql = "INSERT INTO Spieler (Nachname, Vorname, Nick, Strasse, Ort, GebDatum, Email, Telefon, Rights, Password, CreationDate";
 			if(isset($picture)) $sql .= ", Bild";
-			$sql .=") VALUES ('".getDB()->escape($nachname)."', '".getDB()->escape($vorname)."', '".getDB()->escape($nickname)."', '".getDB()->escape($strasse)."', '".getDB()->escape($ort)."', '".getDB()->escape($geburtstag)."', '".getDB()->escape($email)."', '".getDB()->escape($telefon)."', $rechte, '".getDB()->escape($passwd)."', CURDATE(), '".mysql_real_escape_string($skype)."'";
+			$sql .=") VALUES ('".getDB()->escape($nachname)."', '".getDB()->escape($vorname)."', '".getDB()->escape($nickname)."', '".getDB()->escape($strasse)."', '".getDB()->escape($ort)."', '".getDB()->escape($geburtstag)."', '".getDB()->escape($email)."', '".getDB()->escape($telefon)."', $rechte, '".getDB()->escape($passwd)."', CURDATE()";
 			if(isset($picture)) $sql .= ", '$picture'";
 			$sql.= ")";
 			getDB()->query($sql);
@@ -98,12 +98,9 @@
 			return;
 		}
 		
-		if(!isset($userid))
-			$userid = User::getGuestId();
-		
 		if($userid != User::getGuestId())
 		{
-			$sql = "SELECT Nachname, Vorname, Nick, Strasse, Ort, Email, Telefon, GebDatum, Rights, Skype FROM Spieler WHERE SpielerID=$userid";
+			$sql = "SELECT Nachname, Vorname, Nick, Strasse, Ort, Email, Telefon, GebDatum, Rights FROM Spieler WHERE SpielerID=$userid";
 			$result = getDB()->query($sql);
 		
 			if(mysql_num_rows($result) != 1 || !($row = mysql_fetch_assoc($result)))
@@ -126,15 +123,37 @@
 		echo "<input type='hidden' name='cmd' value='userEditConfirm'/>\n";
 		if($userid != User::getGuestId())
 			echo "<input type='hidden' name='userid' value='$userid'/>\n";
-		echo "<b>Nachname:</b> <input type='text' name='nachname' size='15' value='".$row['Nachname']."'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-		echo "<b>Vorname:</b> <input type='text' name='vorname' size='15' value='".$row['Vorname']."'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-		echo "<b>Nickname:</b> <input type='text' name='nickname' size='10' value='".$row['Nick']."'/><br/><br/>\n";
-		echo "<b>Straße:</b> <input type='text' name='strasse' size='20' value='".$row['Strasse']."'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-		echo "<b>Ort:</b> <input type='text' name='ort' size='15' value='".$row['Ort']."'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-		echo "<b>Geburtstag:</b> <input type='text' name='geburtstag' size='10' value='".$row['GebDatum']."'/><br/><br/>\n";
-		echo "<b>Email:</b> <input type='text' name='email' size='25' value='".$row['Email']."'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-		echo "<b>Telefon:</b> <input type='text' name='telefon' size='15' value='".$row['Telefon']."'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-		echo "<b>Skype:</b> <input type='text' name='skype' size='25' value='".$row['Skype']."'/><br/><br/>\n";
+		echo "<b>Nachname:</b> <input type='text' name='nachname' size='15' value='";
+		echo isset($row['Nachname']) ? $row['Nachname'] : "";
+		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+		echo "<b>Vorname:</b> <input type='text' name='vorname' size='15' value='";
+		echo isset($row['Vorname']) ? $row['Vorname'] : "";
+		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+		echo "<b>Nickname:</b> <input type='text' name='nickname' size='10' value='";
+		echo isset($row['Nick']) ? $row['Nick'] : "";
+		echo "'/><br/><br/>\n";
+
+		echo "<b>Straße:</b> <input type='text' name='strasse' size='20' value='";
+		echo isset($row['Strasse']) ? $row['Strasse'] : "";
+		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+		echo "<b>Ort:</b> <input type='text' name='ort' size='15' value='";
+		echo isset($row['Ort']) ? $row['Ort'] : "";
+		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+		echo "<b>Geburtstag:</b> <input type='text' name='geburtstag' size='10' value='";
+		echo isset($row['GebDatum']) ? $row['GebDatum'] : "";
+		echo "'/><br/><br/>\n";
+
+		echo "<b>Email:</b> <input type='text' name='email' size='25' value='";
+		echo isset($row['Email']) ? $row['Email'] : "";
+		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+		echo "<b>Telefon:</b> <input type='text' name='telefon' size='15' value='";
+		echo isset($row['Telefon']) ? $row['Telefon'] : "";
+		echo "'/><br/><br/>\n";
 		
 		if(getUser()->isAdmin())
 		{
@@ -164,7 +183,7 @@
 
 	function printPlayerTable()
 	{
-		$sql = "SELECT SpielerID, Nachname, Vorname, Nick, Strasse, Ort, Email, Telefon, LastTimeStamp, Rights, CreationDate, Skype".
+		$sql = "SELECT SpielerID, Nachname, Vorname, Nick, Strasse, Ort, Email, Telefon, LastTimeStamp, Rights, CreationDate".
 				" FROM Spieler".
 				" WHERE SpielerID != ".User::getGuestId().
 				" ORDER BY LastTimeStamp DESC";
@@ -191,8 +210,6 @@
 				
 				echo "<td width='100%'>";
 					echo "<b>".HP::toHtml($row['Nachname']." ".$row['Vorname'])."</b>";
-					if($row['Skype'] != NULL) 
-						echo "&nbsp;<img src='http://mystatus.skype.com/smallicon/".$row['Skype']."' alt='' title='Skype'/>";
 				echo "</td>";
 				
 				echo "<td style='text-align:right; font-size: x-small;'>";

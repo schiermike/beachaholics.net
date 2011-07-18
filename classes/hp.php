@@ -19,7 +19,7 @@ class HP
 	{		
 		HP::printDocumentHead();
 		echo "<head>\n
-			<title>TRAININGSSYSTEM der BEACHAHOLICS</title>\n
+			<title>Beachvolleyballverein Beachaholics Kufstein</title>\n
 			<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n
 			<link href='/style.css' rel='stylesheet' type='text/css'/>\n";
 			if($stylesheet) 
@@ -104,7 +104,6 @@ class HP
 		if(!getUser()->isGuest())
 		{
 			echo "<b>".HP::toHtml(getUser()->nickName)."</b>";
-			echo " <a href='javascript:bookmarkLogin(".getUser()->id.", \"".getUser()->md5Pass."\")'><img src='/img/pinned.gif' alt='bookmark' title='Login bookmarken (Passwort-eintippen kann man sich damit sparen)'/></a>";
 		}
 		else
 			echo "Gast";
@@ -190,7 +189,7 @@ class HP
 		}
 		else
 		{
-			echo "<a href='/login.php?userid=-1'><img src='/img/navi/exit.gif' alt='Logout' title='Logout'/></a>";
+			echo "<a href='/login.php'><img src='/img/navi/exit.gif' alt='Logout' title='Logout'/></a>";
 		}
 		
 		if(!HP::displayMini())
@@ -222,7 +221,7 @@ class HP
 				echo "<table align='right' cellspacing='4' cellpadding='0' style='font-size:x-small; width:100%'>
 							<tr>
 								<td rowspan='2' width='100%'>
-									<a href='vnstat' target='_blank'><img src='/img/network_stats.png' alt='Network statistics'/></a>
+									<a href='munin' target='_blank'><img src='/img/network_stats.png' alt='Server statistics'/></a>
 								</td>
 								<td style='text-align:right;white-space:nowrap'>für den Inhalt verantwortlich: Beachaholics Kufstein</td>
 								<td rowspan='2'>&nbsp;&nbsp;</td>
@@ -299,8 +298,7 @@ class HP
 		echo "<br/>";
 		echo "<div style='text-align: center; font-size: large;'";
 			echo $text."<br/><br/>";
-		// 	userid is 0 in order to avoid forwarding
-			echo "<a href='/login.php?userid=0'><img src='/img/navi/login.png' alt='login' title='zum Login'/></a><br/>";
+			echo "<a href='/login.php'><img src='/img/navi/login.png' alt='login' title='zum Login'/></a><br/>";
 		echo "</div>";
 	}
 	
