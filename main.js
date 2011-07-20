@@ -95,13 +95,13 @@ function updateSiteParam(object)
 
 function setResponse()
 {
-	userId = document.getElementById('userid').value;
-	challengeB64 = document.getElementById('challenge').value;
-	passWord = document.getElementById('password').value;
-	challengePlain = base64Decode(challengeB64);
-	responsePlain = rc4Crypt(passWord, challengePlain);
-	responseB64 = base64Encode(responsePlain);
-	document.getElementById('response').value = responseB64;
+	s_userid = document.getElementById('userid').value;
+	s_challenge_b64 = document.getElementById('challenge').value;
+	s_password = document.getElementById('password').value;
+	s_challenge_plain = base64Decode(s_challenge_b64);
+	s_response_plain = rc4Crypt(s_password, s_challenge_plain);
+	s_response_b64 = base64Encode(s_response_plain);
+	document.getElementById('response').value = s_response_b64;
 }
 
 // ------------------------------------------------------------------------------------------------	

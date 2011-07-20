@@ -22,7 +22,7 @@
   	function printUploadLinks()
   	{
   		echo "<center>";
-		echo "<a href=\"javascript:window.open('uploader.php', 'uploaderWindow', 'width=350, height=350, status=no,scrollbars=no,resizable=no').focus();\">Java Dateiupload</a>";
+		echo "<a href='uploader/' target='_blank'>Java Dateiupload</a>";
 		echo "&nbsp;&nbsp;&nbsp;";
 		echo "<a href='".$_SERVER['PHP_SELF']."?showFtp=true'>FTP Dateiupload</a>";
 		echo "</center>";

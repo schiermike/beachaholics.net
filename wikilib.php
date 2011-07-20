@@ -2313,7 +2313,7 @@ function ewiki_link_regex_callback($ii, $force_noimg=0) {
 		}
 
 		#-- URL plugins
-		if ($pf_a = $ewiki_plugins["link_url"]) foreach ($pf_a as $pf) {
+		if (isset($ewiki_plugins["link_url"]) && $pf_a = $ewiki_plugins["link_url"]) foreach ($pf_a as $pf) {
 			if ($str = $pf($href, $title, $status)) { break 2; }
 		}
 		$meta = @$ewiki_links[$href];
