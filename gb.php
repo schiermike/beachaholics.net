@@ -195,21 +195,21 @@ function printNavigationField($currentPageIndex, $numRows)
 		$maxVisiblePage = $numRows/getUser()->getGbEntriesPerPage();
 		$maxPageReached = true;
 	}
-	
-	if(!$minPageReached)
-		echo "...";
+	$maxVisiblePage = ceil($maxVisiblePage);
+
+	echo "<a href='".$_SERVER['PHP_SELF']."?msg_offset=".($currentPageIndex==0?0:$currentPageIndex-1)."'>&lt;&lt;</a> ";
 	
 	for($page=$minVisiblePage;$page<$maxVisiblePage;$page++)
 	{
 		echo "<a href='".$_SERVER['PHP_SELF']."?msg_offset=".$page."'>";
 		if($currentPageIndex == $page)
-			echo "<b>".($page+1)."</b>";
+			echo "<u>".($page+1)."</u>";
 		else
 			echo $page+1;
 		echo "</a>\n ";
 	}
-	if(!$maxPageReached)
-		echo "...";
+
+	echo "<a href='".$_SERVER['PHP_SELF']."?msg_offset=".($currentPageIndex==$maxVisiblePage-1?$maxVisiblePage-1:$currentPageIndex+1)."'>&gt;&gt;</a> ";
 		
 	echo "</td><td style='text-align:right'>";
 	
@@ -504,11 +504,10 @@ function printGuestbook()
 	while($row = mysql_fetch_assoc($request))
 	{
 		echo "<tr class='rowColor2'>";
-			echo "<td class='name'>".HP::toHtml($row['Nick'])."</td>\n";
+			echo "<td class='picture' rowspan='2'><img src='userpic.php?id=".$row['SpielerID']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/></td>\n";
+			echo "<td class='name'>";
+				echo "<b>".HP::toHtml($row['Nick'])."</b>&nbsp;&nbsp;";
 
-			echo "<td class='action'>";
-				echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']);
-				
 				if($row['SpielerID'] == getUser()->id && getUser()->id != User::getGuestId() || getUser()->isItMe())
 				{
 					$url = $_SERVER['PHP_SELF']."?action=printEntryField&messageId=".$row['NachrichtID'];
@@ -519,12 +518,12 @@ function printGuestbook()
 				
 			echo "</td>";
 			echo "<td class='date'>";
+				echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']) . ",&nbsp;&nbsp;";
 				echo HP::formatDate($row['Datum'], true)." <img src='img/clock.png' alt='' title='Zeitpunkt des Eintrags'/> - #".$row['NachrichtID'];
 			echo "</td>\n";
 		echo "</tr>";
 		
 		echo "<tr class='rowColor0'>";
-			echo "<td class='picture'><img src='userpic.php?id=".$row['SpielerID']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/></td>\n";
 			echo "<td colspan='2' class='message'>".convertKeywords(HP::toHtml($row['Nachricht'], true))."</td>\n";
 		echo "</tr>\n";
 		

@@ -60,21 +60,10 @@ table#guestbook
 
 table#guestbook tr td.name
 {
-	text-align: left;
-	font-weight: bold;
-	
-	border-width: 1px;
-	border-color: black;
-	border-top-style: solid;
-	border-left-style: solid;
-	padding-left: 3px;
-}
-
-table#guestbook tr td.action
-{
+	height: 20px;
 	text-align: left;
 	font: 8pt/120% sans-serif;
-	padding-left: 10px;
+	padding-left: 3px;
 	
 	border-width: 1px;
 	border-color: black;
@@ -98,6 +87,7 @@ table#guestbook tr td.picture
 {
 	border-color: black;
 	border-width: 1px;
+	border-top-style: solid;
 	border-bottom-style: solid;
 	border-left-style: solid;
 	vertical-align: top;
