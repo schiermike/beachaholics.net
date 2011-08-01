@@ -53,6 +53,7 @@ function printPage()
 	global $datetime;
 	global $message;
 	global $visibility;
+	global $sticky;
 	global $captcha_code;
 	global $sendAsEmail;
 	global $emailRecipients;
@@ -66,7 +67,7 @@ function printPage()
 	switch($action)
 	{
 		case 'makeEntry':
-			if(makeGBEntry($userId, $datetime, $message, $visibility, $captcha_code, $messageId))
+			if(makeGBEntry($userId, $datetime, $message, $visibility, $sticky, $captcha_code, $messageId))
 			{
 				if(isset($sendAsEmail))
 					printEmailTargetsSelection($userId, $message, $visibility);
@@ -228,8 +229,9 @@ function printNavigationField($currentPageIndex, $numRows)
 
 // -----------------------------------------------------------------------------------------
 
-function makeGBEntry($userId, $datetime, $message, $visibility, $captcha_code, $messageId=NULL)
+function makeGBEntry($userId, $datetime, $message, $visibility, $sticky, $captcha_code, $messageId=NULL)
 {
+	$sticky = $sticky == "sticky" ? "TRUE" : "FALSE";
 	if($userId != getUser()->id && !getUser()->isItMe())
 	{
 		HP::printErrorText("Unzureichende Rechte zum Editieren dieser Nachricht!");
@@ -269,9 +271,9 @@ function makeGBEntry($userId, $datetime, $message, $visibility, $captcha_code, $
 	$message = strtr($message, $trans);
 	$sql="";
 	if($messageId == NULL)
-		$sql = "INSERT INTO Gaestebuch (Datum, SpielerID, Nachricht, Sichtbarkeit) VALUES ('".$datetime."',".$userId.",'".getDB()->escape($message)."', ".$visibility.")";
+		$sql = "INSERT INTO Gaestebuch (Datum, SpielerID, Nachricht, Sichtbarkeit, Sticky) VALUES ('".$datetime."',".$userId.",'".getDB()->escape($message)."', ".$visibility.", ".$sticky.")";
 	else
-		$sql = "UPDATE Gaestebuch SET Nachricht='".getDB()->escape($message)."', Sichtbarkeit=".$visibility." WHERE SpielerID=".$userId." AND NachrichtID=".$messageId;
+		$sql = "UPDATE Gaestebuch SET Nachricht='".getDB()->escape($message)."', Sichtbarkeit=".$visibility.", Sticky=".$sticky." WHERE SpielerID=".$userId." AND NachrichtID=".$messageId;
 		
 	$request = getDB()->query($sql);
 	
@@ -358,17 +360,19 @@ function printEntryField($messageId = NULL)
 {
 	$userId = getUser()->id;
 	$messageText="";
+	$sticky = false;
 	$visibility = User::$ROLE_MEMBER;
 	$buttonLabel="Eintragen";
 	if($messageId != NULL)
 	{
-		$sql= "SELECT SpielerID, Nachricht, Sichtbarkeit FROM Gaestebuch WHERE NachrichtID='".$messageId."'";
+		$sql= "SELECT SpielerID, Nachricht, Sichtbarkeit, Sticky FROM Gaestebuch WHERE NachrichtID='".$messageId."'";
 		$request = getDB()->query($sql);
 		if($row = mysql_fetch_assoc($request))
 		{
 			$userId = $row['SpielerID'];
 			$messageText = $row['Nachricht'];
 			$visibility = $row['Sichtbarkeit'];
+			$sticky = $row['Sticky'];
 		}
 		$buttonLabel="Bestätigen";
 	}
@@ -429,10 +433,11 @@ function printEntryField($messageId = NULL)
 			echo "</p>\n";	
 		}
 		echo "<p style='text-align:right'>";
-			if(getUser()->isVorstand())
-			{
-				echo "<input type='checkbox' name='sendAsEmail'/> zusätzlich als Email versenden&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;";
-			}
+			echo "Als sticky setzen: <input type='checkbox' name='sticky' value='sticky'".($sticky?" checked='checked'":"")."'/>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;";
+//			if(getUser()->isVorstand())
+//			{
+//				echo "<input type='checkbox' name='sendAsEmail'/> zusätzlich als Email versenden&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;";
+//			}
 			echo "Sichtbarkeit: <img src='img/groupkey.png' alt=''/> ";
 			echo "<select name='visibility'>";
 			foreach(User::getRoles() as $role)
@@ -492,10 +497,10 @@ function printGuestbook()
 	
 	printNavigationField($msg_offset, $num_rows);
 	
-	$sql = "SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit
+	$sql = "SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit, Sticky
 		FROM Gaestebuch JOIN Spieler USING(SpielerID)
 		WHERE Sichtbarkeit = 0 OR (Sichtbarkeit & ".getUser()->roles.") > 0 
-		ORDER BY Datum DESC LIMIT ".$msg_offset*getUser()->getGbEntriesPerPage()." , ".getUser()->getGbEntriesPerPage();
+		ORDER BY Sticky DESC, Datum DESC LIMIT ".$msg_offset*getUser()->getGbEntriesPerPage()." , ".getUser()->getGbEntriesPerPage();
 	
 	$request = getDB()->query($sql);
 	
@@ -518,6 +523,8 @@ function printGuestbook()
 				
 			echo "</td>";
 			echo "<td class='date'>";
+				if ($row['Sticky'] == true)
+					echo "<img src='img/sticky.gif' alt='Sticky message' title='Wichtige Nachricht'/>&nbsp;&nbsp;";
 				echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']) . ",&nbsp;&nbsp;";
 				echo HP::formatDate($row['Datum'], true)." <img src='img/clock.png' alt='' title='Zeitpunkt des Eintrags'/> - #".$row['NachrichtID'];
 			echo "</td>\n";
