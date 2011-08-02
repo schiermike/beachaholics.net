@@ -39,7 +39,7 @@
 		echo "<form name='loginForm' method='get' action='".$_SERVER['PHP_SELF']."'>\n";
 		echo "<center><br/><br/><br/><br/>\n";
 		echo "<p style='text-align:center'>\n";
-		echo "<select id='userid' name='userid' style='width: 200px;' onchange='this.form.submit();'>\n";
+		echo "<select id='userid' name='userid' style='width: 200px;' onkeypress='if (event.keyCode==13) this.form.submit();' onblur='this.form.submit();'>\n";
 		echo "<option value='-1'>Benutzer auswählen</option>\n";
 		while ($row = mysql_fetch_assoc($request))
 			echo "<option value='".$row['SpielerID']."'>".HP::toHtml($row['Nick'])."</option>\n";
@@ -69,7 +69,7 @@
 		echo "<center><br/><br/><br/><br/>";
 		echo "Benutzer <b>" . $row['Vorname'] . " " . $row['Nachname'] . "</b>\n";
 		echo "<p style='text-align:center'>";
-		echo "<input type='password' id='password' name='password' style='width: 200px;' onkeypress='{if (event.keyCode==13) {setResponse(); document.getElementById(\"loginForm\").submit();}}'/>";
+		echo "<input type='password' id='password' name='password' style='width: 200px;' onkeypress='{setResponse(); if (event.keyCode==13) document.getElementById(\"loginForm\").submit();}'/>";
 		echo "</p>\n";
 		echo "<input type='hidden' id='challenge' value='" . createChallenge($userid) . "'/>\n";
 		
