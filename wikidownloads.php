@@ -70,6 +70,7 @@ function ewiki_page_fileupload($id, $data, $action, $def_sec="")
 	global $ewiki_upload_sections, $ewiki_plugins;
 
 	$upload_file = $_FILES[EWIKI_UP_UPLOAD];
+	$o = "";
 	if($upload_file["size"] > EWIKI_UPLOAD_MAXSIZE) {
 
 		$o .= ewiki_t("UPL_TOOLARGE");
@@ -140,7 +141,7 @@ function ewiki_page_fileupload($id, $data, $action, $def_sec="")
           '" method="POST" enctype="multipart/form-data">' .
           '<b>'.ewiki_t("file").'</b>: <input type="file" name="'.EWIKI_UP_UPLOAD.'"> ';
 
-	if (count($ewiki_upload_sections) > 1)
+	if (count($ewiki_upload_sections) > 1 && isset($_REQUEST['section']))
 	{
 		if (empty($def_sec))
 		$def_sec = $_REQUEST["section"];

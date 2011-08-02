@@ -51,67 +51,6 @@ h3
 }
 
 
-/* Guestbook style definitions */
-
-table#guestbook
-{
-	width: 100%;
-}
-
-table#guestbook tr td.name
-{
-	height: 20px;
-	text-align: left;
-	font: 8pt/120% sans-serif;
-	padding-left: 3px;
-	
-	border-width: 1px;
-	border-color: black;
-	border-top-style: solid;
-}
-
-table#guestbook tr td.date
-{
-	text-align: right;
-	font: 8pt/120% sans-serif;
-	white-space: nowrap;
-	border-color: black;
-	
-	border-width: 1px;
-	border-color: black;
-	border-top-style: solid;
-	border-right-style: solid;
-}
-
-table#guestbook tr td.picture
-{
-	border-color: black;
-	border-width: 1px;
-	border-top-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
-	vertical-align: top;
-	background-color: #d0d0d0;
-}
-
-table#guestbook tr td.message
-{
-	width: 100%;
-	text-align: left; 
-	padding-left: 10px;
-
-	border-color: black;
-	border-width: 1px;
-	border-bottom-style: solid;
-	border-right-style: solid;
-}
-
-table#guestbook tr.empty
-{
-	height: 5px;
-}
-
-
 /* Column color definitions */
 
 .rowColor0

@@ -76,7 +76,7 @@
 		echo "<form id='loginForm' method='get' action='".$_SERVER['PHP_SELF']."' onsubmit='setResponse()'>\n";
 		echo "<input type='hidden' id='userid' name='userid' value='" . $userid . "'/>\n";
 		echo "<input type='hidden' id='response' name='response' value=''/>\n";
-//		echo "<p style='text-align:center'><input type='submit' value='Login' style='width: 200px;'/></p>\n";
+		echo "<p style='text-align:center'><input type='submit' value='Login' style='width: 200px;'/></p>\n";
 		echo "</form>";
 		if (!$firstAttempt)
 			echo "<font color='#ff0000'><b>Login fehlgeschlagen!<b></font>\n";

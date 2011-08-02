@@ -482,6 +482,46 @@ function convertKeywords($string)
 
 // -----------------------------------------------------------------------------------------
 
+function printGuestbookRow($row)
+{
+	echo "<tr>";
+		echo "<td style='border-width: 1px; border-color: black; border-top-style: solid; border-bottom-style: solid; border-left-style: solid; vertical-align: top; background-color: #d0d0d0;'>";
+			echo "<img src='userpic.php?id=".$row['SpielerID']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
+		echo "</td>";
+		echo "<td style='border-width: 1px; border-color: black; border-top-style: solid; border-bottom-style: solid; border-right-style: solid;'>";
+
+			echo "<table cellpadding='0' cellspacing='0' width='100%' height='136'>";
+				echo "<tr>";
+					echo "<td style='text-align: left; font: 8pt/120% sans-serif; padding-left: 3px; background-color: #aaaaaa;'>";
+						echo "<b>".HP::toHtml($row['Nick'])."</b>&nbsp;&nbsp;";
+
+						if($row['SpielerID'] == getUser()->id && getUser()->id != User::getGuestId() || getUser()->isItMe())
+						{
+							$url = $_SERVER['PHP_SELF']."?action=printEntryField&messageId=".$row['NachrichtID'];
+							echo "&nbsp;<a href='".$url."'><img src='img/edit_gb_entry.png' alt='editieren' title='Eintrag editieren'/></a>";
+							$url = $_SERVER['PHP_SELF']."?action=deleteEntry&messageId=".$row['NachrichtID'];
+							echo "&nbsp;<a href='".$url."'><img src='img/delete_gb_entry.png' alt='löschen' title='Eintrag löschen'/></a>";
+						}
+					echo "</td>";
+					echo "<td style='text-align:right; font: 8pt/120% sans-serif; white-space: nowrap; background-color: #aaaaaa;'>";
+						if ($row['Sticky'] == true)
+							echo "<img src='img/sticky.gif' alt='Sticky message' title='Wichtige Nachricht'/>&nbsp;&nbsp;";
+						echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']) . ",&nbsp;&nbsp;";
+						echo HP::formatDate($row['Datum'], true)." <img src='img/clock.png' alt='' title='Zeitpunkt des Eintrags'/> - #".$row['NachrichtID'];
+					echo "</td>\n";
+				echo "</tr>";
+				echo "<tr>";
+					echo "<td colspan='2' style='width: 100%; height: 100%; text-align: left; padding-left: 10px; background-color: #e0e0e0;'>".convertKeywords(HP::toHtml($row['Nachricht'], true))."</td>\n";
+				echo "</tr>\n";
+			echo "</table>";
+
+		echo "</td>";
+	echo "</tr>";
+	echo "<tr style='height: 5px;'><td colspan='2'/></tr>";
+}
+
+// -----------------------------------------------------------------------------------------
+
 function printGuestbook()
 {
 	global $msg_offset, $action;
@@ -504,39 +544,9 @@ function printGuestbook()
 	
 	$request = getDB()->query($sql);
 	
-	echo "\n<table id='guestbook' cellspacing='0' cellpadding='0'>";
-	$rowc=0;
+	echo "\n<table cellspacing='0' cellpadding='0' style='width: 100%'>";
 	while($row = mysql_fetch_assoc($request))
-	{
-		echo "<tr class='rowColor2'>";
-			echo "<td class='picture' rowspan='2'><img src='userpic.php?id=".$row['SpielerID']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/></td>\n";
-			echo "<td class='name'>";
-				echo "<b>".HP::toHtml($row['Nick'])."</b>&nbsp;&nbsp;";
-
-				if($row['SpielerID'] == getUser()->id && getUser()->id != User::getGuestId() || getUser()->isItMe())
-				{
-					$url = $_SERVER['PHP_SELF']."?action=printEntryField&messageId=".$row['NachrichtID'];
-					echo "&nbsp;<a href='".$url."'><img src='img/edit_gb_entry.png' alt='editieren' title='Eintrag editieren'/></a>";
-					$url = $_SERVER['PHP_SELF']."?action=deleteEntry&messageId=".$row['NachrichtID'];
-					echo "&nbsp;<a href='".$url."'><img src='img/delete_gb_entry.png' alt='löschen' title='Eintrag löschen'/></a>";
-				}
-				
-			echo "</td>";
-			echo "<td class='date'>";
-				if ($row['Sticky'] == true)
-					echo "<img src='img/sticky.gif' alt='Sticky message' title='Wichtige Nachricht'/>&nbsp;&nbsp;";
-				echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']) . ",&nbsp;&nbsp;";
-				echo HP::formatDate($row['Datum'], true)." <img src='img/clock.png' alt='' title='Zeitpunkt des Eintrags'/> - #".$row['NachrichtID'];
-			echo "</td>\n";
-		echo "</tr>";
-		
-		echo "<tr class='rowColor0'>";
-			echo "<td colspan='2' class='message'>".convertKeywords(HP::toHtml($row['Nachricht'], true))."</td>\n";
-		echo "</tr>\n";
-		
-		echo "<tr class='empty'><td colspan='2'/></tr>";
-		$rowc++;
-	}
+		printGuestbookRow($row);
 	echo "</table>";
 	
 	printNavigationField($msg_offset, $num_rows);
