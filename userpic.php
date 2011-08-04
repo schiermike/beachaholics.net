@@ -27,7 +27,7 @@
 //		exit;
 //	}
 	
-	$result = getDB()->query("SELECT Bild FROM Spieler WHERE SpielerID=".$pictureId);
+	$result = getDB()->query("SELECT avatar FROM user WHERE id=".$pictureId);
 	if(mysql_num_rows($result) == 0)
 		exit();
 	list($pictureData) = mysql_fetch_row($result);

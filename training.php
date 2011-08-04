@@ -108,15 +108,15 @@
 		if(mysql_affected_rows() == 1 && $eventType == Event::$BEACH)
 		{
 			getDB()->query("INSERT INTO Abmeldung(EventID, SpielerID, Zeitpunkt, Grund) 
-				SELECT EventID, s.SpielerID, NULL, '' FROM Spieler s JOIN Events t 
-				WHERE t.EventID=".$trainingid." AND s.Rights & ".User::$ROLE_BEACHAHOLIC." AND s.SpielerID!=".getUser()->id);
+				SELECT EventID, s.id, NULL, '' FROM user s JOIN Events t 
+				WHERE t.EventID=".$trainingid." AND s.roles & ".User::$ROLE_BEACHAHOLIC." AND s.id!=".getUser()->id);
 		}
 		
 		if(mysql_affected_rows() == 1 && $eventType == Event::$OTHER)
 		{
 			getDB()->query("INSERT INTO Abmeldung(EventID, SpielerID, Zeitpunkt, Grund) 
-				SELECT t.EventID, s.SpielerID, NULL, '' FROM Spieler s JOIN Events t 
-				WHERE t.EventID=".$trainingid." AND s.Rights & ".User::$ROLE_MEMBER);
+				SELECT t.EventID, s.id, NULL, '' FROM user s JOIN Events t 
+				WHERE t.EventID=".$trainingid." AND s.roles & ".User::$ROLE_MEMBER);
 		}
 		
 		printTrainingTable();
@@ -164,7 +164,7 @@
 		
 		echo "<tr><td style='text-align:right'>Startzeit:</td>";
 		echo "<td>";
-		$dateParsed= $datetime == NULL ? getdate() : getdate($datetime);
+		$dateParsed = $datetime == NULL ? getdate() : getdate($datetime);
 		echo "<input type='text' readonly='readonly' name='start_date_day' size='10' value='".$dateParsed['year']."-".$dateParsed['mon']."-".$dateParsed['mday']."'/><a href='javascript:cal1.popup();'><img src='img/cal.gif' alt=''/></a>";
 		echo "&nbsp;&nbsp;";
 		echo "<select name='start_date_hour' id='start_date_hour'>";
@@ -182,7 +182,7 @@
 		echo "<td>";
 		echo "<input type='checkbox' name='set_end_date' value='Endzeit setzen' ".($enddatetime == NULL ? "" : "checked='checked'")."/>";
 		echo "<br/>";
-		$dateParsed= $enddatetime == NULL ? getdate() : getdate($enddatetime);
+		$dateParsed = $enddatetime == NULL ? getdate() : getdate($enddatetime);
 		echo "<input type='text' readonly='readonly' name='end_date_day' size='10' value='".$dateParsed['year']."-".$dateParsed['mon']."-".$dateParsed['mday']."'/><a href='javascript:cal2.popup();'><img src='img/cal.gif' alt=''/></a>";
 		echo "&nbsp;&nbsp;";
 		echo "<select name='end_date_hour' id='end_date_hour'>";
@@ -278,14 +278,14 @@
 			return;
 			
 			
-		$sql = "SELECT Nachname, Vorname, Typ FROM Spieler JOIN Events WHERE SpielerID=".$playerid." AND EventID=".$trainingid;
+		$sql = "SELECT lastname, firstname, Typ FROM user JOIN Events WHERE user.id=".$playerid." AND EventID=".$trainingid;
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		
 		if(!Event::userCanJoin($row['Typ']) )
 			return;
 
-		echo "<p style='text-align:center'>".HP::toHtml($row['Nachname']." ".$row['Vorname'])."</p>";
+		echo "<p style='text-align:center'>".HP::toHtml($row['lastname']." ".$row['firstname'])."</p>";
 		echo "<form name='form1' method='get' action='".$_SERVER['PHP_SELF']."'>";
 		echo "<p style='text-align:center'><textarea name='grund' cols='80' rows='4'>Bitte hier Begründung anführen</textarea></p>";
 		echo "<p style='text-align:center'>";
@@ -350,16 +350,16 @@
 		$spielerID = getUser()->id == NULL ? 0 : getUser()->id;
 		$sql = "SELECT EventID, Ort, Zeit, Bemerkung, Typ, EndZeit, Link, SUM(SpielerAll) AS AnzahlSpieler, SUM(SpielerOff) AS AnzahlAbgemeldet, SUM(isSpielerOff) AS binAbgemeldet FROM ".
 			"( ".
-				"(SELECT EventID, t.Ort, Zeit, Bemerkung, Typ, EndZeit, Link, s.SpielerID, 1 AS SpielerAll, 0 AS SpielerOff, 0 AS isSpielerOff ".
-				"FROM Events t JOIN Spieler s ".
-				"WHERE s.CreationDate < t.Zeit AND (". 
-				"s.Rights & ".User::$ROLE_INDOOR_MEN." AND (t.Typ=".Event::$GAME_MEN." OR t.Typ=".Event::$INDOOR_MEN.") OR ".
-				"s.Rights & ".User::$ROLE_INDOOR_WOMEN." AND (t.Typ=".Event::$GAME_WOMEN." OR t.Typ=".Event::$INDOOR_WOMEN.") OR ".
-				"s.Rights & ".User::$ROLE_BEACHAHOLIC." AND t.Typ=".Event::$BEACH." OR ".
-				"s.Rights > 0 AND t.Typ=".Event::$OTHER.") OR t.Typ=".Event::$EXTERN.
+				"(SELECT EventID, t.Ort, Zeit, Bemerkung, Typ, EndZeit, Link, s.id, 1 AS SpielerAll, 0 AS SpielerOff, 0 AS isSpielerOff ".
+				"FROM Events t JOIN user s ".
+				"WHERE s.creation_date < t.Zeit AND (". 
+				"s.roles & ".User::$ROLE_INDOOR_MEN." AND (t.Typ=".Event::$GAME_MEN." OR t.Typ=".Event::$INDOOR_MEN.") OR ".
+				"s.roles & ".User::$ROLE_INDOOR_WOMEN." AND (t.Typ=".Event::$GAME_WOMEN." OR t.Typ=".Event::$INDOOR_WOMEN.") OR ".
+				"s.roles & ".User::$ROLE_BEACHAHOLIC." AND t.Typ=".Event::$BEACH." OR ".
+				"s.roles > 0 AND t.Typ=".Event::$OTHER.") OR t.Typ=".Event::$EXTERN.
 				" ) UNION ( ".
-				"SELECT t.EventID, t.Ort, Zeit, Bemerkung, Typ, EndZeit, Link, s.SpielerID, 0 AS SpielerAll, 1 AS SpielerOff ,s.SpielerID=".$spielerID." AS isSpielerOff ".
-				"FROM Events t JOIN Abmeldung a ON t.EventID=a.EventID JOIN Spieler s ON a.SpielerID=s.SpielerID) ".
+				"SELECT t.EventID, t.Ort, Zeit, Bemerkung, Typ, EndZeit, Link, s.id, 0 AS SpielerAll, 1 AS SpielerOff ,s.id=".$spielerID." AS isSpielerOff ".
+				"FROM Events t JOIN Abmeldung a ON t.EventID=a.EventID JOIN user s ON a.SpielerID=s.id) ".
 			") AS Union1 GROUP BY EventID ORDER BY Zeit ASC";
 		$request = getDB()->query($sql);
 		
@@ -482,9 +482,9 @@
 		
 		// ---------------------------------------------------------------
 		
-		$sql = "SELECT s.SpielerID AS SpielerID, Nachname, Vorname, a.EventID IS NULL AS Angemeldet, Zeitpunkt, Grund ".
-			"FROM (Spieler s LEFT JOIN Abmeldung a ".
-			"ON s.SpielerID=a.SpielerID AND a.EventID=".$trainingid.") ".
+		$sql = "SELECT s.id AS SpielerID, lastname, firstname, a.EventID IS NULL AS Angemeldet, Zeitpunkt, Grund ".
+			"FROM (user s LEFT JOIN Abmeldung a ".
+			"ON s.id=a.SpielerID AND a.EventID=".$trainingid.") ".
 			"JOIN Events t ON t.EventID=".$trainingid." ".
 			"WHERE ";
 		
@@ -493,12 +493,12 @@
 		{
 			if(!Event::userCanJoin($row['Typ'], $role))
 				continue;
-			$rightSql .= " OR Rights & ".$role;
+			$rightSql .= " OR roles & ".$role;
 		}
 		$rightSql = "(".substr($rightSql, 3).")";
 		$sql .= $rightSql;
 		
-		$sql .= " AND s.CreationDate < t.Zeit ORDER BY a.SpielerID IS NOT NULL, a.Zeitpunkt DESC, Nachname ASC";
+		$sql .= " AND s.creation_date < t.Zeit ORDER BY a.SpielerID IS NOT NULL, a.Zeitpunkt DESC, lastname ASC";
 		
 		$request = getDB()->query($sql);
 
@@ -514,7 +514,7 @@
 		{
 			echo "<tr class='rowColor".($rowc++%2)."'>";
 				
-			echo "<td nowrap='nowrap' style='padding-right:15px'>".HP::toHtml($row['Nachname']." ".$row['Vorname'])."</td>\n";
+			echo "<td nowrap='nowrap' style='padding-right:15px'>".HP::toHtml($row['lastname']." ".$row['firstname'])."</td>\n";
 			if($row['Angemeldet'])
 			{
 				echo "<td/><td/><td>";

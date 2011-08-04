@@ -1500,11 +1500,11 @@ function ewiki_control_links($id, &$data, $action, $hide_hr=0, $hide_mtime=0)
 	return($o);
 }
 
-function getNickForSpielerID($spielerID)
+function getNickForSpielerID($userid)
 {
-	$result = getDB()->query("SELECT Nick FROM Spieler WHERE SpielerID=$spielerID");
+	$result = getDB()->query("SELECT nickname FROM user WHERE id=$userid");
 	$row = mysql_fetch_assoc($result);
-	return $row["Nick"];
+	return $row["nickname"];
 }
 
 

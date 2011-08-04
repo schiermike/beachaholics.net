@@ -3,8 +3,7 @@
 	require_once "classes/database.php";
 	require_once "classes/session.php";
 
-	if(isset($_GET['getPdf']))
-	{
+	if(isset($_GET['getPdf'])) {
 		$pdfId = $_GET['getPdf'];	
 
 		Session::initialize();
@@ -12,7 +11,7 @@
 		header('Date: '.gmdate('D, d M Y H:i:s') . ' GMT');
 	
 		$result = getDB()->query("SELECT id, category, pdf FROM exercises WHERE id=".$pdfId);
-		if(mysql_num_rows($result) == 0)
+		if (mysql_num_rows($result) == 0)
 			exit();
 		$row = mysql_fetch_assoc($result);
 		
@@ -27,7 +26,7 @@
 	require_once "init.php";
 	
 	HP::printPageHead("Material für Übungsleiter", "img/top_exercises.png");
-	if( getUser()->isMember())
+	if (getUser()->isMember())
 		printPage();
 	else
 		HP::printLoginError();
@@ -36,18 +35,15 @@
 // ===================================================================
 // ===================================================================
 
-	function printPage()
-	{
+	function printPage() {
 		$result = getDB()->query("SELECT id, category FROM exercises ORDER BY category");
 		
 		$kategorie = "";
 		$count = 0;
 		echo "<ul style='line-height: 20px;'>\n";
-		while( $row = mysql_fetch_assoc($result))
-		{
-			if(strcmp($kategorie, $row['category']) != 0)
-			{
-				if($kategorie != "")
+		while ( $row = mysql_fetch_assoc($result)) {
+			if (strcmp($kategorie, $row['category']) != 0) {
+				if ($kategorie != "")
 					echo "</li>\n";
 				$kategorie = $row['category'];
 				$count = 0;

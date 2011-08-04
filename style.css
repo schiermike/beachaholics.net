@@ -1,8 +1,7 @@
 /* General style definitions */
 
 body 
-{
-	background-color:black;	
+{	
 	color:#000000;
 	font: 10pt/120% "Trebuchet MS", Tahoma, Arial;
 	margin:0px;
@@ -153,18 +152,3 @@ table.tvvparsed font
 	font-size: 8pt;
 }
 
-
-/* error log style definitions */
-
-div.errorlog
-{
-	border-style: dotted;
-	border-width: 1px;
-	border-color: #b00000;
-}
-
-div.errorinfo
-{
-	text-align: left;
-	font-size: 8pt;
-}

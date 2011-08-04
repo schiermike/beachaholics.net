@@ -110,17 +110,17 @@ function printEmailTargetsSelection($userid, $message, $visibility)
 	echo "<input type='hidden' name='message' value='$message'/>\n";
 	echo "<input type='hidden' name='action' value='sendMail'/>\n";
 	
-	$sql= "SELECT SpielerID, Nick, Rights & $visibility AS inGroup FROM Spieler WHERE SpielerID != ".User::getGuestId()." AND SpielerID!=".$userid;
+	$sql= "SELECT id, nickname, roles & $visibility AS inGroup FROM user WHERE id != ".User::$GUEST_ID." AND id!=".$userid;
 	$request = getDB()->query($sql);
 	echo "<table width='100%'><tr>";
 	$count = 0;
 	while($row = mysql_fetch_assoc($request))
 	{
 		echo "<td>";
-		echo "<input type='checkbox' name='emailRecipients[]' value='".$row['SpielerID']."' ";
+		echo "<input type='checkbox' name='emailRecipients[]' value='".$row['id']."' ";
 		if($row['inGroup'] > 0)
 			echo "checked='checked'";
-		echo "/>".$row['Nick'];
+		echo "/>".$row['nickname'];
 		echo "</td>";
 		
 		if(++$count % 6 == 0)
@@ -135,7 +135,7 @@ function printEmailTargetsSelection($userid, $message, $visibility)
 
 function broadcastMessageViaMail($senderid, $emailRecipients, $message)
 {
-	$sql= "SELECT Vorname, Nachname, Email FROM Spieler WHERE SpielerID=".$senderid;
+	$sql= "SELECT firstname, lastname, email FROM user WHERE id=".$senderid;
 	$request = getDB()->query($sql);
 	if(!($row = mysql_fetch_assoc($request)))
 	{
@@ -144,20 +144,20 @@ function broadcastMessageViaMail($senderid, $emailRecipients, $message)
 	}
 	
 	$header = "From: Beachaholics-Guestbook <no-reply@beachaholics.net>\r\n";
-	$header .= "Reply-To: " . $row['Vorname'] . " " . $row['Nachname'] . " <" . $row['Email'] . ">\r\n";
+	$header .= "Reply-To: " . $row['firstname'] . " " . $row['lastname'] . " <" . $row['email'] . ">\r\n";
 	$subject = "Nachricht von beachaholics.net";
 	
 	$recipient = "";
 	
-	$sql= "SELECT Vorname, Nachname, Email FROM Spieler WHERE";
+	$sql= "SELECT firstname, lastname, email FROM user WHERE";
 	foreach($emailRecipients as $receiverid)
-		$sql .= " SpielerID = ".$receiverid." OR";
+		$sql .= " id = ".$receiverid." OR";
 	$sql = substr($sql, 0, strlen($sql)-3);
 		
 	$request = getDB()->query($sql);
 	while($row = mysql_fetch_assoc($request))
 	{
-		$recipient .= $row['Vorname'] . " " . $row['Nachname'] . " <" . $row['Email'] . ">, ";
+		$recipient .= $row['firstname'] . " " . $row['lastname'] . " <" . $row['email'] . ">, ";
 	}
 	$recipient = substr($recipient, 0, strlen($recipient)-2);
 
@@ -255,7 +255,7 @@ function makeGBEntry($userId, $datetime, $message, $visibility, $sticky, $captch
 	if($messageId == NULL)
 	{
 		// check whether no "refresh" has been performed to avoid duplicate entries
-		$sql= "SELECT Nachricht FROM Gaestebuch WHERE SpielerID=".$userId." AND Datum='".$datetime."'";
+		$sql= "SELECT message FROM guestbook WHERE user_id=".$userId." AND time='".$datetime."'";
 		$request = getDB()->query($sql);
 		if($row = mysql_fetch_assoc($request))
 			return true;
@@ -271,9 +271,9 @@ function makeGBEntry($userId, $datetime, $message, $visibility, $sticky, $captch
 	$message = strtr($message, $trans);
 	$sql="";
 	if($messageId == NULL)
-		$sql = "INSERT INTO Gaestebuch (Datum, SpielerID, Nachricht, Sichtbarkeit, Sticky) VALUES ('".$datetime."',".$userId.",'".getDB()->escape($message)."', ".$visibility.", ".$sticky.")";
+		$sql = "INSERT INTO guestbook (time, user_id, message, visibility, sticky) VALUES ('".$datetime."',".$userId.",'".getDB()->escape($message)."', ".$visibility.", ".$sticky.")";
 	else
-		$sql = "UPDATE Gaestebuch SET Nachricht='".getDB()->escape($message)."', Sichtbarkeit=".$visibility.", Sticky=".$sticky." WHERE SpielerID=".$userId." AND NachrichtID=".$messageId;
+		$sql = "UPDATE guestbook SET message='".getDB()->escape($message)."', visibility=".$visibility.", sticky=".$sticky." WHERE user_id=".$userId." AND id=".$messageId;
 		
 	$request = getDB()->query($sql);
 	
@@ -285,9 +285,9 @@ function makeGBEntry($userId, $datetime, $message, $visibility, $sticky, $captch
 function deleteEntry($messageId)
 {
 	if(getUser()->isItMe())
-		getDB()->query("DELETE FROM Gaestebuch WHERE NachrichtID=".$messageId);
+		getDB()->query("DELETE FROM guestbook WHERE id=".$messageId);
 	else if( !getUser()->isGuest() )
-		getDB()->query("DELETE FROM Gaestebuch WHERE SpielerID=".getUser()->id." AND NachrichtID=".$messageId);
+		getDB()->query("DELETE FROM guestbook WHERE user_id=".getUser()->id." AND id=".$messageId);
 }
 
 // -----------------------------------------------------------------------------------------
@@ -318,39 +318,16 @@ function searchEntry($searchString)
 	
 	$searchString = str_replace("'", "\"", $searchString);
 	
-	$request = getDB()->query("SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit
-		FROM Gaestebuch JOIN Spieler USING(SpielerID)
-		WHERE ( Sichtbarkeit = 0 OR (Sichtbarkeit & ".getUser()->roles.") > 0 )
-		AND Nachricht LIKE '%".getDB()->escape($searchString)."%' 
-		ORDER BY Datum DESC");
+	$request = getDB()->query("SELECT guestbook.id AS guestbook_id, nickname, time, message, user_id, visibility, sticky
+		FROM guestbook JOIN user ON user_id=user.id
+		WHERE ( visibility = 0 OR (visibility & ".getUser()->roles.") > 0 )
+		AND message LIKE '%".getDB()->escape($searchString)."%' 
+		ORDER BY time DESC");
 		
 	echo "\n<table id='guestbook' cellspacing='0' cellpadding='0'>";
 	$rowc=0;
 	while($row = mysql_fetch_assoc($request))
-	{
-		echo "<tr class='rowColor2'>";
-			echo "<td class='name'>".HP::toHtml($row['Nick'])."</td>\n";
-
-			echo "<td class='action'>";
-				echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']);
-				
-			echo "</td>";
-			echo "<td class='date'>";
-				echo HP::formatDate($row['Datum'], true)." <img src='img/clock.png' alt='' title='Zeitpunkt des Eintrags'/> - #".$row['NachrichtID'];
-			echo "</td>\n";
-		echo "</tr>";
-		
-		echo "<tr class='rowColor0'>";
-			echo "<td class='picture'><img src='userpic.php?id=".$row['SpielerID']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/></td>\n";
-			$message = $row['Nachricht'];
-			$message = convertKeywords(HP::toHtml($message, true));
-			$message = str_ireplace($searchString, "<font color='red'>".$searchString."</font>", $message);
-			echo "<td colspan='2' class='message'>".$message."</td>\n";
-		echo "</tr>\n";
-		
-		echo "<tr class='empty'><td colspan='2'/></tr>";
-		$rowc++;
-	}
+		printGuestbookRow($row);
 	echo "</table>";
 }
 
@@ -365,14 +342,14 @@ function printEntryField($messageId = NULL)
 	$buttonLabel="Eintragen";
 	if($messageId != NULL)
 	{
-		$sql= "SELECT SpielerID, Nachricht, Sichtbarkeit, Sticky FROM Gaestebuch WHERE NachrichtID='".$messageId."'";
+		$sql= "SELECT user_id, message, visibility, sticky FROM guestbook WHERE id=".$messageId;
 		$request = getDB()->query($sql);
 		if($row = mysql_fetch_assoc($request))
 		{
-			$userId = $row['SpielerID'];
-			$messageText = $row['Nachricht'];
-			$visibility = $row['Sichtbarkeit'];
-			$sticky = $row['Sticky'];
+			$userId = $row['user_id'];
+			$messageText = $row['message'];
+			$visibility = $row['visibility'];
+			$sticky = $row['sticky'];
 		}
 		$buttonLabel="Bestätigen";
 	}
@@ -486,32 +463,32 @@ function printGuestbookRow($row)
 {
 	echo "<tr>";
 		echo "<td style='border-width: 1px; border-color: black; border-top-style: solid; border-bottom-style: solid; border-left-style: solid; vertical-align: top; background-color: #d0d0d0;'>";
-			echo "<img src='userpic.php?id=".$row['SpielerID']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
+			echo "<img src='userpic.php?id=".$row['user_id']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
 		echo "</td>";
 		echo "<td style='border-width: 1px; border-color: black; border-top-style: solid; border-bottom-style: solid; border-right-style: solid;'>";
 
 			echo "<table cellpadding='0' cellspacing='0' width='100%' height='136'>";
 				echo "<tr>";
 					echo "<td style='text-align: left; font: 8pt/120% sans-serif; padding-left: 3px; background-color: #aaaaaa;'>";
-						echo "<b>".HP::toHtml($row['Nick'])."</b>&nbsp;&nbsp;";
+						echo "<b>".HP::toHtml($row['nickname'])."</b>&nbsp;&nbsp;";
 
-						if($row['SpielerID'] == getUser()->id && getUser()->id != User::getGuestId() || getUser()->isItMe())
+						if($row['user_id'] == getUser()->id && !getUser()->isGuest() || getUser()->isItMe())
 						{
-							$url = $_SERVER['PHP_SELF']."?action=printEntryField&messageId=".$row['NachrichtID'];
+							$url = $_SERVER['PHP_SELF']."?action=printEntryField&messageId=".$row['guestbook_id'];
 							echo "&nbsp;<a href='".$url."'><img src='img/edit_gb_entry.png' alt='editieren' title='Eintrag editieren'/></a>";
-							$url = $_SERVER['PHP_SELF']."?action=deleteEntry&messageId=".$row['NachrichtID'];
+							$url = $_SERVER['PHP_SELF']."?action=deleteEntry&messageId=".$row['guestbook_id'];
 							echo "&nbsp;<a href='".$url."'><img src='img/delete_gb_entry.png' alt='löschen' title='Eintrag löschen'/></a>";
 						}
 					echo "</td>";
 					echo "<td style='text-align:right; font: 8pt/120% sans-serif; white-space: nowrap; background-color: #aaaaaa;'>";
-						if ($row['Sticky'] == true)
+						if ($row['sticky'] == true)
 							echo "<img src='img/sticky.gif' alt='Sticky message' title='Wichtige Nachricht'/>&nbsp;&nbsp;";
-						echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['Sichtbarkeit']) . ",&nbsp;&nbsp;";
-						echo HP::formatDate($row['Datum'], true)." <img src='img/clock.png' alt='' title='Zeitpunkt des Eintrags'/> - #".$row['NachrichtID'];
+						echo "<img src='img/groupkey.png' alt='' title='Sichtbarkeit der Nachricht'/> ".User::roleToString($row['visibility']) . ",&nbsp;&nbsp;";
+						echo HP::formatDate($row['time'], true)." <img src='img/clock.png' alt='' title='Zeitpunkt des Eintrags'/> - #".$row['guestbook_id'];
 					echo "</td>\n";
 				echo "</tr>";
 				echo "<tr>";
-					echo "<td colspan='2' style='width: 100%; height: 100%; text-align: left; padding-left: 10px; background-color: #e0e0e0;'>".convertKeywords(HP::toHtml($row['Nachricht'], true))."</td>\n";
+					echo "<td colspan='2' style='width: 100%; height: 100%; text-align: left; padding-left: 10px; background-color: #e0e0e0;'>".convertKeywords(HP::toHtml($row['message'], true))."</td>\n";
 				echo "</tr>\n";
 			echo "</table>";
 
@@ -527,7 +504,7 @@ function printGuestbook()
 	global $msg_offset, $action;
 
 	// Anzahl der Eintraege erfragen
-	$sql = "SELECT COUNT(*) FROM Gaestebuch WHERE (Sichtbarkeit & ".getUser()->roles.") > 0 OR Sichtbarkeit=0";
+	$sql = "SELECT COUNT(*) FROM guestbook WHERE (visibility & ".getUser()->roles.") > 0 OR visibility=0";
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	$num_rows = $row['COUNT(*)'];
@@ -537,10 +514,10 @@ function printGuestbook()
 	
 	printNavigationField($msg_offset, $num_rows);
 	
-	$sql = "SELECT NachrichtID, Nick, Datum, Nachricht, SpielerID, Sichtbarkeit, Sticky
-		FROM Gaestebuch JOIN Spieler USING(SpielerID)
-		WHERE Sichtbarkeit = 0 OR (Sichtbarkeit & ".getUser()->roles.") > 0 
-		ORDER BY Sticky DESC, Datum DESC LIMIT ".$msg_offset*getUser()->getGbEntriesPerPage()." , ".getUser()->getGbEntriesPerPage();
+	$sql = "SELECT guestbook.id AS guestbook_id, nickname, time, message, user_id, visibility, sticky
+		FROM guestbook JOIN user ON user_id=user.id
+		WHERE visibility = 0 OR (visibility & ".getUser()->roles.") > 0 
+		ORDER BY sticky DESC, time DESC LIMIT ".$msg_offset*getUser()->getGbEntriesPerPage()." , ".getUser()->getGbEntriesPerPage();
 	
 	$request = getDB()->query($sql);
 	

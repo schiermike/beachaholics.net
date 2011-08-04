@@ -31,7 +31,7 @@
 // ===================================================================
 
 	function printSelectUser()	{
-		$sql = "SELECT SpielerID, Nachname, Vorname, Nick FROM Spieler WHERE Rights>=0 ORDER BY Nick ASC";
+		$sql = "SELECT id, lastname, firstname, nickname FROM user WHERE roles>=0 ORDER BY nickname ASC";
 		$request = getDB()->query($sql);
 		
 		HP::printPageHead("Authentifizierung", "img/top_changepass.png");
@@ -42,7 +42,7 @@
 		echo "<select id='userid' name='userid' style='width: 200px;' onkeypress='if (event.keyCode==13) this.form.submit();' onblur='this.form.submit();'>\n";
 		echo "<option value='-1'>Benutzer auswählen</option>\n";
 		while ($row = mysql_fetch_assoc($request))
-			echo "<option value='".$row['SpielerID']."'>".HP::toHtml($row['Nick'])."</option>\n";
+			echo "<option value='".$row['id']."'>".HP::toHtml($row['nickname'])."</option>\n";
 					
 		echo "</select>\n";
 		echo "</p>";
@@ -57,7 +57,7 @@
 // ===================================================================
 	
 	function printPasswordQuestion($userid, $firstAttempt) {
-		$sql = "SELECT Nachname, Vorname FROM Spieler WHERE SpielerID=" . getDB()->escape($userid);
+		$sql = "SELECT lastname, firstname FROM user WHERE id=" . getDB()->escape($userid);
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		if ($row === false) {
@@ -68,7 +68,7 @@
 		HP::printPageHead("Authentifizierung", "img/top_changepass.png");
 		
 		echo "<center><br/><br/><br/><br/>";
-		echo "Benutzer <b>" . $row['Vorname'] . " " . $row['Nachname'] . "</b>\n";
+		echo "Benutzer <b>" . $row['firstname'] . " " . $row['lastname'] . "</b>\n";
 		echo "<p style='text-align:center'>";
 		echo "<input type='password' id='password' name='password' style='width: 200px;' onkeypress='{setResponse(); if (event.keyCode==13) document.getElementById(\"loginForm\").submit();}'/>";
 		echo "</p>\n";
@@ -96,7 +96,7 @@
 	}
 	
 	function checkResponse($userid, $response) {
-		$sql = "SELECT Password FROM Spieler WHERE SpielerID=" . getDB()->escape($userid);
+		$sql = "SELECT password FROM user WHERE id=" . getDB()->escape($userid);
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		if ($row === false)
@@ -109,7 +109,7 @@
 		
 		$response = base64_decode($response);
 		
-		return $response == rc4Crypt($row['Password'], $challenge);
+		return $response == rc4Crypt($row['password'], $challenge);
 	}
 	
 	/**
