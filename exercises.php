@@ -11,15 +11,16 @@
 		
 		header('Date: '.gmdate('D, d M Y H:i:s') . ' GMT');
 	
-		$result = getDB()->query("SELECT Pdf FROM Uebungen WHERE UebungID=".$pdfId);
+		$result = getDB()->query("SELECT id, category, pdf FROM exercises WHERE id=".$pdfId);
 		if(mysql_num_rows($result) == 0)
 			exit();
-		list($pdfData) = mysql_fetch_row($result);
+		$row = mysql_fetch_assoc($result);
 		
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-		header('Content-Length: '.strlen($pdfData));
-	   	header("Content-type: application/pdf");
-	   	echo $pdfData;		 
+		header('Content-Length: '.strlen($row['pdf']));
+   	header('Content-type: application/pdf');
+		header('Content-Disposition: attachment; filename="' . $row['id'] . '_' . $row['category'] . '.pdf"');
+   	echo $row['pdf'];		 
 		exit();
 	}
 
@@ -37,18 +38,18 @@
 
 	function printPage()
 	{
-		$result = getDB()->query("SELECT UebungID, Kategorie FROM Uebungen ORDER BY Kategorie");
+		$result = getDB()->query("SELECT id, category FROM exercises ORDER BY category");
 		
 		$kategorie = "";
 		$count = 0;
 		echo "<ul style='line-height: 20px;'>\n";
 		while( $row = mysql_fetch_assoc($result))
 		{
-			if(strcmp($kategorie, $row['Kategorie']) != 0)
+			if(strcmp($kategorie, $row['category']) != 0)
 			{
 				if($kategorie != "")
 					echo "</li>\n";
-				$kategorie = $row['Kategorie'];
+				$kategorie = $row['category'];
 				$count = 0;
 				
 				echo "<li>";
@@ -56,7 +57,7 @@
 			}
 			$count++;
 			
-			echo "<a href='".$_SERVER['PHP_SELF']."?getPdf=".$row['UebungID']."'>$count</a>&nbsp;&nbsp;";
+			echo "<a href='".$_SERVER['PHP_SELF']."?getPdf=".$row['id']."'>$count</a>&nbsp;&nbsp;";
 		}
 		echo "</ul>";
 	}

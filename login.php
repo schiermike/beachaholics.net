@@ -49,6 +49,7 @@
 		echo "</center></form>\n";
 		echo "<br/><br/>";
 		echo "<script type='text/javascript'>document.getElementById('userid').focus();</script>";
+		echo "<noscript><p><center><font color='#ff0000'>Bitte Javascript aktivieren. Sonst klappt die Anmeldung nicht!</font><br/><a href='http://www.werle.com/helps/javascri.htm'target='_blank'>Howto</a></center></p></noscript>";
 		
 		HP::printPageTail();
 	}
@@ -76,13 +77,14 @@
 		echo "<form id='loginForm' method='get' action='".$_SERVER['PHP_SELF']."' onsubmit='setResponse()'>\n";
 		echo "<input type='hidden' id='userid' name='userid' value='" . $userid . "'/>\n";
 		echo "<input type='hidden' id='response' name='response' value=''/>\n";
-		echo "<p style='text-align:center'><input type='submit' value='Login' style='width: 200px;'/></p>\n";
+//		echo "<p style='text-align:center'><input type='submit' value='Login' style='width: 200px;'/></p>\n";
 		echo "</form>";
 		if (!$firstAttempt)
 			echo "<font color='#ff0000'><b>Login fehlgeschlagen!<b></font>\n";
 		echo "</center>";
 		echo "<br/><br/>";
 		echo "<script>document.getElementById('password').focus();</script>";
+		echo "<noscript><p><center><font color='#ff0000'>Bitte Javascript aktivieren. Sonst klappt die Anmeldung nicht!</font><br/><a href='http://www.werle.com/helps/javascri.htm' target='_blank'>Howto</a></center></p></noscript>";
 		
 		HP::printPageTail();
 	}

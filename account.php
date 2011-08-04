@@ -3,13 +3,13 @@
 	define('COLOR_OUT','#ff0000');
 	define('COLOR_IN','#008800');
 	
-	global $type;
-	if($type != 'print' && $type != 'download')
+	$hp_envelope = !isset($_GET['type']) || ($_GET['type'] != 'print' && $_GET['type'] != 'download')
+	if($hp_envelope)
 		HP::printPageHead("Kontoübersicht", "img/top_account.png");
 	
 	printPage();
 
-	if($type != 'print' && $type != 'download')
+	if($hp_envelope)
 		HP::printPageTail();
 		
 // ===================================================================
@@ -17,19 +17,13 @@
 		
 	function printPage()
 	{
-		global $startDate, $endDate, $id, $date, $amount, $comment, $type;
 		if(!getUser()->isVorstand())
 		{
 			HP::printLoginError();
 			return;
 		}
-		
-		if($startDate!=NULL)
-			$_SESSION['accountSelectionStartDate']=$startDate;
-		if($endDate!=NULL)
-			$_SESSION['accountSelectionEndDate']=$endDate;
 				
-		switch($type)
+		switch($_GET['type'])
 		{
 			case 'add_or_modify_entry':
 				addOrModifyEntry($id, $date, $amount, $comment);
@@ -69,7 +63,7 @@
 	
 	function deleteEntry($id)
 	{
-		$sql="DELETE FROM Konto WHERE BuchungID=".$id." AND UserChecked IS NULL";
+		$sql="DELETE FROM account WHERE id=".$id." AND checked_by IS NULL";
 		
 		if(getDB()->query($sql))
 		{
@@ -101,7 +95,7 @@
 	
 	function confirmEntry($id)
 	{
-		$sql = "UPDATE Konto SET UserChecked=".getUser()->id." WHERE BuchungID=".$id;
+		$sql = "UPDATE account SET checked_by=".getUser()->id." WHERE id=".$id;
 		
 		if(getDB()->query($sql) && mysql_affected_rows()==1)
 		{
@@ -122,14 +116,14 @@
 	
 	function sendDownload($id)
 	{
-		$sql="SELECT Anhang, AnhangName, AnhangType, AnhangSize FROM Konto WHERE BuchungID=".$id;
+		$sql="SELECT attachment, attach_name, attach_type, attach_size FROM account WHERE id=".$id;
 		$result = mysql_query($sql);
 		$row = mysql_fetch_assoc($result);
 		
-		header("Content-length: ".$row['AnhangSize']);
-		header("Content-type: ".$row['AnhangType']);
-		header("Content-Disposition: attachment; filename=".$row['AnhangName']);
-		echo $row['Anhang'];
+		header("Content-length: ".$row['attach_size']);
+		header("Content-type: ".$row['attach_type']);
+		header("Content-Disposition: attachment; filename=".$row['attach_name']);
+		echo $row['attachment'];
 		
 		exit();
 	}
@@ -138,11 +132,11 @@
 	{
 		printToolBar();
 		
-		$sql = "SELECT Nachname, Vorname FROM Spieler JOIN Konto ON Spieler.SpielerID=Konto.UserEntered WHERE Konto.BuchungID=".$id;
+		$sql = "SELECT lastname, firstname FROM user JOIN account ON user.id=account.created_by WHERE account.id=".$id;
 		$result = getDB()->query($sql);
 		$row = mysql_fetch_assoc($result);
 		
-		echo "<p style='text-align:center'><b>Kontoeintrag von ".$row['Nachname']." ".$row['Vorname']." absegnen</b></p>";
+		echo "<p style='text-align:center'><b>Kontoeintrag von ".$row['lastname']." ".$row['firstname']." absegnen</b></p>";
 		echo "<form name='form1' method='get' action='".$_SERVER['PHP_SELF']."'>";
 			echo "<p style='text-align:center'>";
 			echo "<input type='submit' name='Submit' value='Bestätigen'/>";
@@ -202,9 +196,9 @@
 		}
 
 		if($id == NULL)
-			$sql = "INSERT INTO Konto (Datum, Vermerk, Betrag, UserEntered, Anhang, AnhangName, AnhangType, AnhangSize) VALUES ('".$date."','".$comment."',".$amount.",".getUser()->id.", ".$attachment.", ".$attachmentName.", ".$attachmentType.", ".$attachmentSize.")";
+			$sql = "INSERT INTO account (date, note, amount, created_by, attachment, attach_name, attach_type, attach_size) VALUES ('".$date."','".$comment."',".$amount.",".getUser()->id.", ".$attachment.", ".$attachmentName.", ".$attachmentType.", ".$attachmentSize.")";
 		else
-			$sql = "UPDATE Konto SET Datum='".$date."', Vermerk='".$comment."', Betrag='".$amount."', Anhang=".$attachment.", AnhangName=".$attachmentName.", AnhangType=".$attachmentType.", AnhangSize=".$attachmentSize.", UserEntered=".getUser()->id.", UserChecked=NULL WHERE BuchungID=".$id;
+			$sql = "UPDATE account SET date='".$date."', note='".$comment."', amount='".$amount."', attachment=".$attachment.", attach_name=".$attachmentName.", attach_type=".$attachmentType.", attach_size=".$attachmentSize.", created_by=".getUser()->id.", checked_by=NULL WHERE id=".$id;
 		
 		if(getDB()->query($sql) && mysql_affected_rows()==1)
 		{
@@ -217,12 +211,12 @@
 	{
 		if($id!=NULL && $date==NULL)
 		{
-			$sql = "SELECT Datum, Vermerk, Betrag FROM Konto WHERE BuchungID=".$id;
+			$sql = "SELECT date, note, amount FROM account WHERE id=".$id;
 			$request = getDB()->query($sql);
 			$row = mysql_fetch_assoc($request);
-			$date=$row['Datum'];
-			$amount=$row['Betrag'];
-			$comment=$row['Vermerk'];
+			$date=$row['date'];
+			$amount=$row['amount'];
+			$comment=$row['note'];
 		}
 		
 		echo "<p style='text-align:center'><b>";
@@ -277,16 +271,16 @@
 		echo "<h2 style='text-align:center'>Beachaholics Kontoübersicht</h2><br/>\n";
 		
 		$zeitraum="alles";
-		$sql = "SELECT BuchungID, Datum, Vermerk, Betrag FROM Konto ";
-		if($_SESSION['accountSelectionStartDate']!=NULL && $_SESSION['accountSelectionEndDate']!=NULL)
+		$sql = "SELECT id, date, note, amount FROM account ";
+		if(isset($_SESSION['accountSelectionStartDate']) && isset($_SESSION['accountSelectionEndDate']))
 		{
-			$sql .= "WHERE Datum>='".$_SESSION['accountSelectionStartDate']."' AND Datum<='".$_SESSION['accountSelectionEndDate']."' ";
+			$sql .= "WHERE date>='".$_SESSION['accountSelectionStartDate']."' AND date<='".$_SESSION['accountSelectionEndDate']."' ";
 			$zeitraum = "von ".$_SESSION['accountSelectionStartDate']." bis ".$_SESSION['accountSelectionEndDate'];
 		} 
-		$sql .= "ORDER BY Datum, Vermerk";
+		$sql .= "ORDER BY date, note";
 		$request = getDB()->query($sql);
 		
-		echo "<div style='text-align:right'>User: ".getUser()->getName()." / BA-Indoor-System<br/>";
+		echo "<div style='text-align:right'>User: ".getUser()->getName()."<br/>";
 		echo "generiert: ".HP::getPHPTime()."<br/>";
 		echo "Zeitraum: ".$zeitraum; 
 		echo "</div><hr/>\n";
@@ -303,13 +297,13 @@
 		{
 			$rowOutput="<tr>";
 			
-			$rowOutput.="<td>".$row['Datum']."</td>";
-			$rowOutput.="<td style='padding-left:30px;'>".$row['Vermerk']."</td>";
+			$rowOutput.="<td>".$row['date']."</td>";
+			$rowOutput.="<td style='padding-left:30px;'>".$row['note']."</td>";
 				
-			$color= $row['Betrag']<0 ? COLOR_OUT : COLOR_IN;
-			$rowOutput.="<td style='padding-right:30px; text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($row['Betrag'])."</font></td>";
+			$color= $row['amount']<0 ? COLOR_OUT : COLOR_IN;
+			$rowOutput.="<td style='padding-right:30px; text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($row['amount'])."</font></td>";
 				
-			$account+=$row['Betrag'];
+			$account+=$row['amount'];
 			$color= $account<0 ? COLOR_OUT : COLOR_IN;
 			$rowOutput.="<td style='text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($account)."</font></td>";
 			
@@ -330,11 +324,11 @@
 	{
 		global $accountSelectionStartDate, $accountSelectionEndDate;			
 		
-		$sql = "SELECT BuchungID, Datum, Vermerk, Betrag, AnhangName, UserEntered, s1.Nick as UserEnteredNick, UserChecked, s2.Nick AS UserCheckedNick ";
-		$sql .= "FROM Konto JOIN Spieler s1 ON s1.SpielerID=UserEntered LEFT JOIN Spieler s2 ON s2.SpielerID=UserChecked ";
+		$sql = "SELECT account.id as account_id, date, note, amount, attach_name, created_by, u1.nickname as created_by_nick, checked_by, u2.nickname AS checked_by_nick ";
+		$sql .= "FROM account JOIN user u1 ON u1.id=created_by LEFT JOIN user u2 ON u2.id=checked_by ";
 		if($accountSelectionStartDate!=NULL && $accountSelectionEndDate!=NULL)
-			$sql .= "WHERE Datum>='".$accountSelectionStartDate."' AND Datum<='".$accountSelectionEndDate."' "; 
-		$sql .= "ORDER BY Datum, Vermerk";
+			$sql .= "WHERE date>='".$accountSelectionStartDate."' AND date<='".$accountSelectionEndDate."' "; 
+		$sql .= "ORDER BY date, note";
 		$request = getDB()->query($sql);
 
 		echo "<table cellspacing='0' cellpadding='3' width='100%'>";
@@ -353,44 +347,43 @@
 		while($row = mysql_fetch_assoc($request))
 		{
 			$rowOutput="";
-			
-			if($toDeleteId==$row['BuchungID'])
+			if($toDeleteId==$row['account_id'])
 				$rowOutput.="<tr class='rowColorSelected'>";
-			else if($row['Betrag'] < 0)
+			else if($row['amount'] < 0)
 				$rowOutput.="<tr class='rowColor0'>";
 			else
 				$rowOutput.="<tr class='rowColor1'>";
 			
-				$rowOutput.="<td style='white-space:nowrap;'>".$row['Datum']."</td>";
-				$rowOutput.="<td style='padding-left:10px;'>".nl2br($row['Vermerk'])."</td>";
+				$rowOutput.="<td style='white-space:nowrap;'>".$row['date']."</td>";
+				$rowOutput.="<td style='padding-left:10px;'>".nl2br($row['note'])."</td>";
 				
-				$color= $row['Betrag']<0 ? COLOR_OUT : COLOR_IN;
-				$rowOutput.="<td style='padding-right:10px; text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($row['Betrag'])."</font></td>";
+				$color= $row['amount']<0 ? COLOR_OUT : COLOR_IN;
+				$rowOutput.="<td style='padding-right:10px; text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($row['amount'])."</font></td>";
 				
-				$account+=$row['Betrag'];
+				$account+=$row['amount'];
 				$color= $account<0 ? COLOR_OUT : COLOR_IN;
 				$rowOutput.="<td style='padding-right:10px; text-align:right' nowrap='nowrap'><font color='".$color."'>".echoMoney($account)."</font></td>";
 				
-				if($row['AnhangName'])
-					$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=download&amp;id=".$row['BuchungID']."'><img src='img/attached.gif' alt='' title='".$row['AnhangName']."'/></a></td>";
+				if($row['attach_name'])
+					$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=download&amp;id=".$row['account_id']."'><img src='img/attached.gif' alt='' title='".$row['attach_name']."'/></a></td>";
 				else
 					$rowOutput.="<td></td>";
 				
-				$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=print_edit_entry&amp;id=".$row['BuchungID']."'><img src='img/money_edit.png' alt='editieren' title='diesen Kontoeintrag editieren'/></a></td>";
-				if($row['UserChecked']==NULL)
-					$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=ask_delete_entry&amp;id=".$row['BuchungID']."'><img src='img/money_delete.png' alt='löschen' title='diesen Kontoeintrag löschen'/></a></td>";
+				$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=print_edit_entry&amp;id=".$row['account_id']."'><img src='img/money_edit.png' alt='editieren' title='diesen Kontoeintrag editieren'/></a></td>";
+				if($row['checked_by']==NULL)
+					$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=ask_delete_entry&amp;id=".$row['account_id']."'><img src='img/money_delete.png' alt='löschen' title='diesen Kontoeintrag löschen'/></a></td>";
 				else
 					$rowOutput.="<td></td>";
 				
-				if($row['UserChecked']==NULL)
+				if($row['checked_by']==NULL)
 				{
-					if($row['UserEntered'] == getUser()->id)
+					if($row['created_by'] == getUser()->id)
 						$rowOutput.="<td><img src='img/warn.png' alt='pending' title='Eintrag muss zuerst von einem anderen Vorstandsmitglied abgesegnet werden'/></td>";
 					else
-						$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=ask_confirm_entry&amp;id=".$row['BuchungID']."'><img src='img/warn_go.png' alt='markieren' title='Eintrag von ".$row['UserEnteredNick']." als geprüft markieren'/></a></td>";
+						$rowOutput.="<td><a href='".$_SERVER['PHP_SELF']."?type=ask_confirm_entry&amp;id=".$row['account_id']."'><img src='img/warn_go.png' alt='markieren' title='Eintrag von ".$row['created_by_nick']." als geprüft markieren'/></a></td>";
 				}
 				else
-					$rowOutput.="<td><img src='img/ok.png' alt='ok' title='Eintrag von ".$row['UserEnteredNick']." geprüft von ".$row['UserCheckedNick']."'/></td>";
+					$rowOutput.="<td><img src='img/ok.png' alt='ok' title='Eintrag von ".$row['created_by_nick']." geprüft von ".$row['checked_by_nick']."'/></td>";
 				
 			$rowOutput.="</tr>\n";
 			
@@ -407,20 +400,20 @@
 	
 	function printAccountSummary()
 	{
-		$sql = "SELECT 'Ausgaben' AS Name, SUM(Betrag) AS Betrag FROM Konto WHERE Betrag<0 
-			UNION SELECT 'Einnahmen' AS Name, SUM(Betrag) AS Betrag FROM Konto WHERE Betrag>0";
+		$sql = "SELECT 'Ausgaben' AS name, SUM(amount) AS amount FROM account WHERE amount<0 
+			UNION SELECT 'Einnahmen' AS name, SUM(amount) AS amount FROM account WHERE amount>0";
 		$request = getDB()->query($sql);
 		$in=0;
 		$out=0;
 		while($row = mysql_fetch_assoc($request))
 		{
-			switch($row['Name'])
+			switch($row['name'])
 			{
 				case 'Ausgaben':
-					$out=$row['Betrag'];
+					$out=$row['amount'];
 					break;
 				case 'Einnahmen':
-					$in=$row['Betrag'];
+					$in=$row['amount'];
 					break;
 			}
 		}

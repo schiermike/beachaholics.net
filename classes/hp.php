@@ -21,9 +21,9 @@ class HP
 		echo "<head>\n
 			<title>Beachvolleyballverein Beachaholics Kufstein</title>\n
 			<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n
-			<link href='/style.css' rel='stylesheet' type='text/css'/>\n";
+			<link href='style.css' rel='stylesheet' type='text/css'/>\n";
 			if($stylesheet) 
-				echo "<link href='/".$stylesheet."' rel='stylesheet' type='text/css'/>\n";	
+				echo "<link href='".$stylesheet."' rel='stylesheet' type='text/css'/>\n";	
 			echo "<link rel='SHORTCUT ICON' href='favicon.ico'/>\n";
 			echo "<script type='text/javascript' src='calendar.js'></script>\n";
 			echo "<script type='text/javascript' src='main.js'></script>\n";
@@ -75,7 +75,7 @@ class HP
 		echo "<div style='position:absolute; top: 70px; left: 50%; margin-left: 400px; width: 100px; height: 112px; padding: 15px; background-color: white;'>";
 			echo "<div style='position:absolute; top: -20px; left: 0px; width: 100%; height: 20px; background-image: url(\"img/trans/top.png\"); background-repeat: repeat-x;'></div>\n";
 			echo "<div style='position:absolute; top: -20px; left: 100%; width: 20px; height: 20px; background-image: url(\"img/trans/top_right.png\"); background-repeat: no-repeat;'></div>\n";
-			echo "<a href='/'><img src='/img/beachaholics.png' alt=''/></a>";
+			echo "<a href='index.php'><img src='img/beachaholics.png' alt=''/></a>";
 			echo "<div style='position:absolute; top: 0px; left: 100%; width: 20px; height: 100%; background-image: url(\"img/trans/right.png\"); background-repeat: repeat-y;'></div>\n";
 			echo "<div style='position:absolute; top: 100%; left: 0px; width: 100%; height: 20px; background-image: url(\"img/trans/bottom.png\"); background-repeat: repeat-x;'></div>\n";
 			echo "<div style='position:absolute; top: 100%; left: 100%; width: 20px; height: 20px; background-image: url(\"img/trans/bottom_right.png\"); background-repeat: no-repeat;'></div>\n";
@@ -100,7 +100,7 @@ class HP
 	{
 		echo "<div style='position:absolute; top: 250px; left: 50%; margin-left: 435px; width: 85px; padding: 5px; background-color: white; font-size: 8pt; text-align: left;'>";
 
-		echo "<img src='/img/user.png' alt='User:' title='Online Benutzer'/> ";			
+		echo "<img src='img/user.png' alt='User:' title='Online Benutzer'/> ";			
 		if(!getUser()->isGuest())
 		{
 			echo "<b>".HP::toHtml(getUser()->nickName)."</b>";
@@ -134,62 +134,62 @@ class HP
 		else
 			echo "<div style='position:absolute; z-index: 1; top: 70px; width: 24px; left: 50%; margin-left: -444px; padding: 10px; background-color: white;'>";
 		
-		echo "<a href='/training.php'><img src='/img/navi/training.gif' alt='Events' title='Events'/></a>\n";
-		echo "<a href='/ranking.php'><img src='/img/navi/ranking.png' alt='Platzierung' title='Platzierung'/></a>\n";
+		echo "<a href='training.php'><img src='img/navi/training.gif' alt='Events' title='Events'/></a>\n";
+		echo "<a href='ranking.php'><img src='img/navi/ranking.png' alt='Platzierung' title='Platzierung'/></a>\n";
 		if(!getUser()->isGuest())
 		{
-			echo "<a href='/people.php'><img src='/img/navi/spieler.png' alt='Spielerübersicht' title='Spielerübersicht'/></a>\n";
+			echo "<a href='people.php'><img src='img/navi/spieler.png' alt='Spielerübersicht' title='Spielerübersicht'/></a>\n";
 		}
 
 		
-		echo "<a href='/gb.php'><img src='/img/navi/messageboard.png' alt='Pinnwand' title='Pinnwand'/></a>\n";
+		echo "<a href='gb.php'><img src='img/navi/messageboard.png' alt='Pinnwand' title='Pinnwand'/></a>\n";
 		if(getUser()->isMember())
 		{
-			echo "<a href='/wiki.php'><img src='/img/navi/wiki.png' alt='Wiki' title='Wiki'/></a>\n";
+			echo "<a href='wiki.php'><img src='img/navi/wiki.png' alt='Wiki' title='Wiki'/></a>\n";
 		}
 			if(getUser()->isMember())
 		{
-			echo "<a href='/exercises.php'><img src='/img/navi/exercises.png' alt='Übungen' title='Übungen'/></a>\n";
+			echo "<a href='exercises.php'><img src='img/navi/exercises.png' alt='Übungen' title='Übungen'/></a>\n";
 		}
-		echo "<a href='/gallery.php'><img src='/img/navi/gallery.png' alt='Gallerie' title='Bildergallerie'/></a>\n";
+		echo "<a href='gallery.php'><img src='img/navi/gallery.png' alt='Gallerie' title='Bildergallerie'/></a>\n";
 		if(getUser()->isMember())
 		{
-			echo "<a href='/files.php'><img src='/img/navi/files.png' alt='Dateien' title='Dateien'/></a>\n";
+			echo "<a href='files.php'><img src='img/navi/files.png' alt='Dateien' title='Dateien'/></a>\n";
 		}
 		
 		if(getUser()->isAuthorized(User::$ROLE_INDOOR_MEN | User::$ROLE_INDOOR_WOMEN))
 		{
-			echo "<a href='/drivingcosts.php'><img src='/img/navi/fahrten.png' alt='Fahrtkostenabrechnung' title='Fahrtkostenabrechnung'/></a>\n";
+			echo "<a href='drivingcosts.php'><img src='img/navi/fahrten.png' alt='Fahrtkostenabrechnung' title='Fahrtkostenabrechnung'/></a>\n";
 		}
 		if(getUser()->isVorstand())
 		{
-			echo "<a href='/account.php'><img src='/img/navi/konto.png' alt='Kontoübersicht' title='Kontoübersicht'/></a>\n";
+			echo "<a href='account.php'><img src='img/navi/konto.png' alt='Kontoübersicht' title='Kontoübersicht'/></a>\n";
 		}
 			
-		echo "<a href='/forecast.php'><img src='/img/navi/weather.png' alt='Wetter' title='Wettervorhersage'/></a>\n";
-		echo "<a href='/plan.php'><img src='/img/navi/anfahrt.gif' alt='Anfahrt' title='Anfahrt'/></a>\n";
-		echo "<a href='/links.php'><img src='/img/navi/link.png' alt='Links' title='Links'/></a>\n";
+		echo "<a href='forecast.php'><img src='img/navi/weather.png' alt='Wetter' title='Wettervorhersage'/></a>\n";
+		echo "<a href='plan.php'><img src='img/navi/anfahrt.gif' alt='Anfahrt' title='Anfahrt'/></a>\n";
+		echo "<a href='links.php'><img src='img/navi/link.png' alt='Links' title='Links'/></a>\n";
 
 		
 		if(getUser()->isItMe())
 		{
 			if(getSession()->debug)
-				echo "<a href='".$_SERVER['PHP_SELF']."?debug=off'><img src='/img/navi/debugoff.png' alt='' title='hide debug information'/></a>\n";
+				echo "<a href='".$_SERVER['PHP_SELF']."?debug=off'><img src='img/navi/debugoff.png' alt='' title='hide debug information'/></a>\n";
 			else
-				echo "<a href='".$_SERVER['PHP_SELF']."?debug=on'><img src='/img/navi/debugon.png' alt='' title='show debug information'/></a>\n";
+				echo "<a href='".$_SERVER['PHP_SELF']."?debug=on'><img src='img/navi/debugon.png' alt='' title='show debug information'/></a>\n";
 		}
 		
 		if(!getUser()->isGuest())
 		{
-			echo "<a href='/changepass.php'><img src='/img/navi/passwort.gif' alt='Passwort ändern' title='Passwort ändern'/></a>\n";
+			echo "<a href='changepass.php'><img src='img/navi/passwort.gif' alt='Passwort ändern' title='Passwort ändern'/></a>\n";
 		}
 		if(getUser()->isGuest())
 		{
-			echo "<a href='/login.php'><img src='/img/navi/login.png' alt='Login' title='Login'/></a>";
+			echo "<a href='login.php'><img src='img/navi/login.png' alt='Login' title='Login'/></a>";
 		}
 		else
 		{
-			echo "<a href='/login.php'><img src='/img/navi/exit.gif' alt='Logout' title='Logout'/></a>";
+			echo "<a href='login.php'><img src='img/navi/exit.gif' alt='Logout' title='Logout'/></a>";
 		}
 		
 		if(!HP::displayMini())
@@ -221,14 +221,14 @@ class HP
 				echo "<table align='right' cellspacing='4' cellpadding='0' style='font-size:x-small; width:100%'>
 							<tr>
 								<td rowspan='2' width='100%'>
-									<a href='munin' target='_blank'><img src='/img/network_stats.png' alt='Server statistics'/></a>
+									<a href='munin' target='_blank'><img src='img/network_stats.png' alt='Server statistics'/></a>
 								</td>
 								<td style='text-align:right;white-space:nowrap'>für den Inhalt verantwortlich: Beachaholics Kufstein</td>
 								<td rowspan='2'>&nbsp;&nbsp;</td>
 								<td rowspan='2' style='white-space:nowrap'>
-									<a href='http://validator.w3.org/check?uri=referer' target='_blank'><img src='/img/valid_xhtml.gif' alt='Valid XHTML 1.0 Transitional'/></a>
-									<a href='http://jigsaw.w3.org/css-validator/' target='_blank'><img src='/img/valid_css.gif' alt='Valid CSS!'/></a>
-									<a href='/phpinfo.php' target='_blank'><img src='/img/php.gif' alt='' title='currently running version ".phpversion()."'/></a>
+									<a href='http://validator.w3.org/check?uri=referer' target='_blank'><img src='img/valid_xhtml.gif' alt='Valid XHTML 1.0 Transitional'/></a>
+									<a href='http://jigsaw.w3.org/css-validator/' target='_blank'><img src='img/valid_css.gif' alt='Valid CSS!'/></a>
+									<a href='phpinfo.php' target='_blank'><img src='img/php.gif' alt='' title='currently running version ".phpversion()."'/></a>
 								</td>
 							</tr>
 							<tr>
@@ -298,7 +298,7 @@ class HP
 		echo "<br/>";
 		echo "<div style='text-align: center; font-size: large;'";
 			echo $text."<br/><br/>";
-			echo "<a href='/login.php'><img src='/img/navi/login.png' alt='login' title='zum Login'/></a><br/>";
+			echo "<a href='login.php'><img src='img/navi/login.png' alt='login' title='zum Login'/></a><br/>";
 		echo "</div>";
 	}
 	
