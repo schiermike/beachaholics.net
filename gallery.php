@@ -81,14 +81,14 @@
 		echo "</td></tr>";
 		echo "<tr class='rowColor1'><td colspan='2' style='text-align:center'>";
 		
-			$result = getDB()->query("SELECT Nick, Zeit, Kommentar FROM Fotokommentare JOIN Spieler USING(SpielerID) WHERE Ordner='$subdir' AND Datei='$file' ORDER BY Zeit DESC");
+			$result = getDB()->query("SELECT nickname, Zeit, Kommentar FROM Fotokommentare JOIN user ON SpielerID=user.id WHERE Ordner='$subdir' AND Datei='$file' ORDER BY Zeit DESC");
 		
 			echo "<table style='width: 100%; text-align: left', border='0'>";
 			while($row = mysql_fetch_assoc($result))
 			{
 				echo "<tr>";
 				echo "<td nowrap='nowrap'>";
-					echo "<b>".$row['Nick']."</b><br/>";
+					echo "<b>".$row['nickname']."</b><br/>";
 					echo "<div style='font-size: x-small;'>". HP::formatDate($row['Zeit']) . "</div>";
 					
 				echo "</td>";

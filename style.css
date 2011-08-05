@@ -1,7 +1,7 @@
 /* General style definitions */
 
 body 
-{	
+{	background-color: black;
 	color:#000000;
 	font: 10pt/120% "Trebuchet MS", Tahoma, Arial;
 	margin:0px;
