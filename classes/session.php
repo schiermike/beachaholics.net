@@ -42,6 +42,7 @@ class Session {
 		getSession()->update();
 	}
 	
+	// for developing, use a ssh tunnel to the server via $ssh -N -L 3306:127.0.0.1:3306 beachaholics.net
 	public function __construct() {
 		$this->db = new DB("127.0.0.1:3306", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
 		$this->sessionId = session_id();

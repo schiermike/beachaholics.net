@@ -1,19 +1,22 @@
 <?php
-	require_once "init.php";
-	define('STAT_START_DATE', "2011-09-07 00:00:00");
-	
+require_once "init.php";
+define('STAT_START_DATE', "2011-09-07 00:00:00");
+
+printPage();
+
+// ===================================================================
+// ===================================================================
+
+function printPage() {
 	HP::printPageHead("Spielerübersicht", "img/top_people.png");
-	
-	global $cmd;
-	if( !getUser()->isGuest())
-	{
-		switch($cmd)
-		{
+
+	if (!getUser()->isGuest()) {
+		switch (HP::getParam('action')) {
 			case 'userEdit':
-				printUserEditForm(isset($userid) ? $userid : User::$GUEST_ID);
+				printUserEditForm(HP::isParamSet('userid') ? HP::getParam('userid') : User::$GUEST_ID);
 				break;
 			case 'userEditConfirm':
-				userEditConfirm($userid);
+				userEditConfirm(HP::getParam('userid'));
 			default:
 				printPlayerTable();
 		}
@@ -22,317 +25,302 @@
 		HP::printLoginError();
 		
 	HP::printPageTail();
-	
-// ===================================================================
-// ===================================================================
+}
 
-	function userEditConfirm($userid)
-	{
-		if(!getUser()->isAdmin() && $userid != getUser()->id)
-		{
-			HP::printErrorText("Fehlende Berechtigung!");
-			return;
-		}
-		
-		global $nachname, $vorname, $nickname, $strasse, $ort, $geburtstag, $email, $telefon, $rights, $passwd;
-		
-		$rechte = 0;
-		if(isset($rights))
-		{
-			foreach($rights as $right)
-				$rechte |= $right;
-		}
-		
-		if($_FILES['picture']['type'] != "")
-		{
-			if($_FILES['picture']['type'] != "image/jpeg" && $_FILES['picture']['type'] != "image/pjpeg")
-			{
-				HP::printErrorText("Ungültiger Dateityp (".$_FILES['picture']['type'].")!");
-				return;
-			}
-			$picFile = fopen($_FILES['picture']['tmp_name'], "r");
-			$picture = fread($picFile, filesize($_FILES['picture']['tmp_name']));
-			fclose($picFile);
-			$picture = addslashes($picture);
-			
-		}
-		
-		if($userid > 0)
-		{
-			$sql = "UPDATE user SET lastname='".getDB()->escape($nachname).
-				"', firstname='".getDB()->escape($vorname).
-				"', nickname='".getDB()->escape($nickname).
-				"', street='".getDB()->escape($strasse).
-				"', city='".getDB()->escape($ort).
-				"', birthday='".getDB()->escape($geburtstag).
-				"', email='".getDB()->escape($email).
-				"', phone='".getDB()->escape($telefon)."'";
-			
-			if(getUser()->isAdmin()) $sql .= ", roles=$rechte";
-			
-			if(isset($picture))
-				$sql .= ", avatar='$picture'";
-			
-			$sql .=  " WHERE id=$userid";
-			
-			getDB()->query($sql);
-			if(mysql_affected_rows() != 1)
-				HP::printErrorText("Konnte Spielerinformation nicht updaten, Grund: ".mysql_error());
-				
-			if($userid == getUser()->id)
-				getSession()->user = new User($userid);
-		}
-		else
-		{			
-			$sql = "INSERT INTO user (lastname, firstname, nickname, street, city, birthday, email, phone, roles, password, creation_date";
-			if(isset($picture)) $sql .= ", avatar";
-			$sql .=") VALUES ('".getDB()->escape($nachname)."', '".getDB()->escape($vorname)."', '".getDB()->escape($nickname)."', '".getDB()->escape($strasse)."', '".getDB()->escape($ort)."', '".getDB()->escape($geburtstag)."', '".getDB()->escape($email)."', '".getDB()->escape($telefon)."', $rechte, '".getDB()->escape($passwd)."', CURDATE()";
-			if(isset($picture)) $sql .= ", '$picture'";
-			$sql.= ")";
-			getDB()->query($sql);
-			if(mysql_affected_rows() != 1)
-				HP::printErrorText("Konnte Spieler nicht erstellen, Grund: ".mysql_error());
-		}
-		
-		
-	}
-
-	function printUserEditForm($userid)
-	{
-		if(!getUser()->isAdmin() && $userid != getUser()->id)
-		{
-			HP::printErrorText("Fehlende Berechtigung!");
-			return;
-		}
-		
-		if($userid != User::$GUEST_ID)
-		{
-			$sql = "SELECT lastname, firstname, nickname, street, city, email, phone, birthday, roles FROM user WHERE id=$userid";
-			$result = getDB()->query($sql);
-		
-			if(mysql_num_rows($result) != 1 || !($row = mysql_fetch_assoc($result)))
-			{
-				HP::printErrorText("Could not obtain data for this userid!");
-				return;
-			}
-			echo "<h3>Bestehenden Benutzer editieren</h3>";
-		}
-		else
-		{
-			echo "<h3>Neuen Benutzer anlegen</h3>";
-			$row['roles'] = 1;
-			$row['birthday'] = "0000-00-00";
-			$row['phone'] = "+43...";
-		}
-		
-		
-		echo "<form method='post' enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."'>\n";
-		echo "<input type='hidden' name='cmd' value='userEditConfirm'/>\n";
-		if($userid != User::$GUEST_ID)
-			echo "<input type='hidden' name='userid' value='$userid'/>\n";
-		echo "<b>Nachname:</b> <input type='text' name='nachname' size='15' value='";
-		echo isset($row['lastname']) ? $row['lastname'] : "";
-		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-		echo "<b>Vorname:</b> <input type='text' name='vorname' size='15' value='";
-		echo isset($row['firstname']) ? $row['firstname'] : "";
-		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-		echo "<b>Nickname:</b> <input type='text' name='nickname' size='10' value='";
-		echo isset($row['nickname']) ? $row['nickname'] : "";
-		echo "'/><br/><br/>\n";
-
-		echo "<b>Straße:</b> <input type='text' name='strasse' size='20' value='";
-		echo isset($row['street']) ? $row['street'] : "";
-		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-		echo "<b>Ort:</b> <input type='text' name='ort' size='15' value='";
-		echo isset($row['city']) ? $row['city'] : "";
-		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-		echo "<b>Geburtstag:</b> <input type='text' name='geburtstag' size='10' value='";
-		echo isset($row['birthday']) ? $row['birthday'] : "";
-		echo "'/><br/><br/>\n";
-
-		echo "<b>Email:</b> <input type='text' name='email' size='25' value='";
-		echo isset($row['email']) ? $row['email'] : "";
-		echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-		echo "<b>Telefon:</b> <input type='text' name='telefon' size='15' value='";
-		echo isset($row['phone']) ? $row['phone'] : "";
-		echo "'/><br/><br/>\n";
-		
-		if(getUser()->isAdmin())
-		{
-			echo "<b>Rollen: </b>";
-			foreach(User::getRoles() as $role)
-			{
-				if($role == 0) continue;
-				echo "<input type='checkbox' name='rights[]' value='$role' ";
-				if(User::authorized($role, $row['roles']))
-					echo "checked='checked'";
-				echo "/>".User::roleToString($role)."&nbsp;&nbsp;&nbsp;";
-			}
-			echo "<br/><br/>";
-		}
-		
-		if($userid == User::$GUEST_ID)
-			echo "<b>Initiales Passwort:</b> <input type='text' name='passwd'/><br/><br/>";
-			
-		echo "<input type='hidden' name='MAX_FILE_SIZE' value='200000'>";
-		echo "<b>Benutzerbild:</b> <input type='file' name='picture'  size='40'> (".User::$PIC_WIDTH."x".User::$PIC_HEIGHT." Pixel, JPEG)<br/>";
-		echo "<img src='userpic.php?id=$userid' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
-		
-		echo "<div style='text-align:right'><input type='submit' value='Ok'/></div>";
-		
-		echo "</form>\n";
-	}
-
-	function printPlayerTable()
-	{
-		$sql = "SELECT id, lastname, firstname, nickname, street, city, email, phone, last_contact, roles, creation_date".
-				" FROM user".
-				" WHERE id != ".User::$GUEST_ID.
-				" ORDER BY last_contact DESC";
-		$request = getDB()->query($sql);
-
-		echo "<table cellspacing='0' cellpadding='0' >\n";
-		
-		if(getUser()->isAdmin())
-		{
-			echo "<tr><td colspan='3' style='text-align:right'>";
-				echo "<a href='".$_SERVER['PHP_SELF']."?cmd=userEdit'><img src='img/user_add.png' alt='' title='neuen Benutzer hinzufügen'/></a>";
-			echo "</td></tr>";
-		}
-		
-		$rowc=0;
-		while($row = mysql_fetch_assoc($request))
-		{
-			$trdef = "<tr class='rowColor".($rowc++%2)."'>";
-				
-			echo $trdef;
-				echo "<td rowspan='3' style='padding-right:20px; width=".User::$PIC_WIDTH."px;'>";
-					echo "<img src='userpic.php?id=".$row['id']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt='' title='".$row['nickname']."'/>";
-				echo "</td>";
-				
-				echo "<td width='100%'>";
-					echo "<b>".HP::toHtml($row['lastname']." ".$row['firstname'])."</b>";
-				echo "</td>";
-				
-				echo "<td style='text-align:right; font-size: x-small;'>";
-					if(getUser()->isAdmin() || $row['id'] == getUser()->id)
-						echo "<a href='".$_SERVER['PHP_SELF']."?cmd=userEdit&amp;userid=".$row['id']."'><img src='img/user_edit.png' alt='' title='diesen Benutzer editieren'/></a>";
-				echo "</td>";
-					
-			echo "</tr>\n";
-			echo $trdef;
-				echo "<td colspan='2' style='font-size: x-small;'>";
-					echo "Registriert seit: ".HP::formatDate($row['creation_date'], false, true)."<br/>";
-					echo "zuletzt online am ".HP::formatDate($row['last_contact'])."<br/>";
-					echo "Rollen: ";
-					$isFirst = true;
-					foreach(User::getRoles() as $role)
-					{
-						if($role == 0 || !User::authorized($role, $row['roles']))
-							continue;
-						if(!$isFirst)
-							echo ", ";
-						else 
-							$isFirst=false;
-						echo User::roleToString($role);
-					}
-				echo "</td>";
-
-			echo "</tr>\n";
-			echo $trdef;
-				echo "<td>";
-					echo HP::toHtml($row['street'])."<br/>";
-					echo HP::toHtml($row['city'])."<br/>";
-					echo $row['phone']."<br/>";
-					echo $row['email'];
-				echo "</td>";
-				echo "<td style='text-align: left; font-size: x-small;' nowrap='nowrap'>";
-					printStatistics($row['id'], $row['creation_date'], $row['roles']);
-				echo "</td>";
-			echo "</tr>\n";
-		}
-		echo "</table>\n";
-		
-		echo "<br/><div align='right' style='font-size:x-small;'><table>\n";
-		echo "<tr><td>Trainingsbeteiligung Mittwoch und Freitag</td><td><img src='img/chartgreen.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
-		echo "<tr><td>Trainingsbeteiligung generell</td><td><img src='img/chartblue.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
-		echo "<tr><td>Spielbeteiligung</td><td><img src='img/chartred.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
-		echo "<tr><td style='text-align:right' colspan='2'>gemessen seit ".STAT_START_DATE."</td></tr>\n";
-		echo "</table></div>\n";
+function userEditConfirm($userid) {
+	if (!getUser()->isAdmin() && $userid != getUser()->id) {
+		HP::printErrorText("Fehlende Berechtigung!");
+		return;
 	}
 	
-	function printStatistics($playerId, $creationDate, $privileges)
-	{
-		// Achtung: Manche Herren haben beide Rollen, aber keine Frau hat eine Herrenhallenrolle, darum geht diese Lösung!
+	$roles = 0;
+	if (HP::isParamSet('roles')) {
+		foreach (HP::getParam('roles') as $role)
+			$roles |= $role;
+	}
+	
+	if($_FILES['picture']['type'] != "") {
+		if ($_FILES['picture']['type'] != "image/jpeg" && $_FILES['picture']['type'] != "image/pjpeg") {
+			HP::printErrorText("Ungültiger Dateityp (".$_FILES['picture']['type'].")!");
+			return;
+		}
+		$picFile = fopen($_FILES['picture']['tmp_name'], "r");
+		$picture = fread($picFile, filesize($_FILES['picture']['tmp_name']));
+		fclose($picFile);
+		$picture = addslashes($picture);
+		
+	}
+	
+	if($userid > 0) {
+		$sql = "UPDATE user SET lastname='".getDB()->escape(HP::getParam('lastname')).
+			"', firstname='".getDB()->escape(HP::getParam('firstname')).
+			"', nickname='".getDB()->escape(HP::getParam('nickname')).
+			"', street='".getDB()->escape(HP::getParam('street')).
+			"', city='".getDB()->escape(HP::getParam('city')).
+			"', birthday='".getDB()->escape(HP::getParam('birthday')).
+			"', email='".getDB()->escape(HP::getParam('email')).
+			"', phone='".getDB()->escape(HP::getParam('phone'))."'";
+		
+		if (getUser()->isAdmin()) 
+			$sql .= ", roles=$roles";
+		
+		if (isset($picture))
+			$sql .= ", avatar='$picture'";
+		
+		$sql .=  " WHERE id=$userid";
+		
+		getDB()->query($sql);
+		if (mysql_affected_rows() != 1)
+			HP::printErrorText("Konnte Spielerinformation nicht updaten, Grund: ".mysql_error());
+			
+		if ($userid == getUser()->id)
+			getSession()->user = new User($userid);
+	}
+	else {			
+		$sql = "INSERT INTO user (lastname, firstname, nickname, street, city, birthday, email, phone, roles, password, creation_date";
+		if(isset($picture)) $sql .= ", avatar";
+		$sql .=") VALUES ('".
+			getDB()->escape(HP::getParam('lastname')) . "', '" .
+			getDB()->escape(HP::getParam('firstname')) . "', '" .
+			getDB()->escape(HP::getParam('nickname')) . "', '" .
+			getDB()->escape(HP::getParam('street')) . "', '" .
+			getDB()->escape(HP::getParam('city')) . "', '" .
+			getDB()->escape(HP::getParam('birthday')) . "', '" .
+			getDB()->escape(HP::getParam('email')) . "', '" .
+			getDB()->escape(HP::getParam('phone')) . "', $roles, '" .
+			getDB()->escape(HP::getParam('password')) . "', CURDATE()";
+		if(isset($picture)) $sql .= ", '$picture'";
+		$sql.= ")";
+		getDB()->query($sql);
+		if (mysql_affected_rows() != 1)
+			HP::printErrorText("Konnte Spieler nicht erstellen, Grund: ".mysql_error());
+	}
+}
+
+function printUserEditForm($userid) {
+	if (!getUser()->isAdmin() && $userid != getUser()->id) {
+		HP::printErrorText("Fehlende Berechtigung!");
+		return;
+	}
+	
+	if($userid != User::$GUEST_ID) {
+		$sql = "SELECT lastname, firstname, nickname, street, city, email, phone, birthday, roles FROM user WHERE id=$userid";
+		$result = getDB()->query($sql);
+	
+		if (mysql_num_rows($result) != 1 || !($row = mysql_fetch_assoc($result))) {
+			HP::printErrorText("Could not obtain data for this userid!");
+			return;
+		}
+		echo "<h3>Bestehenden Benutzer editieren</h3>";
+	}
+	else {
+		echo "<h3>Neuen Benutzer anlegen</h3>";
+		$row['roles'] = 1;
+		$row['birthday'] = "0000-00-00";
+		$row['phone'] = "+43...";
+	}
+	
+	
+	echo "<form method='post' enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."'>\n";
+	echo "<input type='hidden' name='action' value='userEditConfirm'/>\n";
+	if ($userid != User::$GUEST_ID)
+		echo "<input type='hidden' name='userid' value='$userid'/>\n";
+	echo "<b>Nachname:</b> <input type='text' name='lastname' size='15' value='";
+	echo isset($row['lastname']) ? $row['lastname'] : "";
+	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+	echo "<b>Vorname:</b> <input type='text' name='firstname' size='15' value='";
+	echo isset($row['firstname']) ? $row['firstname'] : "";
+	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+	echo "<b>Nickname:</b> <input type='text' name='nickname' size='10' value='";
+	echo isset($row['nickname']) ? $row['nickname'] : "";
+	echo "'/><br/><br/>\n";
+
+	echo "<b>Straße:</b> <input type='text' name='street' size='20' value='";
+	echo isset($row['street']) ? $row['street'] : "";
+	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+	echo "<b>Ort:</b> <input type='text' name='city' size='15' value='";
+	echo isset($row['city']) ? $row['city'] : "";
+	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+	echo "<b>Geburtstag:</b> <input type='text' name='birthday' size='10' value='";
+	echo isset($row['birthday']) ? $row['birthday'] : "";
+	echo "'/><br/><br/>\n";
+
+	echo "<b>Email:</b> <input type='text' name='email' size='25' value='";
+	echo isset($row['email']) ? $row['email'] : "";
+	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+
+	echo "<b>Telefon:</b> <input type='text' name='phone' size='15' value='";
+	echo isset($row['phone']) ? $row['phone'] : "";
+	echo "'/><br/><br/>\n";
+	
+	if (getUser()->isAdmin()) {
+		echo "<b>Rollen: </b>";
+		foreach (User::getRoles() as $role) {
+			if ($role == 0)
+				continue;
+			echo "<input type='checkbox' name='roles[]' value='$role' ";
+			if (User::authorized($role, $row['roles']))
+				echo "checked='checked'";
+			echo "/>".User::roleToString($role)."&nbsp;&nbsp;&nbsp;";
+		}
+		echo "<br/><br/>";
+	}
+	
+	if ($userid == User::$GUEST_ID)
+		echo "<b>Initiales Passwort:</b> <input type='text' name='password'/><br/><br/>";
+		
+	echo "<input type='hidden' name='MAX_FILE_SIZE' value='200000'>";
+	echo "<b>Benutzerbild:</b> <input type='file' name='picture'  size='40'> (".User::$PIC_WIDTH."x".User::$PIC_HEIGHT." Pixel, JPEG)<br/>";
+	echo "<img src='userpic.php?id=$userid' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
+	
+	echo "<div style='text-align:right'><input type='submit' value='Ok'/></div>";
+	
+	echo "</form>\n";
+}
+
+function printPlayerTable() {
+	$sql = "SELECT id, lastname, firstname, nickname, street, city, email, phone, last_contact, roles, creation_date".
+			" FROM user".
+			" WHERE id != ".User::$GUEST_ID.
+			" ORDER BY last_contact DESC";
+	$request = getDB()->query($sql);
+
+	echo "<table cellspacing='0' cellpadding='0' >\n";
+	
+	if (getUser()->isAdmin()) {
+		echo "<tr><td colspan='3' style='text-align:right'>";
+		echo "<a href='".$_SERVER['PHP_SELF']."?action=userEdit'><img src='img/user_add.png' alt='' title='neuen Benutzer hinzufügen'/></a>";
+		echo "</td></tr>";
+	}
+	
+	$rowc=0;
+	while ($row = mysql_fetch_assoc($request)) {
+		$trdef = "<tr class='rowColor".($rowc++%2)."'>";
+			
+		echo $trdef;
+		echo "<td rowspan='3' style='padding-right:20px; width=".User::$PIC_WIDTH."px;'>";
+		echo "<img src='userpic.php?id=".$row['id']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt='' title='".$row['nickname']."'/>";
+		echo "</td>";
+			
+		echo "<td width='100%'>";
+		echo "<b>".HP::toHtml($row['lastname']." ".$row['firstname'])."</b>";
+		echo "</td>";
+			
+		echo "<td style='text-align:right; font-size: x-small;'>";
+		if (getUser()->isAdmin() || $row['id'] == getUser()->id)
+			echo "<a href='".$_SERVER['PHP_SELF']."?action=userEdit&amp;userid=".$row['id']."'><img src='img/user_edit.png' alt='' title='diesen Benutzer editieren'/></a>";
+		echo "</td>";
+				
+		echo "</tr>\n";
+		echo $trdef;
+		echo "<td colspan='2' style='font-size: x-small;'>";
+		echo "Registriert seit: ".HP::formatDate($row['creation_date'], false, true)."<br/>";
+		echo "zuletzt online am ".HP::formatDate($row['last_contact'])."<br/>";
+		echo "Rollen: ";
+		$isFirst = true;
+		foreach (User::getRoles() as $role) {
+			if ($role == 0 || !User::authorized($role, $row['roles']))
+				continue;
+			if (!$isFirst)
+				echo ", ";
+			else 
+				$isFirst=false;
+			echo User::roleToString($role);
+		}
+		echo "</td>";
+
+		echo "</tr>\n";
+		echo $trdef;
+		echo "<td>";
+		echo HP::toHtml($row['street'])."<br/>";
+		echo HP::toHtml($row['city'])."<br/>";
+		echo $row['phone']."<br/>";
+		echo $row['email'];
+		echo "</td>";
+		echo "<td style='text-align: left; font-size: x-small;' nowrap='nowrap'>";
+		printStatistics($row['id'], $row['creation_date'], $row['roles']);
+		echo "</td>";
+		echo "</tr>\n";
+	}
+	echo "</table>\n";
+	
+	echo "<br/><div align='right' style='font-size:x-small;'><table>\n";
+	echo "<tr><td>Trainingsbeteiligung Mittwoch und Freitag</td><td><img src='img/chartgreen.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
+	echo "<tr><td>Trainingsbeteiligung generell</td><td><img src='img/chartblue.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
+	echo "<tr><td>Spielbeteiligung</td><td><img src='img/chartred.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
+	echo "<tr><td style='text-align:right' colspan='2'>gemessen seit ".STAT_START_DATE."</td></tr>\n";
+	echo "</table></div>\n";
+}
+
+function printStatistics($playerId, $creationDate, $privileges) {
+	// Achtung: Manche Herren haben beide Rollen, aber keine Frau hat eine Herrenhallenrolle, darum geht diese Lösung!
+	$isMale = true;
+	if (User::authorized(User::$ROLE_INDOOR_MEN, $privileges))
 		$isMale = true;
-		if(User::authorized(User::$ROLE_INDOOR_MEN, $privileges))
-			$isMale = true;
-		else if(User::authorized(User::$ROLE_INDOOR_WOMEN, $privileges))
-			$isMale = false;
-		else
-		{
-			echo "<center>Kein Hallenspieler</center>";
-			return;
-		}
-		// Wieviele Trainings gab es für den Spieler Montag, Dienstag, Mittwoch und
-		// Donnerstag, Freitag, Samstag, Sonntag
-		// und Spiele
-		$sql = "SELECT".
-				" SUM(WEEKDAY(Zeit) BETWEEN 0 AND 2 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training1,".
-				" SUM(WEEKDAY(Zeit) BETWEEN 3 AND 6 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training2,".
-				" SUM(Typ = ".($isMale ? Event::$GAME_MEN : Event::$GAME_WOMEN).") AS Spiel".
-				" FROM Events".
-				" WHERE Zeit > '".$creationDate."'".
-				" AND Zeit < NOW()".
-				" AND Zeit > '".STAT_START_DATE."'";
-		$row = mysql_fetch_assoc(getDB()->query($sql));
-		$percTraining1 = $row['Training1'];
-		$percTraining2 = $row['Training2'];
-		$percSpiel = $row['Spiel'];
-		
-		// Wieviele Trainings fehlte der Spieler Montag, Dienstag, Mittwoch und
-		// Donnerstag, Freitag, Samstag, Sonntag
-		// und bei Spielen
-		$sql = "SELECT".
-				" SUM(WEEKDAY(Zeit) BETWEEN 0 AND 2 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training1,".
-				" SUM(WEEKDAY(Zeit) BETWEEN 3 AND 6 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training2,".
-				" SUM(Typ = ".($isMale ? Event::$GAME_MEN : Event::$GAME_WOMEN).") AS Spiel".
-				" FROM Events JOIN Abmeldung USING(EventID)".
-				" WHERE Zeit > '".$creationDate."'".
-				" AND Zeit < NOW()".
-				" AND Zeit > '".STAT_START_DATE."'".
-				" AND SpielerID = ".$playerId;
-		$row = mysql_fetch_assoc(getDB()->query($sql));
-		$percTraining = $percTraining1 + $percTraining2 == 0 ? 0 : 1 - ($row['Training1'] + $row['Training2']) / ($percTraining1 + $percTraining2);
-		$percTraining1 = $percTraining1 == 0 ? 0 : 1 - $row['Training1'] / $percTraining1;
-		$percTraining2 = $percTraining2 == 0 ? 0 : 1 - $row['Training2'] / $percTraining2;
-		$percSpiel = $percSpiel == 0 ? 0 : 1 - $row['Spiel'] / $percSpiel;
-		
-		printChartBar("img/chartgreen.gif", "img/chartgreen2.gif", $percTraining1, "Mittwoch");
-		printChartBar("img/chartgreen.gif", "img/chartgreen2.gif", $percTraining2, "Freitag");
-		printChartBar("img/chartblue.gif", "img/chartblue2.gif", $percTraining, "Training");
-		printChartBar("img/chartred.gif", "img/chartred2.gif", $percSpiel, "Spiel");						
+	else if(User::authorized(User::$ROLE_INDOOR_WOMEN, $privileges))
+		$isMale = false;
+	else {
+		echo "<center>Kein Hallenspieler</center>";
+		return;
 	}
 	
-	function printChartBar($imgBar1, $imgBar2, $percentage, $title)
-	{
-		$chartlengthFactor=3.5;
-		$height=12;
-		
-		$percentage *= 100;
-		$title .= ": ".number_format($percentage, 1, '.', '')." %";
-		$length1 = $chartlengthFactor*$percentage;
-		$length2 = $chartlengthFactor*(100-$percentage);
-		
-		echo "<div>";
-			echo "<img src='".$imgBar1."' height='".$height."' width='".$length1."' alt='' title='".$title."'/>";
-			echo "<img src='".$imgBar2."' height='".$height."' width='".$length2."' alt='' title='".$title."'/>";
-			echo "&nbsp;".number_format($percentage, 1, '.', '')." %<br/>\n";
-		echo "</div>";
-	}
+	// Wieviele Trainings gab es für den Spieler Montag, Dienstag, Mittwoch und
+	// Donnerstag, Freitag, Samstag, Sonntag
+	// und Spiele
+	$sql = "SELECT".
+			" SUM(WEEKDAY(Zeit) BETWEEN 0 AND 2 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training1,".
+			" SUM(WEEKDAY(Zeit) BETWEEN 3 AND 6 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training2,".
+			" SUM(Typ = ".($isMale ? Event::$GAME_MEN : Event::$GAME_WOMEN).") AS Spiel".
+			" FROM Events".
+			" WHERE Zeit > '".$creationDate."'".
+			" AND Zeit < NOW()".
+			" AND Zeit > '".STAT_START_DATE."'";
+	$row = mysql_fetch_assoc(getDB()->query($sql));
+	$percTraining1 = $row['Training1'];
+	$percTraining2 = $row['Training2'];
+	$percSpiel = $row['Spiel'];
+	
+	// Wieviele Trainings fehlte der Spieler Montag, Dienstag, Mittwoch und
+	// Donnerstag, Freitag, Samstag, Sonntag
+	// und bei Spielen
+	$sql = "SELECT".
+			" SUM(WEEKDAY(Zeit) BETWEEN 0 AND 2 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training1,".
+			" SUM(WEEKDAY(Zeit) BETWEEN 3 AND 6 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training2,".
+			" SUM(Typ = ".($isMale ? Event::$GAME_MEN : Event::$GAME_WOMEN).") AS Spiel".
+			" FROM Events JOIN Abmeldung USING(EventID)".
+			" WHERE Zeit > '".$creationDate."'".
+			" AND Zeit < NOW()".
+			" AND Zeit > '".STAT_START_DATE."'".
+			" AND SpielerID = ".$playerId;
+	$row = mysql_fetch_assoc(getDB()->query($sql));
+	$percTraining = $percTraining1 + $percTraining2 == 0 ? 0 : 1 - ($row['Training1'] + $row['Training2']) / ($percTraining1 + $percTraining2);
+	$percTraining1 = $percTraining1 == 0 ? 0 : 1 - $row['Training1'] / $percTraining1;
+	$percTraining2 = $percTraining2 == 0 ? 0 : 1 - $row['Training2'] / $percTraining2;
+	$percSpiel = $percSpiel == 0 ? 0 : 1 - $row['Spiel'] / $percSpiel;
+	
+	printChartBar("img/chartgreen.gif", "img/chartgreen2.gif", $percTraining1, "Mittwoch");
+	printChartBar("img/chartgreen.gif", "img/chartgreen2.gif", $percTraining2, "Freitag");
+	printChartBar("img/chartblue.gif", "img/chartblue2.gif", $percTraining, "Training");
+	printChartBar("img/chartred.gif", "img/chartred2.gif", $percSpiel, "Spiel");						
+}
+
+function printChartBar($imgBar1, $imgBar2, $percentage, $title) {
+	$chartlengthFactor=3.5;
+	$height=12;
+	
+	$percentage *= 100;
+	$title .= ": ".number_format($percentage, 1, '.', '')." %";
+	$length1 = $chartlengthFactor*$percentage;
+	$length2 = $chartlengthFactor*(100-$percentage);
+	
+	echo "<div>";
+	echo "<img src='".$imgBar1."' height='".$height."' width='".$length1."' alt='' title='".$title."'/>";
+	echo "<img src='".$imgBar2."' height='".$height."' width='".$length2."' alt='' title='".$title."'/>";
+	echo "&nbsp;".number_format($percentage, 1, '.', '')." %<br/>\n";
+	echo "</div>";
+}
 ?> 

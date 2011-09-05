@@ -1,13 +1,12 @@
 <?php
-	require_once "init.php";
-	
-	function toIcalTime($sqlTime)
-	{
-		$tmp = str_replace("-", "", $sqlTime);
-		$tmp = str_replace(":", "", $tmp);
-		return str_replace(" ", "T", $tmp);
-	}
-	
+require_once "init.php";
+
+create_icaldata();
+
+// ===================================================================
+// ===================================================================
+
+function create_icaldata() {
 	$output = "BEGIN:VCALENDAR\n";
 	$output .= "VERSION:2.0\n";
 	$output .= "PRODID:-//schiermike/beachaholics//DE\n";
@@ -31,25 +30,20 @@
 	$output .= "END:STANDARD\n";
 	$output .= "END:VTIMEZONE\n";
 	
-	
 	$result = getDB()->query("SELECT Zeit, Endzeit, Bemerkung, Ort, Typ, Link FROM Events");
 	
-	while($row = mysql_fetch_assoc($result))
-	{
+	while ($row = mysql_fetch_assoc($result)) {
 		$output .= "BEGIN:VEVENT\n";
-
-		
+	
 		$output .= "DTSTART:".toIcalTime($row['Zeit'])."\n";
-		if($row['Endzeit'] != Null)
+		if ($row['Endzeit'] != Null)
 			$output .= "DTEND:".toIcalTime($row['Endzeit'])."\n";
 		$output .= "SUMMARY:".Event::toString($row['Typ'])."\n";
 		$output .= "DESCRIPTION:".$row['Bemerkung']." ".$row['Link']."\n";
 		$output .= "LOCATION:".$row['Ort']."\n";
 		$output .= "CATEGORIES: Beachaholics,".Event::toString($row['Typ'])."\n";
-		
 		$output .= "END:VEVENT\n";
 	}
-	
 	$output .= "END:VCALENDAR\n";
 		
 	header('Date: '.gmdate('D, d M Y H:i:s') . ' GMT');
@@ -57,6 +51,14 @@
 	header('Expires: '.gmdate('D, d M Y H:i:s') . ' GMT', 24*60*60);
 	header('Content-Length: '.strlen($output));
 	header("Content-type: text/calendar");
-//	header("Content-type: text/plain");
 	echo $output;
+}
+
+function toIcalTime($sqlTime) {
+	$tmp = str_replace("-", "", $sqlTime);
+	$tmp = str_replace(":", "", $tmp);
+	return str_replace(" ", "T", $tmp);
+}
+
+
 ?>

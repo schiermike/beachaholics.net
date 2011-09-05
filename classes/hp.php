@@ -287,5 +287,24 @@ class HP {
 	public static function getPHPTime() {
 		return date("Y-m-d H:i:s");
 	}
+	
+	/**
+	 * Checks whether the parameter with the given name is set either in the $_GET or the $_POST array
+	 */
+	public static function isParamSet($name) {
+		return isset($_GET[$name]) || isset($_POST[$name]);
+	}
+	/**
+	 * Returns the parameter with the given name from the $_GET or the $_POST array.
+	 * If no such parameter exists, return FALSE
+	 */
+	public static function getParam($name) {
+		$parameter = FALSE;
+		if (isset($_GET[$name]))
+			$parameter = $_GET[$name];
+		if (isset($_POST[$name]))
+			$parameter = $_POST[$name];
+		return $parameter;
+	}
 }
 ?>

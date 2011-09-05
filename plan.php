@@ -7,8 +7,7 @@
 	<div id='map' style='width: 100%; height: 100%;'></div>
 		
 	<script type='text/javascript'>
-if(GBrowserIsCompatible())
-{
+if(GBrowserIsCompatible()) {
 	var map = new GMap2(document.getElementById('map'));
 	map.setCenter(new GLatLng(47.54, 12.1));
 	map.setZoom(12);
