@@ -8,24 +8,24 @@ loginProcedure();
 // ===================================================================
 
 function loginProcedure() {
-	if (!isset($_GET['userid'])) {
+	if (!HP::isParamSet('userid')) {
 		getSession()->logout();
 		Session::initialize();
 		
 		printSelectUser();
 	}
-	else if (!isset($_GET['response'])){
-		printPasswordQuestion($_GET['userid'], true);
+	else if (!HP::isParamSet('response')){
+		printPasswordQuestion(HP::getParam('userid'), true);
 	}
-	else if (checkResponse($_GET['userid'], $_GET['response'])){
-		getSession()->login($_GET['userid']);
+	else if (checkResponse(HP::getParam('userid'), HP::getParam('response'))){
+		getSession()->login(HP::getParam('userid'));
 		echo "<html><head>";
 		echo "<script type='text/css'>body { background-color:black; }</script>";
 		echo "<script type='text/javascript'>window.location.href='gb.php'</script>";
 		echo "</head></html>";
 	}
 	else {
-		printPasswordQuestion($_GET['userid'], false);
+		printPasswordQuestion(HP::getParam('userid'), false);
 	}
 }
 	

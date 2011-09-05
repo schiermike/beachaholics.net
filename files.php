@@ -1,20 +1,16 @@
 <?php
 require_once "init.php";
   	
-HP::printPageHead("Datenaustausch", "img/top_files.png", "files_script/styles.css");
-  	
-if(!getUser()->isGuest())
-	printPage();
-else
-	HP::printLoginError();
-  	
+HP::printPageHead("Datenaustausch", "img/top_files.png", "files_script/styles.css"); 	
+printPage();
 HP::printPageTail();
   	
 function printPage() {
-	$action = "";
-	if (isset($_GET['action']))
-		$action = $_GET['action'];
-	switch ($action) {
+	if (getUser()->isGuest()) {
+		HP::printLoginError();
+		return;
+	}
+	switch (HP::getParam('action')) {
 		case "ftp":
 			printFtpDescription();
 			break;

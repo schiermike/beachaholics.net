@@ -11,27 +11,25 @@ define('IMAGE_MAX_HEIGHT', 1200);
 define('THUMBS_PER_ROW',5);
 
 HP::printPageHead("Bildergallerie", "img/top_gallery.png");
-
 printPage();
-
 HP::printPageTail();
 
 // ===================================================================
 // ===================================================================
 
 function printPage() {
-	if (isset($_GET['dir'])) {
-		if (isset($_GET['file'])) {
-			printSinglePicture($_GET['dir'], $_GET['file']);
+	if (HP::isParamSet('dir')) {
+		if (HP::isParamSet('file')) {
+			printSinglePicture(HP::getParam('dir'), HP::getParam('file'));
 			
-			if (isset($_GET['comment']))
-				addComment($_GET['comment'], $_GET['dir'], $_GET['file']);
+			if (HP::isParamSet('comment'))
+				addComment(HP::getParam('comment'), HP::getParam('dir'), HP::getParam('file'));
 		}
 		else
-			printPictureGallery($_GET['dir']);
+			printPictureGallery(HP::getParam('dir'));
 			
-		if (isset($_GET['regenerate']))
-			checkAndPreparePictureDirectory($_GET['dir'], false);		
+		if (HP::isParamSet('regenerate'))
+			checkAndPreparePictureDirectory(HP::getParam('dir'), false);		
 	}
 	else
 		printPictureDirectories();

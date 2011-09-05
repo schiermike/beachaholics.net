@@ -14,14 +14,8 @@ function printPage() {
 		HP::printLoginError();
 		return;
 	}
-	
-	$action = "";
-	if (isset($_GET['action']))
-		$action = $_GET['action'];
-	if (isset($_POST['action']))
-		$action = $_POST['action'];
-	
-	switch ($action) {
+
+	switch (HP::getParam('action')) {
 		case 'add_or_modify_entry':
 			addOrModifyEntry();
 			break;

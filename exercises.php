@@ -2,15 +2,26 @@
 
 require_once "classes/database.php";
 require_once "classes/session.php";
+require_once "classes/hp.php";
 
-if(isset($_GET['getPdf'])) {
-	$pdfId = $_GET['getPdf'];	
+if(HP::isParamSet('getPdf'))
+	printPdf(HP::getParam('getPdf'));
 
+require_once "init.php";
+
+HP::printPageHead("Material für Übungsleiter", "img/top_exercises.png");
+printPage();
+HP::printPageTail();
+
+// ===================================================================
+// ===================================================================
+
+function printPdf($id) {
 	Session::initialize();
 	
 	header('Date: '.gmdate('D, d M Y H:i:s') . ' GMT');
 
-	$result = getDB()->query("SELECT id, category, pdf FROM exercises WHERE id=".$pdfId);
+	$result = getDB()->query("SELECT id, category, pdf FROM exercises WHERE id=".$id);
 	if (mysql_num_rows($result) == 0)
 		exit();
 	$row = mysql_fetch_assoc($result);
@@ -23,19 +34,12 @@ if(isset($_GET['getPdf'])) {
 	exit();
 }
 
-require_once "init.php";
-
-HP::printPageHead("Material für Übungsleiter", "img/top_exercises.png");
-if (getUser()->isMember())
-	printPage();
-else
-	HP::printLoginError();
-HP::printPageTail();
-
-// ===================================================================
-// ===================================================================
-
 function printPage() {
+	if (!getUser()->isMember()) {
+		HP::printLoginError();
+		return;
+	}	
+	
 	$result = getDB()->query("SELECT id, category FROM exercises ORDER BY category");
 	
 	$kategorie = "";

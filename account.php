@@ -30,13 +30,7 @@ function printPage() {
 	if (isset($_GET['end_date']))
 		$_SESSION['account_end_date'] = $_GET['end_date'];
 	
-	$action = "";
-	if (isset($_GET['action']))
-		$action = $_GET['action'];
-	if (isset($_POST['action']))
-		$action = $_POST['action'];
-		
-	switch($action) {
+	switch(HP::getParam('action')) {
 		case 'add_or_modify_entry':
 			addOrModifyEntry();
 			break;

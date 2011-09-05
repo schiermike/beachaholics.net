@@ -296,10 +296,10 @@ class HP {
 	}
 	/**
 	 * Returns the parameter with the given name from the $_GET or the $_POST array.
-	 * If no such parameter exists, return FALSE
+	 * If no such parameter exists, return NULL
 	 */
 	public static function getParam($name) {
-		$parameter = FALSE;
+		$parameter = NULL;
 		if (isset($_GET[$name]))
 			$parameter = $_GET[$name];
 		if (isset($_POST[$name]))

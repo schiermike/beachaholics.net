@@ -3,14 +3,19 @@
 require_once "init.php";
 
 HP::printPageHead("Beachaholics.net");
+printPage();
+HP::printPageTail();
 
-if (getUser()->isAuthorized(User::$ROLE_MEMBER)) {
-	$action = "";
-	if (isset($_GET['action']))
-		$action = $_GET['action'];
-	if (isset($_POST['action']))
-		$action = $_POST['action'];
-	switch($action) {
+// ===================================================================
+// ===================================================================
+
+function printPage() {
+	if (!getUser()->isAuthorized(User::$ROLE_MEMBER)) {
+		printText();
+		return;
+	}
+	
+	switch(HP::getParam('action')) {
 		case 'edit':
 			printEditField();
 			break;
@@ -20,14 +25,6 @@ if (getUser()->isAuthorized(User::$ROLE_MEMBER)) {
 			printText();
 	}
 }
-else
-	printText();
-
-
-HP::printPageTail();
-
-// ===================================================================
-// ===================================================================
 
 function printEditField() {
 	echo "<form method='post' action='".$_SERVER['PHP_SELF']."'>";

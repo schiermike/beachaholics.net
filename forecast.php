@@ -5,9 +5,7 @@ require_once "init.php";
 define('SHOW_OLD_TRAININGS_UNTIL', 60*60*24*7*4);
 
 HP::printPageHead("Wettervorhersage", "img/top_weather.png");
-
 printPage();
-
 HP::printPageTail();
 
 // ===================================================================

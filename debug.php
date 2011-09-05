@@ -7,13 +7,13 @@ if (!getUser()->isItMe())
 if (!isset($_GET['action']))
 	$_GET['action'] = '';
 	
-switch($_GET['action']) {
+switch(HP::getParam('action')) {
 	case 'clear':
 		clearLog();
 		break;
 	case 'delete':
-		if (isset($_GET['log_id']))
-			deleteLogEntry($_GET['log_id']);
+		if (HP::isParamSet('log_id'))
+			deleteLogEntry(HP::getParam('log_id'));
 		break;
 }
 

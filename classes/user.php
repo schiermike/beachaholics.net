@@ -19,7 +19,6 @@
 		public $lastName;
 		public $firstName;
 		public $nickName;
-		public $md5Pass;
 		public $roles;
 		
 		private $gbEntriesPerPage;
@@ -29,6 +28,8 @@
 		}
 		
 		public function setGbEntriesPerPage($numEntries) {
+			if (!is_numeric($numEntries))
+				return;
 			$this->gbEntriesPerPage = $numEntries;
 			getDB()->query("UPDATE user SET gb_entries_per_page=$numEntries WHERE id=".$this->id);
 		}
@@ -72,13 +73,12 @@
 			if($id == NULL)
 				$id = User::$GUEST_ID;
 				
-			$result = getDB()->query("SELECT lastname, firstname, nickname, MD5(password) AS md5_password, roles, gb_entries_per_page FROM user WHERE id=".$id);
+			$result = getDB()->query("SELECT lastname, firstname, nickname, roles, gb_entries_per_page FROM user WHERE id=".$id);
 			$row = mysql_fetch_assoc($result);
 			$this->id = $id;
 			$this->lastName = $row['lastname'];
 			$this->firstName = $row['firstname'];
 			$this->nickName = $row['nickname'];
-			$this->md5Pass = $row['md5_password'];
 			$this->roles = $row['roles'];
 			$this->gbEntriesPerPage = $row['gb_entries_per_page'];
 		}
