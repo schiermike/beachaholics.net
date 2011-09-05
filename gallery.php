@@ -406,8 +406,7 @@
 			$newImgWidth = round(($maxHeight*$imgWidth)/$imgHeight);
 		else
 			$newImgHeight = round(($maxWidth*$imgHeight)/$imgWidth);
-			
-		
+
 		$imageResource=NULL;
 		switch($imgType)
 		{
@@ -427,6 +426,30 @@
 		// Create resized image
 		$newImageResource = imagecreatetruecolor($newImgWidth,$newImgHeight);
 		imagecopyresized($newImageResource, $imageResource, 0, 0, 0, 0, $newImgWidth, $newImgHeight, $imgWidth, $imgHeight);
+	
+		// rotate the image according to the EXIF metadata
+		$exif = exif_read_data($imagePath);
+		if ($exif !== FALSE) {
+			$orientation = FALSE;
+			if (isset($exif['IFD0']))
+				$exif = $exif['IFD0'];
+			if (isset($exif['Orientation']))
+				$orientation = $exif['Orientation'];
+			if ($orientation !== FALSE) {
+				switch ($orientation) {
+					case 3: // 180°
+						$newImageResource = imagerotate($newImageResource, 180, 0);
+						break;
+					case 6: // rotate right
+						$newImageResource = imagerotate($newImageResource, 270, 0);
+						break;
+					case 8: // rotate left
+						$newImageResource = imagerotate($newImageResource, 90, 0);
+						break;
+				}
+			}
+		}
+
 		imagejpeg($newImageResource, $newImagePath, $thumbnailJpegQuality);
 		
 		if(!file_exists($newImagePath))
