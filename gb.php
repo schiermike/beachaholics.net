@@ -332,9 +332,9 @@ function printGuestbookRow($row) {
 	echo "<td style='border-width: 1px; border-color: black; border-top-style: solid; border-bottom-style: solid; border-left-style: solid; vertical-align: top; background-color: #d0d0d0;'>";
 	echo "<img src='userpic.php?id=".$row['user_id']."' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
 	echo "</td>";
-	echo "<td style='border-width: 1px; border-color: black; border-top-style: solid; border-bottom-style: solid; border-right-style: solid;'>";
+	echo "<td style='width: 100%; border-width: 1px; border-color: black; border-top-style: solid; border-bottom-style: solid; border-right-style: solid;'>";
 
-	echo "<table cellpadding='0' cellspacing='0' width='100%' height='136'>";
+	echo "<table cellpadding='0' cellspacing='0' width='100%' style='height: 136px'>";
 	echo "<tr>";
 	echo "<td style='text-align: left; font: 8pt/120% sans-serif; padding-left: 3px; background-color: #aaaaaa;'>";
 	echo "<b>".HP::toHtml($row['nickname'])."</b>&nbsp;&nbsp;";
