@@ -73,14 +73,12 @@ h3
 }
 
 
-/* training.php style definitions */
-
-table#training
+table#event
 {
 	border-collapse: collapse;
 }
 
-table#training tr td
+table#event tr td
 {
 	padding: 3px 1px 3px 1px;
 	border-bottom-style: solid;
@@ -88,56 +86,62 @@ table#training tr td
 	border-color: #222;
 }
 
-table#training tr.topborder td
+table#event tr.topborder td
 {
 	border-top-style: solid;
 	border-top-width: 5px;
 	border-top-color: #777;
 }
 
-table#training tr.indoor_men,
-table#training_legend tr td.indoor_men
+table#event tr.indoor_men,
+table#event_legend tr td.indoor_men
 {
 	background-color: #aecde8;
 }
 
-table#training tr.game_men,
-table#training_legend tr td.game_men
+table#event tr.game_men,
+table#event_legend tr td.game_men
 {
 	background-color: #5e9bcf;
 }
 
-table#training tr.indoor_women,
-table#training_legend tr td.indoor_women
+table#event tr.indoor_women,
+table#event_legend tr td.indoor_women
 {
 	background-color: #ffadad;
 }
 
-table#training tr.game_women,
-table#training_legend tr td.game_women
+table#event tr.game_women,
+table#event_legend tr td.game_women
 {
 	background-color: #ff6666;
 }
 
-table#training tr.beach,
-table#training_legend tr td.beach
+table#event tr.beach,
+table#event_legend tr td.beach
 {
 	background-color: #ffe384;
 }
 
-table#training tr.misc,
-table#training_legend tr td.misc
+table#event tr.misc,
+table#event_legend tr td.misc
 {
 	background-color: #74cd48;
 }
 
-table#training tr.external,
-table#training_legend tr td.external
+table#event tr.indoor_kids,
+table#event_legend tr td.indoor_kids
 {
-	background-color: #eeeeee;
+	background-color: #9f6cd9;
 }
 
-table#training tr#event:hover
+table#event tr.external,
+table#event_legend tr td.external
+{
+	background-color: #cfcfcf;
+}
+
+table#event tr#event:hover
 {
 	background-color: #dddddd;
 }

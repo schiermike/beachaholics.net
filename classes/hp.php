@@ -118,7 +118,7 @@ class HP {
 		else
 			echo "<div style='position:absolute; z-index: 1; top: 70px; width: 24px; left: 50%; margin-left: -444px; padding: 10px; background-color: white;'>";
 		
-		echo "<a href='training.php'><img src='img/navi/training.gif' alt='Events' title='Events'/></a>\n";
+		echo "<a href='event.php'><img src='img/navi/event.gif' alt='Events' title='Events'/></a>\n";
 		echo "<a href='ranking.php'><img src='img/navi/ranking.png' alt='Platzierung' title='Platzierung'/></a>\n";
 		if (!getUser()->isGuest())
 			echo "<a href='users.php'><img src='img/navi/spieler.png' alt='Spielerübersicht' title='Spielerübersicht'/></a>\n";

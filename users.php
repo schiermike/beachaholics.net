@@ -242,18 +242,19 @@ function printPlayerTable() {
 		echo $row['email'];
 		echo "</td>";
 		echo "<td style='text-align: left; font-size: x-small;' nowrap='nowrap'>";
-		printStatistics($row['id'], $row['creation_date'], $row['roles']);
+//		printStatistics($row['id'], $row['creation_date'], $row['roles']);
 		echo "</td>";
 		echo "</tr>\n";
 	}
 	echo "</table>\n";
-	
+/*	
 	echo "<br/><div align='right' style='font-size:x-small;'><table>\n";
 	echo "<tr><td>Trainingsbeteiligung Mittwoch und Freitag</td><td><img src='img/chartgreen.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
 	echo "<tr><td>Trainingsbeteiligung generell</td><td><img src='img/chartblue.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
 	echo "<tr><td>Spielbeteiligung</td><td><img src='img/chartred.gif' border='0' height='12' width='20' alt=''/></td></tr>\n";
 	echo "<tr><td style='text-align:right' colspan='2'>gemessen seit ".STAT_START_DATE."</td></tr>\n";
 	echo "</table></div>\n";
+*/
 }
 
 function printStatistics($playerId, $creationDate, $privileges) {
