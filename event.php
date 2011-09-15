@@ -327,7 +327,7 @@ function printEventRow($eventId, $type, $startTime, $endTime, $location, $commen
 		$cclass .= " topborder";
 		
 	echo "<tr class='".$cclass."'";
-	if (Event::userCanJoin($type))
+	if (Event::userCanJoin($type) || Event::isJoinable($type) && getUser()->isItMe())
 		echo " style='cursor:pointer;' onclick='location.href=\"".$_SERVER['PHP_SELF']."?event_id=".$eventId."&amp;action=show_details\"'";
 	echo ">\n";
 	echo "<td nowrap='nowrap' style='padding-left: 5px; padding-right:15px'>";
@@ -401,7 +401,7 @@ function printEventDetails($eventId) {
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	
-	if (!Event::userCanJoin($row['type']))
+	if (!Event::userCanJoin($row['type']) && !getUser()->isItMe())
 		return;
 	
 	echo "<table cellspacing='0' cellpadding='2' width='100%' id='event'>";
