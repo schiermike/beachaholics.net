@@ -117,7 +117,7 @@ function resetTimeFrame() {
 	printAccountTable();
 }
 
-function sendDownload($id) {
+function sendDownload() {
 	if (!isset($_GET['id']))
 		Log::fatal("Cannot download account entry attachment an ID");
 		
