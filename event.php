@@ -96,6 +96,7 @@ function printAddModifyForm($id=NULL, $type=NULL, $startDate=NULL, $endDate=NULL
 		$type=$row['type'];
 	}
 	$startDate = $startDate == NULL ? getdate() : getdate(strtotime($startDate));
+	$endDateKnown = $endDate != NULL;
 	$endDate = $endDate == NULL ? getdate() : getdate(strtotime($endDate));
 	
 	if ($id!==NULL && !Event::userCanModify($type) )
@@ -139,8 +140,11 @@ function printAddModifyForm($id=NULL, $type=NULL, $startDate=NULL, $endDate=NULL
 	
 	echo "<tr><td style='vertical-align: top; text-align:right'>Endzeit:</td>";
 	echo "<td>";
-	echo "<input type='checkbox' name='set_end_date' value='Endzeit setzen' ".($endDate == NULL ? "" : "checked='checked'")."/>";
+	echo "<input type='checkbox' name='set_end_date' value='Endzeit setzen' ";
+	echo $endDateKnown ? "checked='checked' " : "";
+	echo "onchange='document.getElementById(\"enddatefield\").style.visibility = this.checked ? \"visible\" : \"hidden\";'/>";
 	echo "<br/>";
+	echo "<div id='enddatefield' style='visibility:" . ($endDateKnown ? "visible" : "hidden" ) . "'>";
 	echo "<input type='text' readonly='readonly' name='end_date_day' size='10' value='".$endDate['year']."-".$endDate['mon']."-".$endDate['mday']."'/><a href='javascript:cal2.popup();'><img src='img/cal.gif' alt=''/></a>";
 	echo "&nbsp;&nbsp;";
 	echo "<select name='end_date_hour' id='end_date_hour'>";
@@ -152,6 +156,7 @@ function printAddModifyForm($id=NULL, $type=NULL, $startDate=NULL, $endDate=NULL
 	for ($i=0;$i<60;$i+=5)
 		echo "<option value='".$i."' ".($i == $endDate['minutes'] ? "selected='selected'" : "").">".$i."</option>";
 	echo "</select> ";
+	echo "</div>";
 	echo "</td></tr>\n";
 	
 	echo "<tr><td style='text-align:right'>Örtlichkeit:</td>";
@@ -326,7 +331,7 @@ function printEventRow($eventId, $type, $startTime, $endTime, $location, $commen
 	if ($isFirstNewEntry)
 		$cclass .= " topborder";
 		
-	echo "<tr class='".$cclass."'";
+	echo "<tr class='".$cclass."' title = '" . Event::toString($type) . "'";
 	if (Event::userCanJoin($type) || Event::isJoinable($type) && getUser()->isItMe())
 		echo " style='cursor:pointer;' onclick='location.href=\"".$_SERVER['PHP_SELF']."?event_id=".$eventId."&amp;action=show_details\"'";
 	echo ">\n";

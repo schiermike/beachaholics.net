@@ -30,18 +30,18 @@ function create_icaldata() {
 	$output .= "END:STANDARD\n";
 	$output .= "END:VTIMEZONE\n";
 	
-	$result = getDB()->query("SELECT Zeit, Endzeit, Bemerkung, Ort, Typ, Link FROM Events");
+	$result = getDB()->query("SELECT start_time, end_time, description, location, type, link FROM event");
 	
 	while ($row = mysql_fetch_assoc($result)) {
 		$output .= "BEGIN:VEVENT\n";
 	
-		$output .= "DTSTART:".toIcalTime($row['Zeit'])."\n";
-		if ($row['Endzeit'] != Null)
-			$output .= "DTEND:".toIcalTime($row['Endzeit'])."\n";
-		$output .= "SUMMARY:".Event::toString($row['Typ'])."\n";
-		$output .= "DESCRIPTION:".$row['Bemerkung']." ".$row['Link']."\n";
-		$output .= "LOCATION:".$row['Ort']."\n";
-		$output .= "CATEGORIES: Beachaholics,".Event::toString($row['Typ'])."\n";
+		$output .= "DTSTART:".toIcalTime($row['start_time'])."\n";
+		if ($row['end_time'] != Null)
+			$output .= "DTEND:".toIcalTime($row['end_time'])."\n";
+		$output .= "SUMMARY:".Event::toString($row['type'])."\n";
+		$output .= "DESCRIPTION:".$row['description']." ".$row['link']."\n";
+		$output .= "LOCATION:".$row['location']."\n";
+		$output .= "CATEGORIES: Beachaholics,".Event::toString($row['type'])."\n";
 		$output .= "END:VEVENT\n";
 	}
 	$output .= "END:VCALENDAR\n";

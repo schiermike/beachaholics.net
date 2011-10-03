@@ -2,13 +2,14 @@
 	require_once "database.php";
 
 	class User {
-		public static $ROLE_ADMIN        = 0x20;
-		public static $ROLE_VORSTAND     = 0x10;
-		public static $ROLE_INDOOR_MEN   = 0x04;
-		public static $ROLE_INDOOR_WOMEN = 0x08;
-		public static $ROLE_BEACHAHOLIC  = 0x02;
-		public static $ROLE_MEMBER       = 0x01;
-		public static $ROLE_NONE         = 0x00;  // jeder
+		public static $ROLE_ADMIN         = 0x20;
+		public static $ROLE_VORSTAND      = 0x10;
+		public static $ROLE_INDOOR_MEN    = 0x04;
+		public static $ROLE_INDOOR_WOMEN  = 0x08;
+		public static $ROLE_INDOOR_WOMEN2 = 0x40;
+		public static $ROLE_BEACHAHOLIC   = 0x02;
+		public static $ROLE_MEMBER        = 0x01;
+		public static $ROLE_NONE          = 0x00;  // jeder
 		
 		public static $GUEST_ID = 1000;
 		
@@ -40,6 +41,7 @@
 				User::$ROLE_VORSTAND, 
 				User::$ROLE_INDOOR_MEN, 
 				User::$ROLE_INDOOR_WOMEN,
+				User::$ROLE_INDOOR_WOMEN2,
 				User::$ROLE_BEACHAHOLIC,
 				User::$ROLE_MEMBER,
 				User::$ROLE_NONE
@@ -60,6 +62,8 @@
 					return "Hallenspieler";
 				case User::$ROLE_INDOOR_WOMEN:
 					return "Hallenspielerin";
+				case User::$ROLE_INDOOR_WOMEN2:
+					return "Hallenspielerin Amateur";
 				case User::$ROLE_BEACHAHOLIC:
 					return "Beachaholic";
 				case User::$ROLE_MEMBER:

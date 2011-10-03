@@ -117,6 +117,18 @@ table#event_legend tr td.game_women
 	background-color: #ff6666;
 }
 
+table#event tr.indoor_women2,
+table#event_legend tr td.indoor_women2
+{
+	background-color: #cf8af3;
+}
+
+table#event tr.game_women2,
+table#event_legend tr td.game_women2
+{
+	background-color: #ba4cf3;
+}
+
 table#event tr.beach,
 table#event_legend tr td.beach
 {
@@ -126,19 +138,19 @@ table#event_legend tr td.beach
 table#event tr.misc,
 table#event_legend tr td.misc
 {
-	background-color: #74cd48;
+	background-color: #cccccc;
 }
 
 table#event tr.indoor_kids,
 table#event_legend tr td.indoor_kids
 {
-	background-color: #9f6cd9;
+	background-color: #42b33a;
 }
 
 table#event tr.external,
 table#event_legend tr td.external
 {
-	background-color: #cfcfcf;
+	background-color: #eeeeee;
 }
 
 table#event tr#event:hover

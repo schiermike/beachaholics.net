@@ -155,28 +155,37 @@ function printUserEditForm($userid) {
 
 	echo "<b>Telefon:</b> <input type='text' name='phone' size='15' value='";
 	echo isset($row['phone']) ? $row['phone'] : "";
-	echo "'/><br/><br/>\n";
+	echo "'/>\n";
+	
+	echo "<table><tr><td width='200'>";
 	
 	if (getUser()->isAdmin()) {
-		echo "<b>Rollen: </b>";
+		echo "<b>Rollen:</b><br/>";
 		foreach (User::getRoles() as $role) {
 			if ($role == 0)
 				continue;
 			echo "<input type='checkbox' name='roles[]' value='$role' ";
 			if (User::authorized($role, $row['roles']))
 				echo "checked='checked'";
-			echo "/>".User::roleToString($role)."&nbsp;&nbsp;&nbsp;";
+			echo "/>".User::roleToString($role)."<br/>";
 		}
-		echo "<br/><br/>";
 	}
+	
+	echo "</td><td>";
+
+	echo "<input type='hidden' name='MAX_FILE_SIZE' value='200000'>";
+	echo "<b>Benutzerbild:</b>";
+	echo "<table><tr><td>";
+	echo "<img src='userpic.php?id=$userid' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
+	echo "</td><td>";
+	echo "<input type='file' name='picture'  size='25'><br/>(".User::$PIC_WIDTH."x".User::$PIC_HEIGHT." Pixel, JPEG)<br/>";
+	echo "</td></tr></table>";
+	
+	
+	echo "</td></tr></table>";
 	
 	if ($userid == User::$GUEST_ID)
 		echo "<b>Initiales Passwort:</b> <input type='text' name='password'/><br/><br/>";
-		
-	echo "<input type='hidden' name='MAX_FILE_SIZE' value='200000'>";
-	echo "<b>Benutzerbild:</b> <input type='file' name='picture'  size='40'> (".User::$PIC_WIDTH."x".User::$PIC_HEIGHT." Pixel, JPEG)<br/>";
-	echo "<img src='userpic.php?id=$userid' width='".User::$PIC_WIDTH."' height='".User::$PIC_HEIGHT."' alt=''/>";
-	
 	echo "<div style='text-align:right'><input type='submit' value='Ok'/></div>";
 	
 	echo "</form>\n";
