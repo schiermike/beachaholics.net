@@ -295,6 +295,9 @@ class HP {
 		return isset($_GET[$name]) || isset($_POST[$name]);
 	}
 
+	/**
+	 * Checks whether the param is set and numeric
+	 */
 	public static function isParamNumeric($name) {
 		if (!HP::isParamSet($name))
 			return false;

@@ -23,9 +23,9 @@ class Log {
 			$prefix .= "__";
 		}
 		
-		$sessionInfo = str_replace("'", "", $sessionInfo);
-		$bugMessage = str_replace("'", "", $bugMessage);
-		$stackTrace = str_replace("'", "", $stackTrace);			
+		$sessionInfo = getDB()->escape($sessionInfo);
+		$bugMessage = getDB()->escape($bugMessage);
+		$stackTrace = getDB()->escape($stackTrace);			
 		
 		getDB()->query("INSERT INTO log (time, session, message, stacktrace) VALUES (NOW(), '$sessionInfo', '$bugMessage', '$stackTrace')");
 		

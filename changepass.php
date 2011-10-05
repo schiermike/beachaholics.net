@@ -32,30 +32,31 @@ function printPassFields() {
 }
 
 function printPassChangeForm() {	
-	if ( !isset($_POST['old_password']) || !isset($_POST['new_password']) || !isset($_POST['new_password_copy']) ) {
+	if ( !HP::isParamSet('old_password') || !HP::isParamSet('new_password') || !HP::isParamSet('new_password_copy') ) {
 		printPassFields();
 		return;
 	}
 	
-	if ($_POST['new_password'] != $_POST['new_password_copy']) {
+	if (HP::getParam('new_password') != HP::getParam('new_password_copy')) {
 		HP::printErrorText("Passwörter müssen ident sein!");
 		printPassFields();
 		return;
 	}
 	
-	if ($_POST['old_password'] == $_POST['new_password']) {
+	if (HP::getParam('old_password') == HP::getParam('new_password')) {
 		HP::printErrorText("Das neue und das alte Passwort müssen sich unterscheiden!");
 		printPassFields();
 		return;
 	}
 	
-	if (strlen($_POST['new_password']) < 5) {
+	if (strlen(HP::getParam('new_password')) < 5) {
 		HP::printErrorText("Das gewählte Passwort ist zu kurz!");
 		printPassFields();
 		return;
 	}
 	
-	$sql = "UPDATE user SET password='".getDB()->escape($_POST['new_password'])."' WHERE id=".getUser()->id." AND password='".getDB()->escape($_POST['old_password'])."'";
+	$sql = "UPDATE user SET password='" . getDB()->escape(HP::getParam('new_password')) . 
+		"' WHERE id=" . getUser()->id . " AND password='" . getDB()->escape(HP::getParam('old_password')) . "'";
 	$request = getDB()->query($sql);
 	if (mysql_affected_rows()==0) {
 		HP::printErrorText("Altes Passwort muss korrekt sein!");

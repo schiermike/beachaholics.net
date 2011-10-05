@@ -1,18 +1,20 @@
 <?php
 
+require_once "classes/hp.php";
 require_once "classes/database.php";
 require_once "classes/session.php";
 
-if (!isset($_GET['id']))
+if (!HP::isParamSet('id'))
 	exit();
 	
-printUserPicture($_GET['id']);
+printUserPicture(HP::getParam('id'));
 
 /**
  * returns the picture with the given id from the user-database
  */
-function printUserPicture($userid) {	
-	$pictureId = $_GET['id'];
+function printUserPicture($id) {	
+	if (!is_numeric($id))
+		return;
 		
 	Session::initialize();
 		
@@ -22,7 +24,7 @@ function printUserPicture($userid) {
 	header("Pragma: public");
 	header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 	
-	$result = getDB()->query("SELECT avatar FROM user WHERE id=".$userid);
+	$result = getDB()->query("SELECT avatar FROM user WHERE id=" . $id);
 	if (mysql_num_rows($result) == 0)
 		exit();
 	list($pictureData) = mysql_fetch_row($result);

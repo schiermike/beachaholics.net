@@ -10,39 +10,39 @@ HP::printPageTail();
 // ===================================================================
 
 function printPage() {
-	if (!getUser()->isAuthorized(User::$ROLE_MEMBER)) {
+	if (!getUser()->isAdmin()) {
 		printText();
 		return;
 	}
 	
 	switch(HP::getParam('action')) {
 		case 'edit':
-			printEditField();
+			printEditField(HP::getParam('date'));
 			break;
 		case 'confirm':
-			confirm();
+			confirm(HP::getParam('content'));
 		default:
 			printText();
 	}
 }
 
-function printEditField() {
+function printEditField($date) {
 	echo "<form method='post' action='".$_SERVER['PHP_SELF']."'>";
 
 	$result = NULL;
-	if (isset($_GET['date']))
-		$result = getDB()->query("SELECT text FROM content WHERE date='" . $_GET['date'] . "'");
+	if ($date != NULL)
+		$result = getDB()->query("SELECT text FROM content WHERE date='" . getDB()->escape($date) . "'");
 	else
 		$result = getDB()->query("SELECT text FROM content WHERE date=(SELECT MAX(date) FROM content)");
 	$row = mysql_fetch_assoc($result);
 
-	echo "<center><textarea id='content' name='content' style='width:98%' cols='1' rows='30'>".$row['text']."</textarea></center>";
+	echo "<center><textarea id='content' name='content' style='width:98%' cols='1' rows='30'>" . $row['text'] . "</textarea></center>";
 	echo "<div style='text-align:right'>Text vom ";
 	echo "<select name='date' onChange='window.location=\"?action=edit&date=\" + this.value'>";
 	$result = getDB()->query("SELECT date FROM content ORDER BY date DESC");
 	while ($row = mysql_fetch_assoc($result)) {
 		echo "<option value='" . $row['date'] . "'";
-		if (isset($_GET['date']) && $_GET['date'] == $row['date'])
+		if ($date == $row['date'])
 			echo "selected='selected'";
 		echo ">" . $row['date'] . "</option>";
 	}
@@ -55,9 +55,9 @@ function printEditField() {
 	echo "</form>";
 }
 
-function confirm() {
+function confirm($content) {
 	getDB()->query("DELETE FROM content WHERE pagename='start' AND date=DATE(NOW())");
-	getDB()->query("INSERT INTO content (pagename, date, text) VALUES ('start', DATE(NOW()), '" . getDB()->escape($_POST['content']) . "')");
+	getDB()->query("INSERT INTO content (pagename, date, text) VALUES ('start', DATE(NOW()), '" . getDB()->escape($content) . "')");
 }	
 
 function printText() {

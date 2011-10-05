@@ -22,7 +22,8 @@ class DB {
 	}
 
 	public function escape($string) {
-		return mysql_escape_string($string);
+		$this->getConnection(); // the subsequent call requires an open connection
+		return mysql_real_escape_string($string);
 	}
 	
 	/**

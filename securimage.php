@@ -930,7 +930,7 @@ class Securimage {
     return $out_data;
   }
 } /* class Securimage */
-if(isset($_GET['captchaImage']))
+if(HP::isParamSet('captchaImage'))
 {
 	$captcha = new Securimage();
 	$captcha->show();

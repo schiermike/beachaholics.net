@@ -3,9 +3,6 @@ require_once "init.php";
 
 if (!getUser()->isItMe())
 	exit(0);
-
-if (!isset($_GET['action']))
-	$_GET['action'] = '';
 	
 switch(HP::getParam('action')) {
 	case 'clear':
@@ -59,7 +56,8 @@ function clearLog() {
 }
 
 function deleteLogEntry($logId) {
-	getDB()->query("DELETE FROM log WHERE id=".$logId);
+	if (is_numeric($logId))
+		getDB()->query("DELETE FROM log WHERE id=" . $logId);
 }
 
 ?>

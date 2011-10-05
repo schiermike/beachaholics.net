@@ -10,25 +10,25 @@ HP::printPageTail();
 // ===================================================================
 
 function printPage() {
-	if (!getUser()->isAuthorized(User::$ROLE_INDOOR_MEN | User::$ROLE_INDOOR_WOMEN)) {
+	if (!getUser()->isAuthorized(User::$ROLE_ADMIN | User::$ROLE_INDOOR_MEN | User::$ROLE_INDOOR_WOMEN)) {
 		HP::printLoginError();
 		return;
 	}
 
 	switch (HP::getParam('action')) {
 		case 'add_or_modify_entry':
-			addOrModifyEntry();
+			addOrModifyEntry(HP::getParam('id'), HP::getParam('userid'), HP::getParam('date'), HP::getParam('distance'), HP::getParam('extra'), HP::getParam('note'), HP::getParam('state'));
 			break;
 		case 'print_edit_entry':
 			printToolBar();
-			printAddModifyForm();
+			printAddModifyForm(HP::getParam('id'));
 			printDrivingTable();
 			break;
 		case 'ask_delete_entry':
-			printAskDelete();
+			printAskDelete(HP::getParam('id'));
 			break;
 		case 'delete_entry':
-			deleteEntry();
+			deleteEntry(HP::getParam('id'));
 			break;
 		case 'confirm_entry':
 			confirmEntry();
@@ -43,15 +43,15 @@ function printPage() {
 	}	
 }
 
-function deleteEntry() {
-	if (!isset($_GET['id']))
+function deleteEntry($id) {
+	if (!is_numeric($id))
 		Log::fatal("Cannot delete driving cost entry without an ID");
 	if(!getUser()->isAdmin()) {
 		HP::printLoginError();
 		return;
 	}
 	
-	$sql="DELETE FROM driving WHERE id=".$_GET['id'];
+	$sql="DELETE FROM driving WHERE id=" . $id;
 	
 	if(getDB()->query($sql)) {
 		printToolBar();
@@ -59,8 +59,8 @@ function deleteEntry() {
 	}
 }
 
-function printAskDelete() {
-	if (!isset($_GET['id']))
+function printAskDelete($id) {
+	if (!is_numeric($id))
 		Log::fatal("Cannot delete driving cost entry without an ID");
 	printToolBar();
 	
@@ -68,29 +68,29 @@ function printAskDelete() {
 	echo "<form name='form1' method='get' action='".$_SERVER['PHP_SELF']."'>";
 	echo "<p style='text-align:center'>";
 	echo "<input type='submit' name='Submit' value='Wirklich löschen'/>";
-	echo "<input type='hidden' name='id' value='".$_GET['id']."'/>";
+	echo "<input type='hidden' name='id' value='" . $id . "'/>";
 	echo "<input type='hidden' name='action' value='delete_entry'/>";
 	echo "</p>";
 	echo "</form>"; 
 	echo "<hr/>";
 	
-	printDrivingTable($_GET['id']);
+	printDrivingTable($id);
 }
 
-function addOrModifyEntry() {
+function addOrModifyEntry($id, $userid, $date, $distance, $extra, $note, $state) {
 	if (!getUser()->isAdmin()) {
 		HP::printLoginError();
 		return;
 	}
 	
-	if ( !isset($_GET['date']) || !isset($_GET['distance']) || !isset($_GET['extra']) || !isset($_GET['note']) || !isset($_GET['userid']))
+	if ( !is_numeric($userid) || $date == NULL || $distance == NULL || $extra == NULL || $note == NULL)
 		Log::fatal("Cannot add/change driving cost entry due to missing parameters!");
 	
-	$_GET['state'] = isset($_GET['state']) ? 1 : 0;
-	$_GET['distance'] = str_replace(',','.',$_GET['distance']); 		
-	$_GET['extra'] = str_replace(',','.',$_GET['extra']);
+	$state = $state == NULL ? 0 : 1;
+	$distance = str_replace(',','.',$distance); 		
+	$extra = str_replace(',','.',$extra);
 	
-	if (!is_numeric($_GET['distance']) || !is_numeric($_GET['extra']) || $_GET['date']=='' || $_GET['note']=='') {
+	if (!is_numeric($userid) || !is_numeric($distance) || !is_numeric($extra) || $date=='' || $note=='' || !is_numeric($state)) {
 		printToolBar();
 		HP::printErrorText("Eingabedaten sind fehlerhaft!");
 		printAddModifyForm();
@@ -98,21 +98,22 @@ function addOrModifyEntry() {
 		return;
 	}
 	
-	if(isset($_GET['id']))
-		$sql = "UPDATE driving SET user_id=".$_GET['userid'].", date='".$_GET['date']."', distance='".$_GET['distance']."', extra='".$_GET['extra']."', note='".$_GET['note']."', state=".$_GET['state']." WHERE id=".$_GET['id'];	
+	if(is_numeric($id))
+		$sql = "UPDATE driving SET user_id=" . $userid . ", date='" . getDB()->escape($date) . "', distance=" . $distance .
+			", extra=" . $extra . ", note='" . getDB()->escape($note) . "', state=" . $state . " WHERE id=" . $id;	
 	else
-		$sql = "INSERT INTO driving (user_id, date, distance, extra, note, state) VALUES (".$_GET['userid'].", '".$_GET['date']."','".$_GET['distance']."','".$_GET['extra']."', '".$_GET['note']."', ".$_GET['state'].")";
+		$sql = "INSERT INTO driving (user_id, date, distance, extra, note, state) VALUES (" . $userid . 
+			", '" . getDB()->escape($date) . "','" . $distance . "','" . $extra . "', '" . getDB()->escape($note) . "', " . $state . ")";
 
 	getDB()->query($sql);
 	printToolBar();
 	printDrivingTable();
 }
 
-function printAddModifyForm() {
-	$date = $note = $state = "";
-	$distance = $extra = 0;
-	if (isset($_GET['id'])) {
-		$sql = "SELECT user_id, date, distance, extra, note, state FROM driving WHERE id=".$_GET['id'];
+function printAddModifyForm($id, $userid = 0, $date = '', $distance = 0, $extra = 0, $note = '') {
+
+	if (is_numeric($id)) {
+		$sql = "SELECT user_id, date, distance, extra, note, state FROM driving WHERE id=" . $id;
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		
@@ -125,11 +126,11 @@ function printAddModifyForm() {
 	}
 	
 	echo "<p style='text-align:center'><b>";
-	echo isset($_GET['id']) ? "Eintragung ändern" : "Eintragung hinzufügen";
+	echo is_numeric($id) ? "Eintragung ändern" : "Eintragung hinzufügen";
 		
 	echo "</b></p>";
 	
-	echo "<form name='accountForm' method='get' action='".$_SERVER['PHP_SELF']."' enctype='multipart/form-data'>";
+	echo "<form name='accountForm' method='get' action='" . $_SERVER['PHP_SELF'] . "' enctype='multipart/form-data'>";
 	echo "<table width='100%' style='text-align:center'>";
 	
 	$sql = "SELECT id, lastname, firstname FROM user where id != " . User::$GUEST_ID . " ORDER BY lastname, firstname";
@@ -142,20 +143,20 @@ function printAddModifyForm() {
 	echo "</select></td></tr>";
 	
 	echo "<tr><td style='text-align:right' width='40%'>Datum:</td>";
-	echo "<td><input type='text' readonly='readonly' name='date' size='9' value='".$date."'/>";
+	echo "<td><input type='text' readonly='readonly' name='date' size='9' value='" . $date . "'/>";
 	echo "<a href='javascript:calDate.popup();'><img src='img/cal.gif' alt='Datum wählen'/></a></td></tr>";
 	
 	echo "<tr><td style='text-align:right'>Gefahrene Kilometer:</td>";
-	echo "<td><input type='text' name='distance' size='10' value='".$distance."'/>KM</td></tr>";
+	echo "<td><input type='text' name='distance' size='10' value='" . $distance . "'/>KM</td></tr>";
 	
 	echo "<tr><td style='text-align:right'>Zusätzlicher Betrag:</td>";
-	echo "<td><input type='text' name='extra' size='10' value='".$extra."'/>&euro;</td></tr>";
+	echo "<td><input type='text' name='extra' size='10' value='" . $extra . "'/>&euro;</td></tr>";
 	
 	echo "<tr><td style='text-align:right'>Bemerkung:</td>";
-	echo "<td><input type='text' name='note' size='40' value='".$note."'/></td></tr>";
+	echo "<td><input type='text' name='note' size='40' value='" . $note . "'/></td></tr>";
 	
 	echo "<tr><td style='text-align:right'>Abgerechnet:</td>";
-	echo "<td><input type='checkbox' name='state' size='40' ".($state == 0 ? "" : "checked='checked'")."/></td></tr>";
+	echo "<td><input type='checkbox' name='state' size='40' ".(isset($state) ? "" : "checked='checked'")."/></td></tr>";
 	 
 	echo "</table>";
 	
@@ -164,15 +165,15 @@ function printAddModifyForm() {
 	echo "</script>";
 	
 	echo "<input type='hidden' name='action' value='add_or_modify_entry'/>";
-	if (isset($_GET['id']))
-		echo "<input type='hidden' name='id' value='".$_GET['id']."'/>";
+	if (is_numeric($id))
+		echo "<input type='hidden' name='id' value='" . $id . "'/>";
 	echo "<p style='text-align:center'><input type='submit' name='Submit' value='Bestätigen'/></p>";
 	echo "</form>";
 	echo "<hr/>";
 }
 
 function printToolBar() {
-	echo "<div align='right'><a href='".$_SERVER['PHP_SELF']."?action=print_edit_entry'><img src='img/money_add.png' alt='neu' title='neuen Eintrag erzeugen'/></a></div>";
+	echo "<div align='right'><a href='" . $_SERVER['PHP_SELF'] . "?action=print_edit_entry'><img src='img/money_add.png' alt='neu' title='neuen Eintrag erzeugen'/></a></div>";
 	echo "<hr/>\n";
 }
 

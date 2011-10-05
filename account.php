@@ -3,7 +3,7 @@ require_once "init.php";
 define('COLOR_OUT','#ff0000');
 define('COLOR_IN','#008800');
 
-$hp_envelope = !isset($_GET['action']) || ($_GET['action'] != 'print' && $_GET['action'] != 'download');
+$hp_envelope = HP::getParam('action') != 'print' && HP::getParam('action') != 'download';
 if ($hp_envelope)
 	HP::printPageHead("Kontoübersicht", "img/top_account.png");
 
@@ -25,37 +25,37 @@ function printPage() {
 		$_SESSION['account_start_date'] = NULL;
 	if (!isset($_SESSION['account_end_date']))
 		$_SESSION['account_end_date'] = NULL;
-	if (isset($_GET['start_date']))
-		$_SESSION['account_start_date'] = $_GET['start_date'];
-	if (isset($_GET['end_date']))
-		$_SESSION['account_end_date'] = $_GET['end_date'];
+	if (HP::isParamSet('start_date'))
+		$_SESSION['account_start_date'] = HP::getParam('start_date');
+	if (HP::isParamSet('end_date'))
+		$_SESSION['account_end_date'] = HP::getParam('end_date');
 	
 	switch(HP::getParam('action')) {
 		case 'add_or_modify_entry':
-			addOrModifyEntry();
+			addOrModifyEntry(HP::getParam('id'), HP::getParam('date'), HP::getParam('amount'), HP::getParam('note'));
 			break;
 		case 'print_edit_entry':
 			printToolBar();
-			printAddModifyForm();
+			printAddModifyForm(HP::getParam('id'));
 			printAccountTable();
 			break;
 		case 'ask_delete_entry':
-			printAskDelete();
+			printAskDelete(HP::getParam('id'));
 			break;
 		case 'delete_entry':
-			deleteEntry();
+			deleteEntry(HP::getParam('id'));
 			break;
 		case 'confirm_entry':
-			confirmEntry();
+			confirmEntry(HP::getParam('id'));
 			break;
 		case 'ask_confirm_entry':
-			printAskConfirm();
+			printAskConfirm(HP::getParam('id'));
 			break;
 		case 'print':
 			printPrintPage();
 			break;
 		case 'download':
-			sendDownload();
+			sendDownload(HP::getParam('id'));
 			break;
 		case 'reset_timeframe':
 			resetTimeFrame();
@@ -67,11 +67,11 @@ function printPage() {
 	}	
 }
 
-function deleteEntry() {
-	if (!isset($_GET['id']))
+function deleteEntry($id) {
+	if (!is_numeric($id))
 		return;
 
-	$sql="DELETE FROM account WHERE id=".$_GET['id']." AND checked_by IS NULL";
+	$sql="DELETE FROM account WHERE id=" . $id . " AND checked_by IS NULL";
 	
 	if (getDB()->query($sql)) {
 		printToolBar();
@@ -99,10 +99,10 @@ function printToolBar() {
 }
 
 function confirmEntry() {
-	if (!isset($_GET['id']))
+	if (!is_numeric($id))
 		Log::fatal("Cannot confirm the account entry without an ID");
 		
-	$sql = "UPDATE account SET checked_by=".getUser()->id." WHERE id=".$_GET['id'];
+	$sql = "UPDATE account SET checked_by=" . getUser()->id . " WHERE id=" . $id;
 	
 	if (getDB()->query($sql) && mysql_affected_rows()==1) {
 		printToolBar();
@@ -117,28 +117,28 @@ function resetTimeFrame() {
 	printAccountTable();
 }
 
-function sendDownload() {
-	if (!isset($_GET['id']))
+function sendDownload($id) {
+	if (!is_numeric($id))
 		Log::fatal("Cannot download account entry attachment an ID");
 		
-	$sql="SELECT attachment, attach_name, attach_type, attach_size FROM account WHERE id=".$_GET['id'];
+	$sql="SELECT attachment, attach_name, attach_type, attach_size FROM account WHERE id=" . $id;
 	$result = mysql_query($sql);
 	$row = mysql_fetch_assoc($result);
 	
-	header("Content-length: ".$row['attach_size']);
-	header("Content-type: ".$row['attach_type']);
-	header("Content-Disposition: attachment; filename=".$row['attach_name']);
+	header("Content-length: " . $row['attach_size']);
+	header("Content-type: " . $row['attach_type']);
+	header("Content-Disposition: attachment; filename=" . $row['attach_name']);
 	echo $row['attachment'];
 	
 	exit();
 }
 
-function printAskConfirm() {
-	if (!isset($_GET['id']))
+function printAskConfirm($id) {
+	if (!is_numeric($id))
 		Log::fatal("Cannot delete account entry without an ID");
 	printToolBar();
 	
-	$sql = "SELECT lastname, firstname FROM user JOIN account ON user.id=account.created_by WHERE account.id=".$_GET['id'];
+	$sql = "SELECT lastname, firstname FROM user JOIN account ON user.id=account.created_by WHERE account.id=" . $id;
 	$result = getDB()->query($sql);
 	$row = mysql_fetch_assoc($result);
 	
@@ -146,17 +146,17 @@ function printAskConfirm() {
 	echo "<form name='form1' method='get' action='".$_SERVER['PHP_SELF']."'>";
 	echo "<p style='text-align:center'>";
 	echo "<input type='submit' name='Submit' value='Bestätigen'/>";
-	echo "<input type='hidden' name='id' value='".$_GET['id']."'/>";
+	echo "<input type='hidden' name='id' value='" . $id . "'/>";
 	echo "<input type='hidden' name='action' value='confirm_entry'/>";
 	echo "</p>";
 	echo "</form>"; 
 	echo "<br/>";
 	
-	printAccountTable($_GET['id']);
+	printAccountTable($id);
 }
 
-function printAskDelete() {
-	if (!isset($_GET['id']))
+function printAskDelete($id) {
+	if (!is_numeric($id))
 		Log::fatal("Cannot delete account entry without an ID");
 	printToolBar();
 	
@@ -164,26 +164,24 @@ function printAskDelete() {
 	echo "<form name='form1' method='get' action='".$_SERVER['PHP_SELF']."'>";
 		echo "<p style='text-align:center'>";
 		echo "<input type='submit' name='Submit' value='Wirklich löschen'/>";
-		echo "<input type='hidden' name='id' value='".$_GET['id']."'/>";
+		echo "<input type='hidden' name='id' value='" . $id . "'/>";
 		echo "<input type='hidden' name='action' value='delete_entry'/>";
 		echo "</p>";
 	echo "</form>"; 
 	echo "<hr/>";
 	
-	printAccountTable($_GET['id']);
+	printAccountTable($id);
 }
 
-function addOrModifyEntry() {
-	if (!isset($_POST['date']) || !isset($_POST['amount']) || !isset($_POST['note']))
+function addOrModifyEntry($id, $date, $amount, $note) {
+	if ($date == NULL || $amount == NULL || $note == NULL)
 		Log::fatal("Not sufficient parameters for account add/change operation");
 
-	$amount=str_replace(',','.',$_POST['amount']);	
-	if (!is_numeric($_POST['amount']) || $_POST['date']=='' || $_POST['note']=='') {
+	$amount=str_replace(',','.',$amount);	
+	if (!is_numeric($amount) || $date=='' || $note=='') {
 		printToolBar();
 		HP::printErrorText("Eingabedaten sind fehlerhaft!");
-		if (isset($_POST['id']))
-			$_GET['id'] = $_POST['id'];
-		printAddModifyForm();
+		printAddModifyForm($id);
 		printAccountTable();
 		return;
 	}
@@ -203,10 +201,14 @@ function addOrModifyEntry() {
 		$attachmentSize="'".$_FILES['attached']['size']."'";
 	}
 
-	if (isset($_POST['id']))
-		$sql = "UPDATE account SET date='".$_POST['date']."', note='".$_POST['note']."', amount='".$_POST['amount']."', attachment=".$attachment.", attach_name=".$attachmentName.", attach_type=".$attachmentType.", attach_size=".$attachmentSize.", created_by=".getUser()->id.", checked_by=NULL WHERE id=".$_POST['id'];
+	if (is_numeric($id))
+		$sql = "UPDATE account SET date='" . $date . "', note='" . $note . "', amount='" . $amount . 
+		"', attachment=" . $attachment .	", attach_name=" . $attachmentName . ", attach_type=" . $attachmentType . 
+		", attach_size=" . $attachmentSize . ", created_by=" . getUser()->id . ", checked_by=NULL WHERE id=" . $id;
 	else
-		$sql = "INSERT INTO account (date, note, amount, created_by, attachment, attach_name, attach_type, attach_size) VALUES ('".$_POST['date']."','".$_POST['note']."',".$_POST['amount'].",".getUser()->id.", ".$attachment.", ".$attachmentName.", ".$attachmentType.", ".$attachmentSize.")";
+		$sql = "INSERT INTO account (date, note, amount, created_by, attachment, attach_name, attach_type, attach_size) 
+		VALUES ('" . $date . "','" . $note . "'," . $amount . "," . getUser()->id . ", " . $attachment . ", " . 
+		$attachmentName . ", " . $attachmentType . ", " . $attachmentSize . ")";
 	
 	if (getDB()->query($sql) && mysql_affected_rows()==1) {
 		printToolBar();
@@ -214,12 +216,12 @@ function addOrModifyEntry() {
 	}
 }
 
-function printAddModifyForm() {
+function printAddModifyForm($id) {
 	$date = "";
 	$amount = "";
 	$note = "";
-	if (isset($_GET['id'])) {
-		$sql = "SELECT date, note, amount FROM account WHERE id=" . $_GET['id'];
+	if (is_numeric($id)) {
+		$sql = "SELECT date, note, amount FROM account WHERE id=" . $id;
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		$date = $row['date'];
@@ -228,22 +230,22 @@ function printAddModifyForm() {
 	}
 
 	echo "<p style='text-align:center'><b>";
-	echo isset($_GET['id']) ? "Kontoeintrag ändern" : "Kontoeintrag hinzufügen";
+	echo is_numeric($id) ? "Kontoeintrag ändern" : "Kontoeintrag hinzufügen";
 		
 	echo "</b></p>";
 	
-	echo "<form name='accountForm' method='post' action='".$_SERVER['PHP_SELF']."' enctype='multipart/form-data'>";
+	echo "<form name='accountForm' method='post' action='" .$_SERVER['PHP_SELF'] . "' enctype='multipart/form-data'>";
 	echo "<table width='100%' style='text-align:center'>";
 	
 	echo "<tr><td style='text-align:right' width='30%'>Zeit:</td>";
-	echo "<td><input type='text' readonly='readonly' name='date' size='9' value='".$date."'/>";
+	echo "<td><input type='text' readonly='readonly' name='date' size='9' value='" . $date . "'/>";
 	echo "<a href='javascript:calDate.popup();'><img src='img/cal.gif' alt='Datum wählen'/></a></td></tr>";
 	
 	echo "<tr><td style='text-align:right'>Betrag:</td>";
-	echo "<td><input type='text' name='amount' size='10' value='".$amount."'/>&euro;</td></tr>";
+	echo "<td><input type='text' name='amount' size='10' value='" . $amount . "'/>&euro;</td></tr>";
 	
 	echo "<tr><td style='text-align:right'>Bemerkung:</td>";
-	echo "<td><textarea name='note' rows='6' cols='60'/>".$note."</textarea>";
+	echo "<td><textarea name='note' rows='6' cols='60'/>" . $note . "</textarea>";
 	echo "</td></tr>";
 	
 	echo "<tr><td style='text-align:right'>Beleg (optional):</td>";
@@ -257,8 +259,8 @@ function printAddModifyForm() {
 	echo "</script>";
 	
 	echo "<input type='hidden' name='action' value='add_or_modify_entry'/>";
-	if (isset($_GET['id']))
-		echo "<input type='hidden' name='id' value='".$_GET['id']."'/>";
+	if (is_numeric($id))
+		echo "<input type='hidden' name='id' value='" . $id . "'/>";
 	echo "<p style='text-align:center'><input type='submit' name='Submit' value='Bestätigen'/></p>";
 	echo "</form>";
 	echo "<hr/>";
@@ -279,10 +281,10 @@ function printPrintPage() {
 	
 	$sql = "SELECT id, date, note, amount FROM account ";
 	if ($_SESSION['account_start_date'] != NULL)
-		$sql .= "WHERE date>='" . $_SESSION['account_start_date'] . "' ";
+		$sql .= "WHERE date>='" . getDB()->escape($_SESSION['account_start_date']) . "' ";
 	if ($_SESSION['account_end_date'] != NULL) {
 		$sql .= $_SESSION['account_start_date'] == NULL ? "WHERE " : "AND ";
-		$sql .= "date<='" . $_SESSION['account_end_date'] . "' ";
+		$sql .= "date<='" . getDB()->escape($_SESSION['account_end_date']) . "' ";
 	}
 	$sql .= "ORDER BY date, note";
 	
@@ -292,8 +294,8 @@ function printPrintPage() {
 	$request = getDB()->query($sql);
 	
 	echo "<div style='text-align:right'>User: ".getUser()->getName()."<br/>";
-	echo "generiert: ".HP::getPHPTime()."<br/>";
-	echo "Zeitraum: ".$zeitraum; 
+	echo "generiert: " . HP::getPHPTime() . "<br/>";
+	echo "Zeitraum: " . $zeitraum; 
 	echo "</div><hr/>\n";
 	
 	echo "<table width='100%'>\n";
@@ -334,10 +336,10 @@ function printAccountTable($toDeleteId=NULL) {
 	$sql = "SELECT account.id as account_id, date, note, amount, attach_name, created_by, u1.nickname as created_by_nick, checked_by, u2.nickname AS checked_by_nick ";
 	$sql .= "FROM account JOIN user u1 ON u1.id=created_by LEFT JOIN user u2 ON u2.id=checked_by ";
 	if ($_SESSION['account_start_date'] != NULL)
-		$sql .= "WHERE date>='" . $_SESSION['account_start_date'] . "' ";
+		$sql .= "WHERE date>='" . getDB()->escape($_SESSION['account_start_date']) . "' ";
 	if ($_SESSION['account_end_date'] != NULL) {
 		$sql .= $_SESSION['account_start_date'] == NULL ? "WHERE " : "AND ";
-		$sql .= "date<='" . $_SESSION['account_end_date'] . "' ";
+		$sql .= "date<='" . getDB()->escape($_SESSION['account_end_date']) . "' ";
 	}
 	$sql .= "ORDER BY date, note";
 	$request = getDB()->query($sql);
@@ -349,7 +351,7 @@ function printAccountTable($toDeleteId=NULL) {
 	echo "<th style='padding-right:10px; text-align:right'>Betrag</th>";
 	echo "<th style='padding-right:10px; text-align:right'>Summe</th>";
 	echo "<th/><th/>";
-	echo "<th><a href='".$_SERVER['PHP_SELF']."?action=print_edit_entry'><img src='img/money_add.png' alt='neu' title='neuen Kontoeintrag anlegen'/></a></th>";
+	echo "<th><a href='" . $_SERVER['PHP_SELF'] . "?action=print_edit_entry'><img src='img/money_add.png' alt='neu' title='neuen Kontoeintrag anlegen'/></a></th>";
 	echo "<th/>";
 	echo "</tr>";
 

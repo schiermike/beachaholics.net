@@ -74,8 +74,12 @@
 		}
 		
 		public function __construct($id = NULL) {
-			if($id == NULL)
+			if ($id == NULL)
 				$id = User::$GUEST_ID;
+			if (!is_numeric($id)) {
+				Log::error("A non-numeric userid (" . $id . ") was used!");
+				exit();
+			}
 				
 			$result = getDB()->query("SELECT lastname, firstname, nickname, roles, gb_entries_per_page FROM user WHERE id=".$id);
 			$row = mysql_fetch_assoc($result);

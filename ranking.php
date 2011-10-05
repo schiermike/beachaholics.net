@@ -38,13 +38,13 @@ function printPage() {
 	echo " | " . getLigaLink(373, true, "Mixed Meister Playoff", "2009/2010");
 	echo "</div>";
 
-	if(!isset($_GET['tvvid']))
+	if(!HP::isParamSet('tvvid'))
 		return;
 	
-	echo "<h3>" . $_GET['name'] . "</h3>";
-	echo parseLigaTable($_GET['tvvid']);
-	if($_GET['showgames'])
-		echo "<br/>" . parseLigaGames($_GET['tvvid']);
+	echo "<h3>" . HP::getParam('name') . "</h3>";
+	echo parseLigaTable(HP::getParam('tvvid'));
+	if(HP::isParamSet('showgames'))
+		echo "<br/>" . parseLigaGames(HP::isParamSet('tvvid'));
 }
 
 function parseLigaTable($ligaid) {
