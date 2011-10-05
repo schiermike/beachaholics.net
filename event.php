@@ -66,18 +66,18 @@ function addModifyEvent($eventId, $eventType, $startDate, $endDate, $location, $
 		return;
 	}
 		
-	$endDate = $endDate == NULL ? "NULL" : "'$endDate'";
-	$link = $link == NULL ? "NULL" : "'$link'";
+	$endDate = $endDate == NULL ? "NULL" : esc($endDate);
+	$link = $link == NULL ? "NULL" : esc($link);
 		
 	if ($eventId==NULL) {
 		$result = getDB()->query("INSERT IGNORE INTO event (start_time, end_time, location, description, type, link) 
-			VALUES ('".$startDate."', " . $endDate . ", '".getDB()->escape($location)."', '".getDB()->escape($comment)."', " . $eventType . ", " . $link . ")");
+			VALUES (" . esc($startDate) . "," . $endDate . "," . esc($location) . "," . esc($comment) . "," . esc($eventType) . "," . $link . ")");
 		$eventId = mysql_insert_id();
 	}
 	else {
 		// Typ kann nicht geändert werden, da sonst Chaos
-		getDB()->query("UPDATE event SET start_time='".$startDate."', end_time=" . $endDate . ", location='".getDB()->escape($location) . 
-			"', description='".getDB()->escape($comment)."', link=" . $link . " WHERE id=" . $eventId);
+		getDB()->query("UPDATE event SET start_time=" . esc($startDate) . ", end_time=" . $endDate . ", location=" . esc($location) . 
+			", description=" . esc($comment) . ", link=" . $link . " WHERE id=" . esc($eventId));
 	}
 		
 	printEvents();
@@ -85,7 +85,7 @@ function addModifyEvent($eventId, $eventType, $startDate, $endDate, $location, $
 	
 function printAddModifyForm($id=NULL, $type=NULL, $startDate=NULL, $endDate=NULL, $location=NULL, $comment=NULL, $link=NULL) {
 	if ($id!==NULL && $type===NULL) {
-		$sql = "SELECT location, start_time, description, type, end_time, link FROM event WHERE id=".$id;
+		$sql = "SELECT location, start_time, description, type, end_time, link FROM event WHERE id=" . esc($id);
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		$location=$row['location'];
@@ -196,7 +196,7 @@ function printAddModifyForm($id=NULL, $type=NULL, $startDate=NULL, $endDate=NULL
 }
 	
 function printDeleteConfirmation($eventId) {
-	$sql = "SELECT start_time, location, description, type FROM event WHERE id=".$eventId;
+	$sql = "SELECT start_time, location, description, type FROM event WHERE id=" . esc($eventId);
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	$startTime = HP::formatDate($row['start_time']);
@@ -220,14 +220,14 @@ function printDeleteConfirmation($eventId) {
 }
 	
 function deleteEvent($eventId) {
-	$result = getDB()->query("SELECT type FROM event WHERE id=".$eventId);
+	$result = getDB()->query("SELECT type FROM event WHERE id=" . esc($eventId));
 	list($eventType) = mysql_fetch_row($result);
 	if (!Event::userCanModify($eventType) )
 		return;
 			
-	$sql = "DELETE FROM participation WHERE event_id=".$eventId;
+	$sql = "DELETE FROM participation WHERE event_id=" . esc($eventId);
 	$request = getDB()->query($sql);
-	$sql = "DELETE FROM event WHERE id=".$eventId;
+	$sql = "DELETE FROM event WHERE id=" . esc($eventId);
 	$request = getDB()->query($sql);
 	
 	printEvents();
@@ -237,7 +237,7 @@ function printUnsubscribeForm($eventId, $playerId) {
 	if ($playerId != getUser()->id && !getUser()->isAdmin())
 		return;		
 			
-	$sql = "SELECT lastname, firstname, type FROM user JOIN event WHERE user.id=".$playerId." AND event.id=".$eventId;
+	$sql = "SELECT lastname, firstname, type FROM user JOIN event WHERE user.id=" . esc($playerId) . " AND event.id=" . esc($eventId);
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	
@@ -256,12 +256,13 @@ function printUnsubscribeForm($eventId, $playerId) {
 }
 
 function unsubscribe($eventId, $comment, $playerId)	{
-	$result = getDB()->query("SELECT type FROM event WHERE id=".$eventId);
+	$result = getDB()->query("SELECT type FROM event WHERE id=" . esc($eventId));
 	list($eventType) = mysql_fetch_row($result);
 	if (!Event::userCanJoin($eventType) )
 		return;
 			
-	$sql = "INSERT IGNORE INTO participation (event_id, user_id, time, comment) VALUES (".$eventId.",".$playerId.",'".HP::getPHPTime()."','".getDB()->escape($comment)."')";
+	$sql = "INSERT IGNORE INTO participation (event_id, user_id, time, comment) VALUES (" . 
+		esc($eventId) . "," . esc($playerId) . "," . esc(HP::getPHPTime()) . "," . esc($comment) . ")";
 	$request = getDB()->query($sql);
 	
 	if ($playerId == getUser()->id)
@@ -271,12 +272,12 @@ function unsubscribe($eventId, $comment, $playerId)	{
 }
 
 function resubscribe($eventId, $playerId) {
-	$result = getDB()->query("SELECT type FROM event WHERE id=".$eventId);
+	$result = getDB()->query("SELECT type FROM event WHERE id=" . esc($eventId));
 	list($eventType) = mysql_fetch_row($result);
 	if (!Event::userCanJoin($eventType) )
 		return;
 		
-	$sql = "DELETE FROM participation WHERE event_id=".$eventId." AND user_id=".$playerId;
+	$sql = "DELETE FROM participation WHERE event_id=" . esc($eventId) . " AND user_id=" . esc($playerId);
 	$request = getDB()->query($sql);
 
 	if ($playerId == getUser()->id)
@@ -352,11 +353,11 @@ function printEventRow($eventId, $type, $startTime, $endTime, $location, $commen
 		return;
 	}
 	
-	$sql = "SELECT COUNT(*) AS groupsize FROM user WHERE roles & " . Event::getAllowedRolesForEvent($type) . " > 0";
+	$sql = "SELECT COUNT(*) AS groupsize FROM user WHERE roles & " . esc(Event::getAllowedRolesForEvent($type)) . " > 0";
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	$groupsize = $row['groupsize'];
-	$sql = "SELECT COUNT(*) AS groupsize FROM participation WHERE event_id=" . $eventId;
+	$sql = "SELECT COUNT(*) AS groupsize FROM participation WHERE event_id=" . esc($eventId);
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	$participation = $row['groupsize'];
@@ -372,7 +373,7 @@ function printEventRow($eventId, $type, $startTime, $endTime, $location, $commen
 		
 	echo "<td style='text-align:center'>";
 	if ( Event::userCanJoin($type) && $isNewEntry && time()+Event::getDeadline($type)<strtotime($startTime)) {
-		$sql = "SELECT COUNT(*) AS participates FROM participation WHERE user_id=" . getUser()->id . " AND event_id=" . $eventId;
+		$sql = "SELECT COUNT(*) AS participates FROM participation WHERE user_id=" . esc(getUser()->id) . " AND event_id=" . esc($eventId);
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		if ($row['participates'] == 1)
@@ -402,7 +403,7 @@ function printEventRow($eventId, $type, $startTime, $endTime, $location, $commen
 }
 	
 function printEventDetails($eventId) {
-	$sql = "SELECT type, start_time, location, description, end_time FROM event WHERE id=".$eventId;
+	$sql = "SELECT type, start_time, location, description, end_time FROM event WHERE id=" . esc($eventId);
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	
@@ -417,15 +418,14 @@ function printEventDetails($eventId) {
 	
 	$sql = "SELECT user.id as userid, lastname, firstname, p.event_id IS NULL AS notpart, time, comment ".
 		"FROM (user LEFT JOIN participation p ".
-		"ON user.id=p.user_id AND p.event_id=".$eventId.") ".
-		"JOIN event ON event.id=".$eventId." ".
-		"WHERE ";
+		"ON user.id=p.user_id AND p.event_id=" . esc($eventId) . ") ".
+		"JOIN event ON event.id=" . esc($eventId) . " WHERE ";
 	
 	$rightSql = "";
 	foreach (User::getRoles() as $role) {
 		if(!Event::userCanJoin($row['type'], $role))
 			continue;
-		$rightSql .= " OR roles & ".$role;
+		$rightSql .= " OR roles & " . esc($role);
 	}
 	$rightSql = "(".substr($rightSql, 3).")";
 	$sql .= $rightSql;

@@ -31,7 +31,7 @@ function printEditField($date) {
 
 	$result = NULL;
 	if ($date != NULL)
-		$result = getDB()->query("SELECT text FROM content WHERE date='" . getDB()->escape($date) . "'");
+		$result = getDB()->query("SELECT text FROM content WHERE date=" . esc($date));
 	else
 		$result = getDB()->query("SELECT text FROM content WHERE date=(SELECT MAX(date) FROM content)");
 	$row = mysql_fetch_assoc($result);
@@ -57,7 +57,7 @@ function printEditField($date) {
 
 function confirm($content) {
 	getDB()->query("DELETE FROM content WHERE pagename='start' AND date=DATE(NOW())");
-	getDB()->query("INSERT INTO content (pagename, date, text) VALUES ('start', DATE(NOW()), '" . getDB()->escape($content) . "')");
+	getDB()->query("INSERT INTO content (pagename, date, text) VALUES ('start', DATE(NOW()), " . esc($content) . ")");
 }	
 
 function printText() {

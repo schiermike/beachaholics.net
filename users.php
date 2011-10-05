@@ -52,22 +52,22 @@ function userEditConfirm($userid) {
 	}
 	
 	if($userid > 0) {
-		$sql = "UPDATE user SET lastname='".getDB()->escape(HP::getParam('lastname')).
-			"', firstname='".getDB()->escape(HP::getParam('firstname')).
-			"', nickname='".getDB()->escape(HP::getParam('nickname')).
-			"', street='".getDB()->escape(HP::getParam('street')).
-			"', city='".getDB()->escape(HP::getParam('city')).
-			"', birthday='".getDB()->escape(HP::getParam('birthday')).
-			"', email='".getDB()->escape(HP::getParam('email')).
-			"', phone='".getDB()->escape(HP::getParam('phone'))."'";
+		$sql = "UPDATE user SET lastname=" . esc(HP::getParam('lastname')) .
+			", firstname=" . esc(HP::getParam('firstname')) .
+			", nickname=" . esc(HP::getParam('nickname')) .
+			", street=" . esc(HP::getParam('street')) .
+			", city=" . esc(HP::getParam('city')) .
+			", birthday=" . esc(HP::getParam('birthday')) .
+			", email=" . esc(HP::getParam('email')) .
+			", phone=" . esc(HP::getParam('phone'))."'";
 		
 		if (getUser()->isAdmin()) 
-			$sql .= ", roles=$roles";
+			$sql .= ", roles=" . esc($roles);
 		
 		if (isset($picture))
-			$sql .= ", avatar='$picture'";
+			$sql .= ", avatar=" . esc($picture);
 		
-		$sql .=  " WHERE id=$userid";
+		$sql .=  " WHERE id=" . esc($userid);
 		
 		getDB()->query($sql);
 		if (mysql_affected_rows() != 1)
@@ -79,16 +79,17 @@ function userEditConfirm($userid) {
 	else {			
 		$sql = "INSERT INTO user (lastname, firstname, nickname, street, city, birthday, email, phone, roles, password, creation_date";
 		if(isset($picture)) $sql .= ", avatar";
-		$sql .=") VALUES ('".
-			getDB()->escape(HP::getParam('lastname')) . "', '" .
-			getDB()->escape(HP::getParam('firstname')) . "', '" .
-			getDB()->escape(HP::getParam('nickname')) . "', '" .
-			getDB()->escape(HP::getParam('street')) . "', '" .
-			getDB()->escape(HP::getParam('city')) . "', '" .
-			getDB()->escape(HP::getParam('birthday')) . "', '" .
-			getDB()->escape(HP::getParam('email')) . "', '" .
-			getDB()->escape(HP::getParam('phone')) . "', $roles, '" .
-			getDB()->escape(HP::getParam('password')) . "', CURDATE()";
+		$sql .=") VALUES (".
+			esc(HP::getParam('lastname'))  . "," .
+			esc(HP::getParam('firstname')) . "," .
+			esc(HP::getParam('nickname'))  . "," .
+			esc(HP::getParam('street'))    . "," .
+			esc(HP::getParam('city'))      . "," .
+			esc(HP::getParam('birthday'))  . "," .
+			esc(HP::getParam('email'))     . "," .
+			esc(HP::getParam('phone'))     . "," . 
+			$roles                         . "," .
+			esc(HP::getParam('password'))  . ", CURDATE()";
 		if(isset($picture)) $sql .= ", '$picture'";
 		$sql.= ")";
 		getDB()->query($sql);
@@ -104,7 +105,7 @@ function printUserEditForm($userid) {
 	}
 	
 	if($userid != User::$GUEST_ID) {
-		$sql = "SELECT lastname, firstname, nickname, street, city, email, phone, birthday, roles FROM user WHERE id=$userid";
+		$sql = "SELECT lastname, firstname, nickname, street, city, email, phone, birthday, roles FROM user WHERE id=" . esc($userid);
 		$result = getDB()->query($sql);
 	
 		if (mysql_num_rows($result) != 1 || !($row = mysql_fetch_assoc($result))) {
@@ -194,7 +195,7 @@ function printUserEditForm($userid) {
 function printPlayerTable() {
 	$sql = "SELECT id, lastname, firstname, nickname, street, city, email, phone, last_contact, roles, creation_date".
 			" FROM user".
-			" WHERE id != ".User::$GUEST_ID.
+			" WHERE id != " . esc(User::$GUEST_ID) .
 			" ORDER BY last_contact DESC";
 	$request = getDB()->query($sql);
 
@@ -286,7 +287,7 @@ function printStatistics($playerId, $creationDate, $privileges) {
 			" SUM(WEEKDAY(Zeit) BETWEEN 3 AND 6 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training2,".
 			" SUM(Typ = ".($isMale ? Event::$GAME_MEN : Event::$GAME_WOMEN).") AS Spiel".
 			" FROM Events".
-			" WHERE Zeit > '".$creationDate."'".
+			" WHERE Zeit > " . esc($creationDate) . 
 			" AND Zeit < NOW()".
 			" AND Zeit > '".STAT_START_DATE."'";
 	$row = mysql_fetch_assoc(getDB()->query($sql));
@@ -302,7 +303,7 @@ function printStatistics($playerId, $creationDate, $privileges) {
 			" SUM(WEEKDAY(Zeit) BETWEEN 3 AND 6 AND Typ = ".($isMale ? Event::$INDOOR_MEN : Event::$INDOOR_WOMEN).") AS Training2,".
 			" SUM(Typ = ".($isMale ? Event::$GAME_MEN : Event::$GAME_WOMEN).") AS Spiel".
 			" FROM Events JOIN Abmeldung USING(EventID)".
-			" WHERE Zeit > '".$creationDate."'".
+			" WHERE Zeit > " . esc($creationDate) .
 			" AND Zeit < NOW()".
 			" AND Zeit > '".STAT_START_DATE."'".
 			" AND SpielerID = ".$playerId;

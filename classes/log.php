@@ -22,12 +22,10 @@ class Log {
 			$stackTrace .= $prefix . $dFunc['file'] . " --> " . $dFunc['function'] . "(), line " . $dFunc['line'] . "\n";
 			$prefix .= "__";
 		}
-		
-		$sessionInfo = getDB()->escape($sessionInfo);
-		$bugMessage = getDB()->escape($bugMessage);
-		$stackTrace = getDB()->escape($stackTrace);			
-		
-		getDB()->query("INSERT INTO log (time, session, message, stacktrace) VALUES (NOW(), '$sessionInfo', '$bugMessage', '$stackTrace')");
+			
+		$sql = "INSERT INTO log (time, session, message, stacktrace) VALUES (NOW(), " . 
+			esc($sessionInfo) . ", " . esc($bugMessage) . ", " . esc($stackTrace) . ")";
+		getDB()->query($sql);
 		
 		return false;
 	}

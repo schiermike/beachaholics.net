@@ -24,7 +24,7 @@ function printUserPicture($id) {
 	header("Pragma: public");
 	header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 	
-	$result = getDB()->query("SELECT avatar FROM user WHERE id=" . $id);
+	$result = getDB()->query("SELECT avatar FROM user WHERE id=" . enc($id));
 	if (mysql_num_rows($result) == 0)
 		exit();
 	list($pictureData) = mysql_fetch_row($result);

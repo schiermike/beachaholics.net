@@ -55,8 +55,8 @@ function printPassChangeForm() {
 		return;
 	}
 	
-	$sql = "UPDATE user SET password='" . getDB()->escape(HP::getParam('new_password')) . 
-		"' WHERE id=" . getUser()->id . " AND password='" . getDB()->escape(HP::getParam('old_password')) . "'";
+	$sql = "UPDATE user SET password=" . esc(HP::getParam('new_password')) . 
+		" WHERE id=" . esc(getUser()->id) . " AND password=" . esc(HP::getParam('old_password'));
 	$request = getDB()->query($sql);
 	if (mysql_affected_rows()==0) {
 		HP::printErrorText("Altes Passwort muss korrekt sein!");

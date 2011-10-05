@@ -199,7 +199,8 @@ class HP {
 		$users = Array();
 		// ask database for current users
 		$sql = "SELECT nickname, (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(last_contact)) DIV 60 AS time_diff FROM user WHERE " .
-				"id!=".getUser()->id." AND id>0 AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(last_contact) < ".HP::$VISIBLE_USER_TIMEOUT." ORDER BY last_contact DESC";
+				"id!=" . esc(getUser()->id) . " AND id>0 AND UNIX_TIMESTAMP() - UNIX_TIMESTAMP(last_contact) < " . 
+				esc(HP::$VISIBLE_USER_TIMEOUT) . " ORDER BY last_contact DESC";
 		$request = getDB()->query($sql);
 		
 		while ($row = mysql_fetch_assoc($request))

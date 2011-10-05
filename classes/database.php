@@ -2,6 +2,10 @@
 
 require_once("log.php");
 
+function esc($query, $addQuotes = true) {
+	return getDB()->escape($query, $addQuotes);	
+}
+
 class DB {
 	private $connection;
 	private $host;
@@ -21,9 +25,12 @@ class DB {
 		return str_replace($this->password, "*******", $string);
 	}
 
-	public function escape($string) {
+	public function escape($string, $addQuotes = true) {
 		$this->getConnection(); // the subsequent call requires an open connection
-		return mysql_real_escape_string($string);
+		$string = mysql_real_escape_string($string);
+		if ($addQuotes)
+			$string = "'" . $string . "'";
+		return $string;
 	}
 	
 	/**

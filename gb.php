@@ -149,7 +149,7 @@ function makeGBEntry ($userId, $datetime, $message, $visibility, $sticky, $captc
 	
 	if ($messageId == NULL) {
 		// check whether no "refresh" has been performed to avoid duplicate entries
-		$sql= "SELECT message FROM guestbook WHERE user_id=".$userId." AND time='".$datetime."'";
+		$sql= "SELECT message FROM guestbook WHERE user_id=" . esc($userId) . " AND time=" . esc($datetime);
 		$request = getDB()->query($sql);
 		if ($row = mysql_fetch_assoc($request))
 			return true;
@@ -164,9 +164,11 @@ function makeGBEntry ($userId, $datetime, $message, $visibility, $sticky, $captc
 	$message = strtr($message, $trans);
 	$sql="";
 	if ($messageId == NULL)
-		$sql = "INSERT INTO guestbook (time, user_id, message, visibility, sticky) VALUES ('".$datetime."',".$userId.",'".getDB()->escape($message)."', ".$visibility.", ".$sticky.")";
+		$sql = "INSERT INTO guestbook (time, user_id, message, visibility, sticky) VALUES (" . 
+			esc($datetime) . "," . esc($userId) . "," . esc($message) . "," . esc($visibility) . "," . esc($sticky) . ")";
 	else
-		$sql = "UPDATE guestbook SET message='".getDB()->escape($message)."', visibility=".$visibility.", sticky=".$sticky." WHERE user_id=".$userId." AND id=".$messageId;
+		$sql = "UPDATE guestbook SET message=" . esc($message) . ", visibility=" . esc($visibility) . 
+			", sticky=" . esc($sticky) . " WHERE user_id=" . esc($userId) . " AND id=" . esc($messageId);
 		
 	$request = getDB()->query($sql);
 	
@@ -177,9 +179,9 @@ function makeGBEntry ($userId, $datetime, $message, $visibility, $sticky, $captc
 
 function deleteEntry($messageId) {
 	if (getUser()->isItMe())
-		getDB()->query("DELETE FROM guestbook WHERE id=".$messageId);
+		getDB()->query("DELETE FROM guestbook WHERE id=" . esc($messageId));
 	else if (!getUser()->isGuest())
-		getDB()->query("DELETE FROM guestbook WHERE user_id=".getUser()->id." AND id=".$messageId);
+		getDB()->query("DELETE FROM guestbook WHERE user_id=" . esc(getUser()->id) . " AND id=" . esc($messageId));
 }
 
 // -----------------------------------------------------------------------------------------
@@ -209,8 +211,8 @@ function searchEntry($searchString) {
 	
 	$request = getDB()->query("SELECT guestbook.id AS guestbook_id, nickname, time, message, user_id, visibility, sticky
 		FROM guestbook JOIN user ON user_id=user.id
-		WHERE ( visibility = 0 OR (visibility & ".getUser()->roles.") > 0 )
-		AND message LIKE '%".getDB()->escape($searchString)."%' 
+		WHERE ( visibility = 0 OR (visibility & " . esc(getUser()->roles) . ") > 0 )
+		AND message LIKE '%" . esc($searchString, false) . "%' 
 		ORDER BY time DESC");
 		
 	echo "\n<table id='guestbook' cellspacing='0' cellpadding='0'>";
@@ -229,7 +231,7 @@ function printEntryField($messageId = NULL) {
 	$visibility = User::$ROLE_MEMBER;
 	$buttonLabel="Eintragen";
 	if ($messageId != NULL) {
-		$sql= "SELECT user_id, message, visibility, sticky FROM guestbook WHERE id=".$messageId;
+		$sql= "SELECT user_id, message, visibility, sticky FROM guestbook WHERE id=" . esc($messageId);
 		$request = getDB()->query($sql);
 		if ($row = mysql_fetch_assoc($request)) {
 			$userId = $row['user_id'];
@@ -371,7 +373,7 @@ function printGuestbook() {
 		$msg_offset = HP::getParam('msg_offset');
 
 	// Anzahl der Eintraege erfragen
-	$sql = "SELECT COUNT(*) FROM guestbook WHERE (visibility & ".getUser()->roles.") > 0 OR visibility=0";
+	$sql = "SELECT COUNT(*) FROM guestbook WHERE (visibility & " . esc(getUser()->roles) . ") > 0 OR visibility=0";
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	$num_rows = $row['COUNT(*)'];
@@ -379,9 +381,9 @@ function printGuestbook() {
 	printNavigationField($msg_offset, $num_rows);
 	
 	$sql = "SELECT guestbook.id AS guestbook_id, nickname, time, message, user_id, visibility, sticky
-		FROM guestbook JOIN user ON user_id=user.id
-		WHERE visibility = 0 OR (visibility & ".getUser()->roles.") > 0 
-		ORDER BY sticky DESC, time DESC LIMIT ".$msg_offset*getUser()->getGbEntriesPerPage()." , ".getUser()->getGbEntriesPerPage();
+		FROM guestbook JOIN user ON user_id=user.id WHERE visibility = 0 OR (visibility & " . 
+		esc(getUser()->roles) . ") > 0 ORDER BY sticky DESC, time DESC LIMIT " . 
+		esc($msg_offset*getUser()->getGbEntriesPerPage()) . " , " . esc(getUser()->getGbEntriesPerPage());
 	
 	$request = getDB()->query($sql);
 	

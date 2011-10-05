@@ -71,7 +71,7 @@ function deleteEntry($id) {
 	if (!is_numeric($id))
 		return;
 
-	$sql="DELETE FROM account WHERE id=" . $id . " AND checked_by IS NULL";
+	$sql = "DELETE FROM account WHERE id=" . esc($id) . " AND checked_by IS NULL";
 	
 	if (getDB()->query($sql)) {
 		printToolBar();
@@ -102,7 +102,7 @@ function confirmEntry() {
 	if (!is_numeric($id))
 		Log::fatal("Cannot confirm the account entry without an ID");
 		
-	$sql = "UPDATE account SET checked_by=" . getUser()->id . " WHERE id=" . $id;
+	$sql = "UPDATE account SET checked_by=" . esc(getUser()->id) . " WHERE id=" . esc($id);
 	
 	if (getDB()->query($sql) && mysql_affected_rows()==1) {
 		printToolBar();
@@ -138,7 +138,7 @@ function printAskConfirm($id) {
 		Log::fatal("Cannot delete account entry without an ID");
 	printToolBar();
 	
-	$sql = "SELECT lastname, firstname FROM user JOIN account ON user.id=account.created_by WHERE account.id=" . $id;
+	$sql = "SELECT lastname, firstname FROM user JOIN account ON user.id=account.created_by WHERE account.id=" . esc($id);
 	$result = getDB()->query($sql);
 	$row = mysql_fetch_assoc($result);
 	
@@ -195,19 +195,19 @@ function addOrModifyEntry($id, $date, $amount, $note) {
 		$attachment = fread($fp, filesize($_FILES['attached']['tmp_name']));
 		$attachment = addslashes($attachment);
 		fclose($fp);
-		$attachment = "'".$attachment."'";
-		$attachmentName="'".$_FILES['attached']['name']."'";
-		$attachmentType="'".$_FILES['attached']['type']."'";
-		$attachmentSize="'".$_FILES['attached']['size']."'";
+		$attachment = esc($attachment);
+		$attachmentName = esc($_FILES['attached']['name']);
+		$attachmentType = esc($_FILES['attached']['type']);
+		$attachmentSize = esc($_FILES['attached']['size']);
 	}
 
 	if (is_numeric($id))
-		$sql = "UPDATE account SET date='" . $date . "', note='" . $note . "', amount='" . $amount . 
+		$sql = "UPDATE account SET date=" . esc($date) . ", note=" . esc($note) . ", amount=" . esc($amount) . 
 		"', attachment=" . $attachment .	", attach_name=" . $attachmentName . ", attach_type=" . $attachmentType . 
-		", attach_size=" . $attachmentSize . ", created_by=" . getUser()->id . ", checked_by=NULL WHERE id=" . $id;
+		", attach_size=" . $attachmentSize . ", created_by=" . esc(getUser()->id) . ", checked_by=NULL WHERE id=" . esc($id);
 	else
 		$sql = "INSERT INTO account (date, note, amount, created_by, attachment, attach_name, attach_type, attach_size) 
-		VALUES ('" . $date . "','" . $note . "'," . $amount . "," . getUser()->id . ", " . $attachment . ", " . 
+		VALUES (" . esc($date) . "," . esc($note) . "," . esc($amount) . "," . esc(getUser()->id) . ", " . $attachment . ", " . 
 		$attachmentName . ", " . $attachmentType . ", " . $attachmentSize . ")";
 	
 	if (getDB()->query($sql) && mysql_affected_rows()==1) {
@@ -221,7 +221,7 @@ function printAddModifyForm($id) {
 	$amount = "";
 	$note = "";
 	if (is_numeric($id)) {
-		$sql = "SELECT date, note, amount FROM account WHERE id=" . $id;
+		$sql = "SELECT date, note, amount FROM account WHERE id=" . esc($id);
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		$date = $row['date'];
@@ -281,10 +281,10 @@ function printPrintPage() {
 	
 	$sql = "SELECT id, date, note, amount FROM account ";
 	if ($_SESSION['account_start_date'] != NULL)
-		$sql .= "WHERE date>='" . getDB()->escape($_SESSION['account_start_date']) . "' ";
+		$sql .= "WHERE date>=" . esc($_SESSION['account_start_date']) . " ";
 	if ($_SESSION['account_end_date'] != NULL) {
 		$sql .= $_SESSION['account_start_date'] == NULL ? "WHERE " : "AND ";
-		$sql .= "date<='" . getDB()->escape($_SESSION['account_end_date']) . "' ";
+		$sql .= "date<=" . esc($_SESSION['account_end_date']) . " ";
 	}
 	$sql .= "ORDER BY date, note";
 	
@@ -336,10 +336,10 @@ function printAccountTable($toDeleteId=NULL) {
 	$sql = "SELECT account.id as account_id, date, note, amount, attach_name, created_by, u1.nickname as created_by_nick, checked_by, u2.nickname AS checked_by_nick ";
 	$sql .= "FROM account JOIN user u1 ON u1.id=created_by LEFT JOIN user u2 ON u2.id=checked_by ";
 	if ($_SESSION['account_start_date'] != NULL)
-		$sql .= "WHERE date>='" . getDB()->escape($_SESSION['account_start_date']) . "' ";
+		$sql .= "WHERE date>=" . esc($_SESSION['account_start_date']) . " ";
 	if ($_SESSION['account_end_date'] != NULL) {
 		$sql .= $_SESSION['account_start_date'] == NULL ? "WHERE " : "AND ";
-		$sql .= "date<='" . getDB()->escape($_SESSION['account_end_date']) . "' ";
+		$sql .= "date<=" . esc($_SESSION['account_end_date']) . " ";
 	}
 	$sql .= "ORDER BY date, note";
 	$request = getDB()->query($sql);

@@ -32,7 +32,7 @@
 			if (!is_numeric($numEntries))
 				return;
 			$this->gbEntriesPerPage = $numEntries;
-			getDB()->query("UPDATE user SET gb_entries_per_page=$numEntries WHERE id=".$this->id);
+			getDB()->query("UPDATE user SET gb_entries_per_page=" . esc($numEntries) . " WHERE id=" . esc($this->id));
 		}
 		 
 		public static function getRoles() {
@@ -81,7 +81,7 @@
 				exit();
 			}
 				
-			$result = getDB()->query("SELECT lastname, firstname, nickname, roles, gb_entries_per_page FROM user WHERE id=".$id);
+			$result = getDB()->query("SELECT lastname, firstname, nickname, roles, gb_entries_per_page FROM user WHERE id=" . esc($id));
 			$row = mysql_fetch_assoc($result);
 			$this->id = $id;
 			$this->lastName = $row['lastname'];

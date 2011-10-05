@@ -84,7 +84,7 @@ class Session {
 			$this->user = new User();
 		
 		if (!getUser()->isGuest()) {
-			$sql = "UPDATE user SET last_contact=NOW(), last_ip='" . getDB()->escape($_SERVER['REMOTE_ADDR']) . "' WHERE id=" . getUser()->id;
+			$sql = "UPDATE user SET last_contact=NOW(), last_ip=" . esc($_SERVER['REMOTE_ADDR']) . " WHERE id=" . esc(getUser()->id);
 			$request = getDB()->query($sql);
 		}
 	}

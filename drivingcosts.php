@@ -51,7 +51,7 @@ function deleteEntry($id) {
 		return;
 	}
 	
-	$sql="DELETE FROM driving WHERE id=" . $id;
+	$sql = "DELETE FROM driving WHERE id=" . esc($id);
 	
 	if(getDB()->query($sql)) {
 		printToolBar();
@@ -99,11 +99,11 @@ function addOrModifyEntry($id, $userid, $date, $distance, $extra, $note, $state)
 	}
 	
 	if(is_numeric($id))
-		$sql = "UPDATE driving SET user_id=" . $userid . ", date='" . getDB()->escape($date) . "', distance=" . $distance .
-			", extra=" . $extra . ", note='" . getDB()->escape($note) . "', state=" . $state . " WHERE id=" . $id;	
+		$sql = "UPDATE driving SET user_id=" . esc($userid) . ", date=" . esc($date) . ", distance=" . esc($distance) .
+			", extra=" . esc($extra) . ", note=" . esc($note) . ", state=" . esc($state) . " WHERE id=" . esc($id);	
 	else
-		$sql = "INSERT INTO driving (user_id, date, distance, extra, note, state) VALUES (" . $userid . 
-			", '" . getDB()->escape($date) . "','" . $distance . "','" . $extra . "', '" . getDB()->escape($note) . "', " . $state . ")";
+		$sql = "INSERT INTO driving (user_id, date, distance, extra, note, state) VALUES (" . esc($userid) . 
+			", " . esc($date) . "," . esc($distance) . "," . esc($extra) . "," . esc($note) . "," . esc($state) . ")";
 
 	getDB()->query($sql);
 	printToolBar();
@@ -113,7 +113,7 @@ function addOrModifyEntry($id, $userid, $date, $distance, $extra, $note, $state)
 function printAddModifyForm($id, $userid = 0, $date = '', $distance = 0, $extra = 0, $note = '') {
 
 	if (is_numeric($id)) {
-		$sql = "SELECT user_id, date, distance, extra, note, state FROM driving WHERE id=" . $id;
+		$sql = "SELECT user_id, date, distance, extra, note, state FROM driving WHERE id=" . esc($id);
 		$request = getDB()->query($sql);
 		$row = mysql_fetch_assoc($request);
 		
@@ -133,7 +133,7 @@ function printAddModifyForm($id, $userid = 0, $date = '', $distance = 0, $extra 
 	echo "<form name='accountForm' method='get' action='" . $_SERVER['PHP_SELF'] . "' enctype='multipart/form-data'>";
 	echo "<table width='100%' style='text-align:center'>";
 	
-	$sql = "SELECT id, lastname, firstname FROM user where id != " . User::$GUEST_ID . " ORDER BY lastname, firstname";
+	$sql = "SELECT id, lastname, firstname FROM user where id != " . esc(User::$GUEST_ID) . " ORDER BY lastname, firstname";
 	$request = getDB()->query($sql);
 	echo "<tr><td style='text-align:right' width='40%'>Benutzer:</td>";
 	echo "<td><select name='userid'>";

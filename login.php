@@ -57,8 +57,7 @@ function printSelectUser()	{
 // ===================================================================
 
 function printPasswordQuestion($userid, $firstAttempt) {
-	$userid = getDB()->escape($userid);
-	$sql = "SELECT lastname, firstname FROM user WHERE id=" . $userid;
+	$sql = "SELECT lastname, firstname FROM user WHERE id=" . esc($userid);
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	if ($row === false) {
@@ -97,7 +96,7 @@ function createChallenge($userid) {
 }
 
 function checkResponse($userid, $response) {
-	$sql = "SELECT password FROM user WHERE id=" . getDB()->escape($userid);
+	$sql = "SELECT password FROM user WHERE id=" . esc($userid);
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	if ($row === false)

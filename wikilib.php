@@ -1502,7 +1502,7 @@ function ewiki_control_links($id, &$data, $action, $hide_hr=0, $hide_mtime=0)
 
 function getNickForSpielerID($userid)
 {
-	$result = getDB()->query("SELECT nickname FROM user WHERE id=$userid");
+	$result = getDB()->query("SELECT nickname FROM user WHERE id=" . esc($userid));
 	$row = mysql_fetch_assoc($result);
 	return $row["nickname"];
 }

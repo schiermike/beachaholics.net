@@ -21,7 +21,7 @@ function printPdf($id) {
 	
 	header('Date: '.gmdate('D, d M Y H:i:s') . ' GMT');
 
-	$result = getDB()->query("SELECT id, category, pdf FROM exercises WHERE id=".$id);
+	$result = getDB()->query("SELECT id, category, pdf FROM exercises WHERE id=" . esc($id));
 	if (mysql_num_rows($result) == 0)
 		exit();
 	$row = mysql_fetch_assoc($result);

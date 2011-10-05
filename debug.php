@@ -57,7 +57,7 @@ function clearLog() {
 
 function deleteLogEntry($logId) {
 	if (is_numeric($logId))
-		getDB()->query("DELETE FROM log WHERE id=" . $logId);
+		getDB()->query("DELETE FROM log WHERE id=" . esc($logId));
 }
 
 ?>
