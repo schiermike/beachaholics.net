@@ -55,7 +55,7 @@
 		public static function roleToString($role) {
 			switch ($role) {
 				case User::$ROLE_ADMIN:
-					return "Administrator";
+					return "Admin";
 				case User::$ROLE_VORSTAND:
 					return "Vorstand";
 				case User::$ROLE_INDOOR_MEN:

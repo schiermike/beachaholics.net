@@ -39,12 +39,12 @@ class Event {
 		switch ($event) {
 			case Event::$BEACH:
 				return getUser()->isAuthorized(User::$ROLE_BEACHAHOLIC);
-			case Event::$INDOOR_WOMEN:
-			case Event::$GAME_WOMEN:
-				return getUser()->isAuthorized(User::$ROLE_INDOOR_WOMEN);
-			case Event::$INDOOR_WOMEN2:
-			case Event::$GAME_WOMEN2:
-				return getUser()->isAuthorized(User::$ROLE_INDOOR_WOMEN2);
+#			case Event::$INDOOR_WOMEN:
+#			case Event::$GAME_WOMEN:
+#				return getUser()->isAuthorized(User::$ROLE_INDOOR_WOMEN);
+#			case Event::$INDOOR_WOMEN2:
+#			case Event::$GAME_WOMEN2:
+#				return getUser()->isAuthorized(User::$ROLE_INDOOR_WOMEN2);
 			default:
 				return false;
 		}

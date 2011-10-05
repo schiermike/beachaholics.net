@@ -8,7 +8,7 @@ loginProcedure();
 // ===================================================================
 
 function loginProcedure() {
-	if (!HP::isParamSet('userid')) {
+	if (!HP::isParamSet('userid') || !HP::isParamNumeric('userid')) {
 		getSession()->logout();
 		Session::initialize();
 		
@@ -19,12 +19,11 @@ function loginProcedure() {
 	}
 	else if (checkResponse(HP::getParam('userid'), HP::getParam('response'))){
 		getSession()->login(HP::getParam('userid'));
-		echo "<html><head>";
-		echo "<script type='text/css'>body { background-color:black; }</script>";
-		echo "<script type='text/javascript'>window.location.href='gb.php'</script>";
-		echo "</head></html>";
+		header("Status: 200");
+		header("Location: gb.php");
 	}
 	else {
+		header("HTTP/1.0 401 Unauthorized", true, 401);
 		printPasswordQuestion(HP::getParam('userid'), false);
 	}
 }
@@ -58,7 +57,8 @@ function printSelectUser()	{
 // ===================================================================
 
 function printPasswordQuestion($userid, $firstAttempt) {
-	$sql = "SELECT lastname, firstname FROM user WHERE id=" . getDB()->escape($userid);
+	$userid = getDB()->escape($userid);
+	$sql = "SELECT lastname, firstname FROM user WHERE id=" . $userid;
 	$request = getDB()->query($sql);
 	$row = mysql_fetch_assoc($request);
 	if ($row === false) {
@@ -106,6 +106,7 @@ function checkResponse($userid, $response) {
 	if (!isset($_SESSION['challenge']))
 		return false;
 	$challenge = $_SESSION['challenge'];
+	$_SESSION['challenge'] = "";
 	unset($_SESSION['challenge']);
 	
 	$response = base64_decode($response);

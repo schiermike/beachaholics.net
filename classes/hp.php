@@ -294,6 +294,13 @@ class HP {
 	public static function isParamSet($name) {
 		return isset($_GET[$name]) || isset($_POST[$name]);
 	}
+
+	public static function isParamNumeric($name) {
+		if (!HP::isParamSet($name))
+			return false;
+		return is_numeric(HP::getParam($name));
+	}
+
 	/**
 	 * Returns the parameter with the given name from the $_GET or the $_POST array.
 	 * If no such parameter exists, return NULL
