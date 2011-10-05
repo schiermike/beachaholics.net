@@ -1,1 +1,1 @@
-<? define("HP_VERSION", "v2.46 (2011/09/14)"); ?>
+<? define("HP_VERSION", "v2.46 (2011/10/05)"); ?>
