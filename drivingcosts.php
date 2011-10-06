@@ -103,7 +103,7 @@ function addOrModifyEntry($id, $userid, $date, $distance, $extra, $note, $state)
 			", extra=" . esc($extra) . ", note=" . esc($note) . ", state=" . esc($state) . " WHERE id=" . esc($id);	
 	else
 		$sql = "INSERT INTO driving (user_id, date, distance, extra, note, state) VALUES (" . esc($userid) . 
-			", " . esc($date) . "," . esc($distance) . "," . esc($extra) . "," . esc($note) . "," . esc($state) . ")";
+			"," . esc($date) . "," . esc($distance) . "," . esc($extra) . "," . esc($note) . "," . esc($state) . ")";
 
 	getDB()->query($sql);
 	printToolBar();

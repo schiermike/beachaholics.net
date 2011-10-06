@@ -203,12 +203,12 @@ function addOrModifyEntry($id, $date, $amount, $note) {
 
 	if (is_numeric($id))
 		$sql = "UPDATE account SET date=" . esc($date) . ", note=" . esc($note) . ", amount=" . esc($amount) . 
-		"', attachment=" . $attachment .	", attach_name=" . $attachmentName . ", attach_type=" . $attachmentType . 
+		", attachment=" . $attachment .	", attach_name=" . $attachmentName . ", attach_type=" . $attachmentType . 
 		", attach_size=" . $attachmentSize . ", created_by=" . esc(getUser()->id) . ", checked_by=NULL WHERE id=" . esc($id);
 	else
 		$sql = "INSERT INTO account (date, note, amount, created_by, attachment, attach_name, attach_type, attach_size) 
-		VALUES (" . esc($date) . "," . esc($note) . "," . esc($amount) . "," . esc(getUser()->id) . ", " . $attachment . ", " . 
-		$attachmentName . ", " . $attachmentType . ", " . $attachmentSize . ")";
+		VALUES (" . esc($date) . "," . esc($note) . "," . esc($amount) . "," . esc(getUser()->id) . "," . $attachment . "," . 
+		$attachmentName . "," . $attachmentType . "," . $attachmentSize . ")";
 	
 	if (getDB()->query($sql) && mysql_affected_rows()==1) {
 		printToolBar();
@@ -336,12 +336,12 @@ function printAccountTable($toDeleteId=NULL) {
 	$sql = "SELECT account.id as account_id, date, note, amount, attach_name, created_by, u1.nickname as created_by_nick, checked_by, u2.nickname AS checked_by_nick ";
 	$sql .= "FROM account JOIN user u1 ON u1.id=created_by LEFT JOIN user u2 ON u2.id=checked_by ";
 	if ($_SESSION['account_start_date'] != NULL)
-		$sql .= "WHERE date>=" . esc($_SESSION['account_start_date']) . " ";
+		$sql .= "WHERE date>=" . esc($_SESSION['account_start_date']);
 	if ($_SESSION['account_end_date'] != NULL) {
 		$sql .= $_SESSION['account_start_date'] == NULL ? "WHERE " : "AND ";
-		$sql .= "date<=" . esc($_SESSION['account_end_date']) . " ";
+		$sql .= " date<=" . esc($_SESSION['account_end_date']);
 	}
-	$sql .= "ORDER BY date, note";
+	$sql .= " ORDER BY date, note";
 	$request = getDB()->query($sql);
 
 	echo "<table cellspacing='0' cellpadding='3' width='100%'>";

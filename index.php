@@ -65,7 +65,7 @@ function printText() {
 	$row = mysql_fetch_assoc($result);
 	echo $row['text'];
 
-	if (getUser()->isAuthorized(User::$ROLE_MEMBER)) {
+	if (getUser()->isAdmin()) {
 		echo "<div style='text-align:right'>";
 		echo "<a href='" . $_SERVER['PHP_SELF'] . "?action=edit'><img src='img/text_edit.png' alt='edit'/></a>";
 		echo "</div>";
