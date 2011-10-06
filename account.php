@@ -281,12 +281,12 @@ function printPrintPage() {
 	
 	$sql = "SELECT id, date, note, amount FROM account ";
 	if ($_SESSION['account_start_date'] != NULL)
-		$sql .= "WHERE date>=" . esc($_SESSION['account_start_date']) . " ";
+		$sql .= "WHERE date>=" . esc($_SESSION['account_start_date']);
 	if ($_SESSION['account_end_date'] != NULL) {
 		$sql .= $_SESSION['account_start_date'] == NULL ? "WHERE " : "AND ";
-		$sql .= "date<=" . esc($_SESSION['account_end_date']) . " ";
+		$sql .= " date<=" . esc($_SESSION['account_end_date']);
 	}
-	$sql .= "ORDER BY date, note";
+	$sql .= " ORDER BY date, note";
 	
 	$zeitraum = "von " . ($_SESSION['account_start_date'] == NULL ? "Anfang" : $_SESSION['account_start_date']);
 	$zeitraum .= " bis " . ($_SESSION['account_end_date'] == NULL ? "Ende" : $_SESSION['account_end_date']);	

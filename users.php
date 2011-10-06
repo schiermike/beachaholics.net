@@ -59,7 +59,7 @@ function userEditConfirm($userid) {
 			", city=" . esc(HP::getParam('city')) .
 			", birthday=" . esc(HP::getParam('birthday')) .
 			", email=" . esc(HP::getParam('email')) .
-			", phone=" . esc(HP::getParam('phone'))."'";
+			", phone=" . esc(HP::getParam('phone'));
 		
 		if (getUser()->isAdmin()) 
 			$sql .= ", roles=" . esc($roles);

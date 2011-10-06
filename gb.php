@@ -383,12 +383,12 @@ function printGuestbook() {
 	$sql = "SELECT guestbook.id AS guestbook_id, nickname, time, message, user_id, visibility, sticky
 		FROM guestbook JOIN user ON user_id=user.id WHERE visibility = 0 OR (visibility & " . 
 		esc(getUser()->roles) . ") > 0 ORDER BY sticky DESC, time DESC LIMIT " . 
-		esc($msg_offset*getUser()->getGbEntriesPerPage()) . " , " . esc(getUser()->getGbEntriesPerPage());
+		$msg_offset*getUser()->getGbEntriesPerPage() . " , " . 1*getUser()->getGbEntriesPerPage();
 	
-	$request = getDB()->query($sql);
+	$result = getDB()->query($sql);
 	
 	echo "\n<table cellspacing='0' cellpadding='0' style='width: 100%'>";
-	while ($row = mysql_fetch_assoc($request))
+	while ($row = mysql_fetch_assoc($result))
 		printGuestbookRow($row);
 	echo "</table>";
 	
