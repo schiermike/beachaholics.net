@@ -18,9 +18,15 @@ function loginProcedure() {
 		printPasswordQuestion(HP::getParam('userid'), true);
 	}
 	else if (checkResponse(HP::getParam('userid'), HP::getParam('response'))){
-		getSession()->login(HP::getParam('userid'));
-		header("Status: 200");
-		header("Location: gb.php");
+		if (User::hasPasswordExpired(HP::getParam('userid'))) {
+			header("Status: 401");
+			header("Location: changepass.php?userid=" . HP::getParam('userid') . "&expired");
+		}
+		else {
+			getSession()->login(HP::getParam('userid'));
+			header("Status: 200");
+			header("Location: gb.php");
+		}
 	}
 	else {
 		header("HTTP/1.0 401 Unauthorized", true, 401);

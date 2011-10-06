@@ -211,10 +211,10 @@ class HP {
 	
 	public static function printLoginError($text = 'Nicht genügend Rechte, um diese Seite anzeigen zu können!') {
 		echo "<br/>";
-		echo "<div style='text-align: center; font-size: large;'";
+		echo "<p style='text-align: center; color: #ff0000;'>";
 		echo $text."<br/><br/>";
 		echo "<a href='login.php'><img src='img/navi/login.png' alt='login' title='zum Login'/></a><br/>";
-		echo "</div>";
+		echo "</p>";
 	}
 	
 	public static function printErrorText($text) {

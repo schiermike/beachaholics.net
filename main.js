@@ -136,7 +136,7 @@ function rc4Crypt(key, pt) {
 
 // ------------------------------------------------------------------------------------------------	
 
-//Encodes data to Base64 format
+// encodes data to Base64 format
 function base64Encode(data){
 	if (typeof(btoa) == 'function') return btoa(data);//use internal base64 functions if available (gecko only)
 	var b64_map = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -167,7 +167,7 @@ function base64Encode(data){
 
 // ------------------------------------------------------------------------------------------------	
 
-//Decodes Base64 formated data
+// decodes Base64 formated data
 function base64Decode(data){
 	data = data.replace(/[^a-z0-9\+\/=]/ig, '');// strip none base64 characters
 	if (typeof(atob) == 'function') return atob(data);//use internal base64 functions if available (gecko only)
@@ -198,4 +198,35 @@ function base64Decode(data){
 	return result.join('');
 }
 
+// ------------------------------------------------------------------------------------------------	
 
+// determine the strength of a password
+function getPasswordStrength(passwd) {
+	score = 0;
+	special_chars = "[\\(\\)\\-´`/=°§!,@#$%^&*?_~]";
+	if (passwd.match("[a-z]")) // at least one lower case letter
+		score += 1;
+	if (passwd.match("[a-z].*[a-z]")) // at least two lower case letters
+		score += 1;
+		
+	if (passwd.match("[A-Z]")) // at least one upper case letter
+		score += 1;
+	if (passwd.match("[A-Z].*[A-Z]")) // at least two upper case letters
+		score += 1;
+	
+	if (passwd.match("\\d")) // at least one number
+		score += 1;
+	if (passwd.match("\\d.*\\d")) // at least two numbers
+		score += 1;
+	
+	// SPECIAL CHAR
+	if (passwd.match(special_chars)) // at least one special character
+		score += 2;
+	if (passwd.match(special_chars + ".*" + special_chars)) // at least two special characters
+		score += 2;
+		
+	score *= passwd.length > 10 ? 1 : passwd.length/10;
+	score = Math.round(score);
+
+	return score;
+}

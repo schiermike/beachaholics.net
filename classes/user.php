@@ -16,6 +16,8 @@
 		public static $PIC_WIDTH = 90;
 		public static $PIC_HEIGHT = 136;
 		
+		public static $MAX_PASSWORD_AGE = 63072000; // 60*60*24*365*2 // 3 Jahre
+		
 		public $id;
 		public $lastName;
 		public $firstName;
@@ -126,6 +128,15 @@
 			$roles = (int)$roles;
 				
 			return ( $required & $roles ) > 0;
+		}
+		
+		/**
+		 * check whether the password of this user has exceeded its lifetime
+		 */
+		public static function hasPasswordExpired($userid) {
+			$sql = "SELECT id FROM user WHERE id= " . esc($userid) . " AND UNIX_TIMESTAMP()-UNIX_TIMESTAMP(pw_timestamp)>" . User::$MAX_PASSWORD_AGE;
+			$result = getDB()->query($sql);
+			return mysql_num_rows($result) == 1;
 		}
 		
 		public function isVorstand() {
