@@ -235,5 +235,5 @@ function checkPwStrength() {
 	pw = document.getElementById('newpw').value;
  	score = getPasswordStrength(pw);
 	document.getElementById('score').value = (10*score) + '%';
-	document.getElementById('submit').disabled = score<7;
+	document.getElementById('submit').disabled = score<6;
 }

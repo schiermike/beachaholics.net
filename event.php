@@ -323,7 +323,7 @@ function printEvents($showAll = FALSE) {
 		echo "<tr><td style='width: 20px; border-style: solid; border-width: 1px 1px 0px 1px; border-color: black;' class='" . 
 			Event::toClass($event)."'/><td>" . Event::toString($event) . "</td></tr>";
 	}
-	echo "</tr></table><br/>";
+	echo "</table><br/>";
 	echo "</div>";
 }
 	

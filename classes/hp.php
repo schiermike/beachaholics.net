@@ -39,7 +39,7 @@ class HP {
 	 				{
 	 					var enddate = new Date('December 31, 2060');
 	 					document.cookie = 'screenresolution='+ screen.width +'x'+ screen.height + ';expires=' + enddate.toGMTString();
-	 					window.location.replace('" . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING'] . "');
+	 					window.location.replace('" . HP::toHtml($_SERVER['PHP_SELF']) . "?" . HP::toHtml($_SERVER['QUERY_STRING']) . "');
 	 				}
 	 				writeCookie();
 	 			</script>";

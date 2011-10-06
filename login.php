@@ -55,7 +55,10 @@ function printSelectUser()	{
 	echo "</center></form>\n";
 	echo "<br/><br/>";
 	echo "<script type='text/javascript'>document.getElementById('userid').focus();</script>";
-	echo "<noscript><p><center><font color='#ff0000'>Bitte Javascript aktivieren. Sonst klappt die Anmeldung nicht!</font><br/><a href='http://www.werle.com/helps/javascri.htm'target='_blank'>Howto</a></center></p></noscript>";
+	echo "<noscript><p style='text-align:center;'>";
+	echo "<font color='#ff0000'>Bitte Javascript aktivieren. Sonst klappt die Anmeldung nicht!</font><br/>";
+	echo "<a href='http://www.werle.com/helps/javascri.htm' target='_blank'>Howto</a>";
+	echo "</p></noscript>";
 	
 	HP::printPageTail();
 }

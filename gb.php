@@ -256,7 +256,7 @@ function printEntryField($messageId = NULL) {
 	echo "<input type='hidden' name='datetime' value='".HP::getPHPTime()."'/>\n";
 	echo "<input type='hidden' name='messageId' value='".$messageId."'/>\n";
 	echo "<input type='hidden' name='userId' value='".$userId."'/>\n";
-	echo "<script language='javascript'>
+	echo "<script type='text/javascript'>
 		function showBigSmileys() { 
 			div_style = document.getElementById('bigSmiley').style;
 			if(div_style.height == '')	{ 
@@ -290,7 +290,7 @@ function printEntryField($messageId = NULL) {
 	echo "</p>\n";	
 	}
 	echo "<p style='text-align:right'>";
-	echo "Als sticky setzen: <input type='checkbox' name='sticky' value='sticky'".($sticky?" checked='checked'":"")."'/>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;";
+	echo "Als sticky setzen: <input type='checkbox' name='sticky' value='sticky'".($sticky?" checked='checked'":"")."/>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;";
 	echo "Sichtbarkeit: <img src='img/groupkey.png' alt=''/> ";
 	echo "<select name='visibility'>";
 	foreach (User::getRoles() as $role) {
