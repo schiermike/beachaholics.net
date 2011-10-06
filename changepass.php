@@ -24,24 +24,16 @@ function printPassFields($id) {
 	if ($row === false)
 		return;
 	
-	echo "<script type='text/javascript'>";
-	echo "function doCheck() {
-		pw = document.getElementById('newpw').value;
-		score = getPasswordStrength(pw);
-		document.getElementById('score').value = (10*score) + '%';
-		document.getElementById('submit').disabled = score<7;
-		}";
-	echo "</script>";
 	if (HP::isParamSet('expired'))
 		echo "<p style='color: #ff0000; text-align:center;'>Dein Passwort wurde entweder zu alt oder ist zu schwach!<br/>Bitte ändere es jetzt.</p>";
-	echo "<p><form name='form1' method='post' action='changepass.php'>";
+	echo "<p style='text-align:center;'><form name='form1' method='post' action='changepass.php'>";
 	echo "<table width='350'>";
 	echo "<tr><td scope='col'>Benutzer:</td>";
 	echo "<td scope='col'>" . $row['lastname'] . " " . $row['firstname'] . "</td></tr>";
 	echo "<tr><td scope='col'>Altes Passwort:</td>";
 	echo "<td scope='col'><input type='password' name='old_password'/></td></tr>";
 	echo "<tr><td scope='col'>Neues Passwort:</td>";
-	echo "<td scope='col'><input id='newpw' type='password' onchange='doCheck();' onkeyup='doCheck();' name='new_password'/></td></tr>";
+	echo "<td scope='col'><input id='newpw' type='password' onchange='checkPwStrength();' onkeyup='checkPwStrength();' name='new_password'/></td></tr>";
 	echo "<tr><td scope='col'>Passwort bestätigen:</td>";
 	echo "<td scope='col'><input type='password' name='new_password_copy'/></td></tr>";
 	echo "<tr><td scope='col'>Passwortstärke:</td>";
