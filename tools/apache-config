@@ -1,10 +1,31 @@
 <VirtualHost *:80>
-	ServerAlias  beachaholics.net
+	ServerName  beachaholics.net
 	ServerAlias www.beachaholics.net
 	ServerAdmin schiermike@gmx.net
 
-	Redirect permanent / https://beachaholics.net
-	RewriteEngine On
-	RewriteCond %{HTTPS} off
-	RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+	Alias /munin /var/cache/munin/www/
+	
+	DocumentRoot /www/beachaholics/
+	<Location />
+		Options -Indexes
+	</Location>
+
+	<DirectoryMatch "(.*/\.svn)|(tools)">
+		Order deny,allow
+		Deny from all
+	</DirectoryMatch>
+	
+	<Location /files/>
+		php_flag engine off
+	</Location>
+
+
+	ErrorLog /var/log/apache2/beachaholics.error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+	LogLevel warn
+
+	LogFormat "%h %l %{baUsername}e %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" custom
+	SetEnvIf Request_URI "^.*(?i)(jpg|gif|png)"  dontlog
+	CustomLog /var/log/apache2/beachaholics.access.log custom env=!dontlog
 </VirtualHost>

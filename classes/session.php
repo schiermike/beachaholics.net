@@ -40,6 +40,7 @@ class Session {
 			$_SESSION['session'] = new Session();
 
 		getSession()->update();
+		apache_setenv("baUsername", getUser()->nickName); // this name should be used in the custom apache log format
 	}
 	
 	// for developing, use a ssh tunnel to the server via $ssh -N -L 3306:127.0.0.1:3306 beachaholics.net
