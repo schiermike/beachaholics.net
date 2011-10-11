@@ -60,6 +60,9 @@ function userEditConfirm($userid) {
 			", birthday=" . esc(HP::getParam('birthday')) .
 			", email=" . esc(HP::getParam('email')) .
 			", phone=" . esc(HP::getParam('phone'));
+
+		if (getUser()->isAdmin() && HP::isParamSet('password') && HP::getParam('password') != "")
+			$sql .= ", password=" . esc(HP::getParam('password'));
 		
 		if (getUser()->isAdmin()) 
 			$sql .= ", roles=" . esc($roles);
@@ -104,7 +107,7 @@ function printUserEditForm($userid) {
 		return;
 	}
 	
-	if($userid != User::$GUEST_ID) {
+	if ($userid != User::$GUEST_ID) {
 		$sql = "SELECT lastname, firstname, nickname, street, city, email, phone, birthday, roles FROM user WHERE id=" . esc($userid);
 		$result = getDB()->query($sql);
 	
@@ -126,37 +129,55 @@ function printUserEditForm($userid) {
 	echo "<input type='hidden' name='action' value='userEditConfirm'/>\n";
 	if ($userid != User::$GUEST_ID)
 		echo "<input type='hidden' name='userid' value='$userid'/>\n";
-	echo "<b>Nachname:</b> <input type='text' name='lastname' size='15' value='";
-	echo isset($row['lastname']) ? $row['lastname'] : "";
-	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-	echo "<b>Vorname:</b> <input type='text' name='firstname' size='15' value='";
+	
+	echo "<table>";
+	echo "<tr><td style='text-align:right; font-weight: bold;'>";
+	echo "Vorname:</td><td><input type='text' name='firstname' size='12' value='";
 	echo isset($row['firstname']) ? $row['firstname'] : "";
-	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+	echo "'/></td>\n";
 
-	echo "<b>Nickname:</b> <input type='text' name='nickname' size='10' value='";
-	echo isset($row['nickname']) ? $row['nickname'] : "";
-	echo "'/><br/><br/>\n";
-
-	echo "<b>Straße:</b> <input type='text' name='street' size='20' value='";
+	echo "<td style='text-align:right; font-weight: bold;'>";
+	echo "Straße:</td><td><input type='text' name='street' size='18' value='";
 	echo isset($row['street']) ? $row['street'] : "";
-	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+	echo "'/></td>\n";
 
-	echo "<b>Ort:</b> <input type='text' name='city' size='15' value='";
-	echo isset($row['city']) ? $row['city'] : "";
-	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
-
-	echo "<b>Geburtstag:</b> <input type='text' name='birthday' size='10' value='";
-	echo isset($row['birthday']) ? $row['birthday'] : "";
-	echo "'/><br/><br/>\n";
-
-	echo "<b>Email:</b> <input type='text' name='email' size='25' value='";
+	echo "<td style='text-align:right; font-weight: bold;'>";
+	echo "Email:</td><td><input type='text' name='email' size='25' value='";
 	echo isset($row['email']) ? $row['email'] : "";
-	echo "'/>&nbsp;&nbsp;&nbsp;&nbsp;\n";
+	echo "'/></td></tr>\n";
 
-	echo "<b>Telefon:</b> <input type='text' name='phone' size='15' value='";
+	echo "<tr><td style='text-align:right; font-weight: bold;'>";
+	echo "Nachname:</td><td><input type='text' name='lastname' size='12' value='";
+	echo isset($row['lastname']) ? $row['lastname'] : "";
+	echo "'/></td>\n";
+
+	echo "<td style='text-align:right; font-weight: bold;'>";
+	echo "Ort:</td><td><input type='text' name='city' size='18' value='";
+	echo isset($row['city']) ? $row['city'] : "";
+	echo "'/></td>\n";
+
+	echo "<td style='text-align:right; font-weight: bold;'>";
+	echo "Telefon:</td><td><input type='text' name='phone' size='15' value='";
 	echo isset($row['phone']) ? $row['phone'] : "";
-	echo "'/>\n";
+	echo "'/></td></tr>\n";
+
+	echo "<tr><td style='text-align:right; font-weight: bold;'>";
+	echo "Nickname:</td><td><input type='text' name='nickname' size='12' value='";
+	echo isset($row['nickname']) ? $row['nickname'] : "";
+	echo "'/></td>\n";
+
+	echo "<td style='text-align:right; font-weight: bold;'>";
+	echo "Geburtstag:</td><td><input type='text' name='birthday' size='10' value='";
+	echo isset($row['birthday']) ? $row['birthday'] : "";
+	echo "'/></td>\n";
+
+	if (getUser()->isAdmin()) {
+		echo "<td style='text-align:right; font-weight: bold;'>";
+		echo "Neues PW:</td><td><input type='text' id='password' name='password' size='15' value=''/>";
+		echo " <a href='javascript:generatePassword(8);'>generate</a>\n";
+	}
+
+	echo "</tr></table>";
 	
 	echo "<table><tr><td width='200'>";
 	

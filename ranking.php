@@ -23,6 +23,14 @@ function getLigaLink($tvvid, $showGames, $name, $nsaison=False) {
 
 function printPage() {
 	echo "<div style='text-align:right'>";
+	echo "<i>Saison 2011/2012:</i> ";
+	echo getLigaLink(499, true, "Damen Qualifikation A");
+	echo " | " . getLigaLink(497, true, "Damen Qualifikation C");
+	echo " | " . getLigaLink(501, false, "Damen Cup");
+	echo " | " . getLigaLink(495, true, "Herren Qualifikation B");
+	echo " | " . getLigaLink(500, false, "Herren Cup");
+	echo "</div>";
+	echo "<div style='text-align:right'>";
 	echo "<i>Saison 2010/2011:</i> ";
 	echo getLigaLink(465, true, "Damen oberes Playoff");
 	echo " | " . getLigaLink(430, false, "Damen Cup");

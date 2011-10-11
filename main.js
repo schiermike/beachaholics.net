@@ -231,9 +231,41 @@ function getPasswordStrength(passwd) {
 	return score;
 }
 
+// ------------------------------------------------------------------------------------------------	
+
 function checkPwStrength() {
 	pw = document.getElementById('newpw').value;
  	score = getPasswordStrength(pw);
 	document.getElementById('score').value = (10*score) + '%';
 	document.getElementById('submit').disabled = score<6;
 }
+
+// ------------------------------------------------------------------------------------------------	
+
+function randInt(maximum) {
+	return (Math.floor(Math.random() * (maximum+1)));
+}
+
+// ------------------------------------------------------------------------------------------------	
+
+function generatePassword(len) {
+	var chars = new Array("0123456789", "abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "!@#$^&*()-_=+[{]}|;:,<.>/? ");
+	var count = new Array(0,0,0,0);
+	var i = 0;
+	var password = "";
+	while (len-->0) {
+		count[i]++;
+		i = (i+1)%4;
+	}
+	while (count[0]+count[1]+count[2]+count[3]>0) {
+		i = randInt(3);
+		if (count[i] == 0)
+			continue;
+		password += chars[i].charAt(randInt(chars[i].length-1));
+		count[i]--;
+	}
+	
+
+	document.getElementById('password').value = password;
+}
+
