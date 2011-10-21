@@ -37,6 +37,13 @@ function loginProcedure() {
 // ===================================================================
 
 function printSelectUser()	{
+	$sql = "SELECT id FROM user WHERE last_ip = " . esc($_SERVER['REMOTE_ADDR']);
+	$request = getDB()->query($sql);
+	$lastId = NULL;
+	if (mysql_num_rows($request) == 1) {
+		$row = mysql_fetch_assoc($request);
+		$lastId = $row['id'];
+	}
 	$sql = "SELECT id, lastname, firstname, nickname FROM user WHERE roles>=0 ORDER BY nickname ASC";
 	$request = getDB()->query($sql);
 	
@@ -48,7 +55,7 @@ function printSelectUser()	{
 	echo "<select id='userid' name='userid' style='width: 200px;' onkeypress='if (event.keyCode==13) this.form.submit();' onblur='this.form.submit();'>\n";
 	echo "<option value='-1'>Benutzer auswählen</option>\n";
 	while ($row = mysql_fetch_assoc($request))
-		echo "<option value='".$row['id']."'>".HP::toHtml($row['nickname'])."</option>\n";
+		echo "<option value='".$row['id']."'" . ($row['id'] == $lastId ? "selected='selected'" : "") . ">".HP::toHtml($row['nickname'])."</option>\n";
 				
 	echo "</select>\n";
 	echo "</p>";
