@@ -193,7 +193,6 @@ function addOrModifyEntry($id, $date, $amount, $note) {
 	if ($_FILES['attached']['size'] > 0) {
 		$fp = fopen($_FILES['attached']['tmp_name'], 'r');
 		$attachment = fread($fp, filesize($_FILES['attached']['tmp_name']));
-		$attachment = addslashes($attachment);
 		fclose($fp);
 		$attachment = esc($attachment);
 		$attachmentName = esc($_FILES['attached']['name']);
