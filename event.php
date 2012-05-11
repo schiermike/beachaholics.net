@@ -248,7 +248,7 @@ function printUnsubscribeForm($eventId, $playerId) {
 	echo "<form name='form1' method='get' action='".$_SERVER['PHP_SELF']."'>";
 	echo "<p style='text-align:center'><textarea name='reason' cols='80' rows='4'></textarea></p>";
 	echo "<p style='text-align:center'>";
-	echo "<input type='submit' name='Submit' value='Abmeldung abschicken'/>";
+	echo "<input type='submit' name='Submit' value='Änderung abschicken'/>";
 	echo "<input type='hidden' name='event_id' value='".$eventId."'/>";
 	echo "<input type='hidden' name='playerid' value='".$playerId."'/>";
 	echo "<input type='hidden' name='action' value='unsubscribe_step2'/>";

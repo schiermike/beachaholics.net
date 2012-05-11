@@ -10,7 +10,7 @@
 		Options -Indexes
 	</Location>
 
-	<DirectoryMatch "(.*/\.svn)|(tools)">
+	<DirectoryMatch "(.*/\.git)|(tools)">
 		Order deny,allow
 		Deny from all
 	</DirectoryMatch>
