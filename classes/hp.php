@@ -1,5 +1,4 @@
 <?php
-require_once "version.php";
 require_once "database.php";
 require_once "user.php";
 require_once "session.php";
@@ -181,7 +180,7 @@ class HP {
 							</td>
 						</tr>
 						<tr>
-							<td style='text-align:right'>".HP_VERSION." &copy;  by Schier Michael</td>
+							<td style='text-align:right'>".HP::code_version()." &copy;  by Schier Michael</td>
 							<td/>
 						</tr>
 					</table>
@@ -316,6 +315,10 @@ class HP {
 		if (isset($_POST[$name]))
 			$parameter = $_POST[$name];
 		return $parameter;
+	}
+
+	private static function code_version() {
+		return exec("git describe --tags --dirty");
 	}
 }
 ?>
