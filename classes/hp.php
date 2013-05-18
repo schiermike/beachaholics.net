@@ -168,9 +168,7 @@ class HP {
 					<div style='width: 800px; height: 120px; background-image:url(\"".HP::getRandPicURL()."\");'></div>
 					<table align='right' cellspacing='4' cellpadding='0' style='font-size:x-small; width:100%'>
 						<tr>
-							<td rowspan='2' width='100%'>
-								<a href='munin' target='_blank'><img src='img/network_stats.png' alt='Server statistics'/></a>
-							</td>
+							<td rowspan='2' width='100%'></td>
 							<td style='text-align:right;white-space:nowrap'>für den Inhalt verantwortlich: Beachaholics Kufstein</td>
 							<td rowspan='2'>&nbsp;&nbsp;</td>
 							<td rowspan='2' style='white-space:nowrap'>
@@ -318,7 +316,7 @@ class HP {
 	}
 
 	private static function code_version() {
-		return exec("git describe --tags --dirty");
+		return system("git describe --tags --dirty");
 	}
 }
 ?>

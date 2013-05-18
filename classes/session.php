@@ -14,6 +14,10 @@ function getDB() {
 	return getSession()->db;
 }
 
+function getConfig() {
+	return parse_ini_file('config.ini.php', True);
+}
+
 class Session {
 	public $sessionId;
 	public $user = NULL;
@@ -27,9 +31,10 @@ class Session {
 		setlocale(LC_MONETARY, 'de_AT.utf8');
 		
 		srand(microtime()*1000000);
-
-		ini_set('SMTP','beachaholics.net');
-		ini_set('sendmail_from', 'no-reply@beachaholics.net');
+		$c = getConfig();
+		$c = $c['mail'];
+		ini_set('SMTP', $c['host']);
+		ini_set('sendmail_from', $c['from']);
 		
 		// start the session
 		if (session_id() == "")
@@ -45,7 +50,10 @@ class Session {
 	
 	// for developing, use a ssh tunnel to the server via $ssh -N -L 3306:127.0.0.1:3306 beachaholics.net
 	public function __construct() {
-		$this->db = new DB("127.0.0.1:3306", "beachaholics", "nöm3Fru4Fru66", "beachaholics");
+		$c = getConfig();
+		$c = $c['database'];
+
+		$this->db = new DB($c['host'] . ':' . $c['port'], $c['username'], $c['password'], $c['schema']);
 		$this->sessionId = session_id();
 	}
 	
