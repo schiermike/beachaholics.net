@@ -133,7 +133,7 @@ class HP {
 			echo "<a href='drivingcosts.php'><img src='img/navi/fahrten.png' alt='Fahrtkostenabrechnung' title='Fahrtkostenabrechnung'/></a>\n";
 		if (getUser()->isVorstand())
 			echo "<a href='account.php'><img src='img/navi/konto.png' alt='Kontoübersicht' title='Kontoübersicht'/></a>\n";	
-		echo "<a href='forecast.php'><img src='img/navi/weather.png' alt='Wetter' title='Wettervorhersage'/></a>\n";
+		echo "<a href='http://www.zamg.ac.at/cms/de/wetter/wetter-oesterreich/tirol/' target='_blank'><img src='img/navi/weather.png' alt='Wetter' title='Wettervorhersage'/></a>\n";
 		echo "<a href='plan.php'><img src='img/navi/anfahrt.gif' alt='Anfahrt' title='Anfahrt'/></a>\n";
 		echo "<a href='links.php'><img src='img/navi/link.png' alt='Links' title='Links'/></a>\n";
 		if (getUser()->isItMe())
